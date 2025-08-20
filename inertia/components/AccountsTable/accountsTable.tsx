@@ -5,6 +5,9 @@ import {DateTime} from "luxon";
 import {BankAccountDTO} from "#models/bank_account";
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
 import {deleteAccount} from "~/services/account_service";
+import EditBalance from "~/components/EditBalance/editBalance";
+import {createBalance} from "~/services/balance_service";
+import {getLatestBalance} from "~/services/utils_service";
 
 type AccountsTableProps = {
   accounts: BankAccountDTO[],
@@ -34,17 +37,26 @@ export default function AccountsTable({ accounts, updateAccounts }: AccountsTabl
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {accounts.map((account) => (
+                {accounts.map((account) => {
+                  const latestBalance = getLatestBalance(account.balances)
+                  return (
                   <Table.Row key={account.id}>
-                    <Table.RowHeaderCell className='no-wrap-cell'>{account.name}</Table.RowHeaderCell>
-                    <Table.Cell>{account.balances[0].amount}</Table.Cell>
+                    <Table.RowHeaderCell className='no-wrap-cell'>
+                      <Flex align='center'>
+                        {account.name}
+                      </Flex>
+                    </Table.RowHeaderCell>
+                    <Table.Cell className='no-wrap-cell'>{latestBalance?.amount}</Table.Cell>
                     <Table.Cell className='no-wrap-cell'>
-                      {account.updatedAt
-                      ? DateTime.fromISO(account.updatedAt).toFormat('yyyy-MM-dd HH:mm')
+                      {latestBalance?.createdAt
+                      ? DateTime.fromISO(latestBalance.createdAt).toFormat('yyyy-MM-dd HH:mm')
                       : ''}
                     </Table.Cell>
                     <Table.Cell>
-                      <Flex gap='4'>
+                      <Flex align='center' justify='start' gap='4'>
+                        <EditBalance
+                          metadata={account}
+                          onSubmit={onEditBalance} />
                         <ConfirmationModal
                           title='Delete Account'
                           description='This account and all balance/allocation information will be permanently deleted'
@@ -52,7 +64,7 @@ export default function AccountsTable({ accounts, updateAccounts }: AccountsTabl
                       </Flex>
                     </Table.Cell>
                   </Table.Row>
-                ))}
+                )})}
               </Table.Body>
             </Table.Root>
           </ScrollArea>
@@ -64,5 +76,15 @@ export default function AccountsTable({ accounts, updateAccounts }: AccountsTabl
   async function onDeleteConfirm(id: number){
     const accounts = await deleteAccount(id);
     updateAccounts(accounts)
+  }
+
+  async function onEditBalance(balance: string, id: number){
+    const payload = {
+      bankAccountId: id,
+      amount: balance,
+    }
+
+    const response = await createBalance(payload)
+    console.log(response)
   }
 }

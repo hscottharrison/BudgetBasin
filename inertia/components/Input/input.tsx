@@ -7,19 +7,8 @@ export default function Input(props: any) {
     <Box>
       <Text as='label' weight='bold'>
         {label}
-        <TextField.Root type={type} id={name} />
+        <TextField.Root type={type} id={name} name={name} />
       </Text>
     </Box>
-    // <div className="field">
-    //   <label
-    //     className="field__label"
-    //     htmlFor={name}>
-    //     {label}
-    //   </label>
-    //   <input
-    //     className="field__input"
-    //     type={type}
-    //     name={name}/>
-    // </div>
   )
 }

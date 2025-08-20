@@ -9,6 +9,8 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+const BucketsController = () => import('#controllers/buckets_controller')
+const BalancesController = () => import('#controllers/balances_controller')
 const AccountsController = () => import('#controllers/accounts_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ViewsController = () => import('#controllers/views_controller')
@@ -27,3 +29,9 @@ router.post('/api/logout', [AuthController, 'logout'])
 // Accounts
 router.post('/api/accounts', [AccountsController, 'create']).use(middleware.auth())
 router.delete('/api/accounts/:id', [AccountsController, 'delete']).use(middleware.auth())
+
+// Balances
+router.post('/api/balances', [BalancesController, 'create']).use(middleware.auth())
+
+// Buckets
+router.post('/api/buckets', [BucketsController, 'create']).use(middleware.auth())

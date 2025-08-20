@@ -8,7 +8,7 @@ export type BankAccountDTO = {
   id: number
   name: string
   balances: BalanceDTO[]
-  updatedAt: string | null
+  createdAt: string | null
 }
 
 export default class BankAccount extends BaseModel {

@@ -11,7 +11,7 @@ export async function createAccount(payload: any) {
 
 export async function deleteAccount(accountId: number ){
   try {
-    var res = await fetch('/api/accounts/'+accountId, {
+    var res = await fetch('/api/accounts/' + accountId, {
       method: 'DELETE',
     })
     return res.json()

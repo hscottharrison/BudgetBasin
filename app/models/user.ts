@@ -5,6 +5,7 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import BankAccount from '#models/bank_account'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
+import Bucket from '#models/bucket'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -37,4 +38,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare bankAccounts: HasMany<typeof BankAccount>
+
+  @hasMany(() => Bucket, {
+    foreignKey: 'userId',
+  })
+  declare buckets: HasMany<typeof Bucket>
 }

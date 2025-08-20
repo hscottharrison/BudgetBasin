@@ -35,7 +35,7 @@ export default class AccountsController {
 
       response.json(bankAccounts)
     } catch (error) {
-      response.badRequest(error.message)
+      response.internalServerError(error.message)
     }
   }
 }

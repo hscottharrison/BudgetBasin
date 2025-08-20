@@ -9,6 +9,11 @@ export type BalanceDTO = {
   createdAt: string | null
 }
 
+export type CreateBalanceDTO = {
+  bankAccountId: number
+  amount: number
+}
+
 export default class Balance extends BaseModel {
   @column({ isPrimary: true })
   declare id: number

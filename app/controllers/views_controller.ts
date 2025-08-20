@@ -1,10 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import BankAccount from '#models/bank_account'
+import AccountsService from '#services/accounts_service'
+import BucketsService from '#services/buckets_service'
 // import {UserHomeDTO} from "#models/user_home_dto";
 
 @inject()
 export default class ViewsController {
+  constructor(
+    private accountService: AccountsService,
+    private bucketsService: BucketsService
+  ) {}
   async home({ inertia }: HttpContext) {
     return inertia.render('home')
   }
@@ -18,26 +23,15 @@ export default class ViewsController {
   }
 
   async userHome({ inertia, auth }: HttpContext) {
-    const userAccounts = await BankAccount.query()
-      .preload('balances')
-      .join('balances', 'balances.bank_account_id', 'bank_accounts.id')
-      .select('bank_accounts.*')
-      .where('user_id', auth?.user?.id ?? 0)
-
+    const userAccounts = await this.accountService.GetAllAccountsForUser(auth?.user?.id ?? 0)
+    const buckets = await this.bucketsService.GetAllBucketsForUser(auth?.user?.id ?? 0)
     const dto = {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
       },
-      userAccounts: userAccounts.map((a) => {
-        const json = a.serialize()
-        return {
-          id: json.id,
-          name: json.name,
-          balances: json.balances ? json.balances : [],
-          updatedAt: a.updatedAt.toISO() ?? null,
-        }
-      }),
+      userAccounts,
+      userBuckets: buckets,
     }
 
     return inertia.render('UserHome/userHome', dto)
