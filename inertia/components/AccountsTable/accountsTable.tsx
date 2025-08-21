@@ -12,9 +12,10 @@ import {getLatestBalance} from "~/services/utils_service";
 type AccountsTableProps = {
   accounts: BankAccountDTO[],
   updateAccounts: (accounts: BankAccountDTO[]) => void,
+  updateAccount: (account: BankAccountDTO) => void,
 }
 
-export default function AccountsTable({ accounts, updateAccounts }: AccountsTableProps) {
+export default function AccountsTable({ accounts, updateAccounts, updateAccount }: AccountsTableProps) {
   return (
     <Accordion.Root
       className='accordion-root'
@@ -85,6 +86,6 @@ export default function AccountsTable({ accounts, updateAccounts }: AccountsTabl
     }
 
     const response = await createBalance(payload)
-    console.log(response)
+    updateAccount(response)
   }
 }

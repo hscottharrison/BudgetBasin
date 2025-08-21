@@ -6,6 +6,7 @@ import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import BankAccount from '#models/bank_account'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Bucket from '#models/bucket'
+import Allocation from '#models/allocation'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -43,4 +44,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare buckets: HasMany<typeof Bucket>
+
+  @hasMany(() => Allocation, {
+    foreignKey: 'userId',
+  })
+  declare allocations: HasMany<typeof Allocation>
 }

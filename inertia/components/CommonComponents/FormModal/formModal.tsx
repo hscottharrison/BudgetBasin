@@ -1,14 +1,16 @@
 import {Button, Dialog, Flex} from "@radix-ui/themes";
 import {PlusIcon} from "@radix-ui/react-icons";
-import Input from "~/components/Input/input";
+import Input from "~/components/CommonComponents/Input/input";
 import {FormEvent, ReactNode} from "react";
+import SelectInput from "~/components/CommonComponents/Select/select";
 
 type FieldConfig<K extends string> = {
   name: K;
   label: string;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   inputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, "name" | "id" | "type">;
-  render?: (name: K) => ReactNode; // escape hatch for custom inputs
+  render?: (name: K) => ReactNode;
+  options?: {label: string, value: string}[]// escape hatch for custom inputs
 };
 
 export type FormModalProps<T extends Record<string, unknown>> = {
@@ -48,12 +50,24 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
         <Dialog.Description>{ description }</Dialog.Description>
         <form onSubmit={submit}>
           <Flex direction='column' gap='4'>
-            {formElements.map(formElement => (
-              <Input
-                label={formElement.label}
-                name={formElement.name}
-                type={formElement.type ?? 'text'}/>
-            ))}
+            {formElements.map(formElement => {
+              switch(formElement.type) {
+                case 'select':
+                  if (!!formElement.options) {
+                    return (
+                      <SelectInput label={formElement.label} name={formElement.name} options={formElement.options} />
+                    )
+                  }
+                  break;
+                default:
+                  return (
+                    <Input
+                      label={formElement.label}
+                      name={formElement.name}
+                      type={formElement.type ?? 'text'}/>
+                  )
+              }
+            })}
             <Flex gap='4' justify='end'>
               <Dialog.Close>
                 <Button type='button' variant='surface'>{ closeButtonLabel }</Button>

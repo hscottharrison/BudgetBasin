@@ -1,6 +1,7 @@
 import {BucketDTO} from "#models/bucket";
 import {Box, Card, Flex, Grid, ScrollArea, Text} from "@radix-ui/themes";
-import { TbPigMoney } from "react-icons/tb";
+import { RiWalletFill } from "@remixicon/react"
+import {sumAllocations} from "~/services/utils_service";
 
 type BucketsListProps = {
   buckets: BucketDTO[];
@@ -14,14 +15,18 @@ export default function BucketsList({ buckets }: BucketsListProps){
             <Box>
               <Flex align='center' justify='between'>
                 <Flex align='center'>
-                  <TbPigMoney />
+                  <RiWalletFill />
                   <Box ml='4'>
                     <Text weight='bold' size='3'>{ bucket.name }</Text>
                     <br />
                     <Text size='1'> { bucket.description }</Text>
                   </Box>
                 </Flex>
-                <Text weight='bold' size='4'>{ bucket.goalAmount }</Text>
+                <Box>
+                  <Text weight='bold' size='3'>{ sumAllocations(bucket.allocations) }</Text>
+                  /
+                  <Text size='2'>{ bucket.goalAmount }</Text>
+                </Box>
               </Flex>
             </Box>
           </Card>

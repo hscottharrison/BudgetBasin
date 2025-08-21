@@ -1,22 +1,28 @@
-import { Flex } from "@radix-ui/themes";
+import {Flex, ScrollArea} from "@radix-ui/themes";
 import AddAccount from "~/components/AddAccount/addAccount";
 import {createAccount} from "~/services/account_service";
 import {BankAccountDTO} from "#models/bank_account";
 import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
 import {BucketDTO, CreateBucketDTO} from "#models/bucket";
 import {createBucket} from "~/services/bucket_service";
+import {CreateAllocationDTO} from "#models/allocation";
+import {createAllocation} from "~/services/allocation_service";
 
 type ActionBarProps = {
   updateAccounts: (account: BankAccountDTO[]) => void;
   updateBuckets: (buckets: BucketDTO[]) => void;
+  buckets: BucketDTO[]
 }
 
-export default function ActionsBar({updateAccounts}: ActionBarProps) {
+export default function ActionsBar({buckets, updateAccounts}: ActionBarProps) {
  return (
-   <Flex gap='2'>
-     <AddAccount onSubmit={addAccount} />
-     <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
-   </Flex>
+   <ScrollArea type='auto' scrollbars='horizontal' style={{ width: '100%', paddingBottom: '1rem' }}>
+     <Flex gap='2'>
+       <AddAccount onSubmit={addAccount} />
+       <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
+       <FormModal<CreateAllocationDTO> {...getCreateAllocationConfig()} />
+     </Flex>
+   </ScrollArea>
  )
   async function addAccount(e: React.FormEvent) {
     e.preventDefault();
@@ -37,6 +43,34 @@ export default function ActionsBar({updateAccounts}: ActionBarProps) {
   async function addBucket(payload: CreateBucketDTO) {
     const response: BucketDTO = await createBucket(payload)
     console.log(response)
+  }
+
+  async function addAllocation(payload: CreateAllocationDTO) {
+    const response = await createAllocation(payload)
+    console.log(response)
+  }
+
+  function getCreateAllocationConfig(): FormModalProps<CreateAllocationDTO> {
+   return {
+     actionLabel: 'Allocate Funds',
+     title: 'Allocate Funds',
+     description: 'Select a bucket and allocate some of your hard-earned cash towards your goals',
+     submitButtonLabel: 'Allocate',
+     onSubmit: addAllocation,
+     formElements: [
+       {
+         name: 'bucketId',
+         label: 'Bucket',
+         type: 'select',
+         options: buckets.map((bucket) => ({label: bucket.name, value: `${bucket.id}`}))
+       },
+       {
+         name: 'amount',
+         label: 'Amount',
+         type: 'number',
+       }
+     ]
+   }
   }
 
   function getCreateBucketConfig(): FormModalProps<CreateBucketDTO> {

@@ -1,6 +1,6 @@
 import {Button, Dialog, Flex, IconButton} from "@radix-ui/themes";
 import {Pencil1Icon} from "@radix-ui/react-icons";
-import Input from "~/components/Input/input";
+import Input from "~/components/CommonComponents/Input/input";
 import {FormEvent} from "react";
 import {BankAccountDTO} from "#models/bank_account";
 

@@ -1,5 +1,5 @@
 import {FormEvent} from "react";
-import Input from '~/components/Input/input'
+import Input from '~/components/CommonComponents/Input/input'
 import {Card, Container, Box, Flex, Button, Heading} from "@radix-ui/themes";
 import {register} from "~/services/auth_service";
 

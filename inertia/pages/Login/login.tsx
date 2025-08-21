@@ -1,6 +1,6 @@
 import {FormEvent} from "react";
 import {Box, Button, Card, Container, Flex, Heading} from "@radix-ui/themes";
-import Input from "~/components/Input/input";
+import Input from "~/components/CommonComponents/Input/input";
 import {login} from "~/services/auth_service";
 import {LoginDTO} from "#models/auth_dto";
 

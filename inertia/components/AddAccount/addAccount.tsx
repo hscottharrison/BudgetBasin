@@ -1,6 +1,6 @@
 import {Button, Dialog, Flex} from "@radix-ui/themes";
 import {PlusIcon} from "@radix-ui/react-icons";
-import Input from "~/components/Input/input";
+import Input from "~/components/CommonComponents/Input/input";
 import {FormEvent} from "react";
 
 type AddAccountProps = {
