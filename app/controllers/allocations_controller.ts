@@ -8,9 +8,8 @@ export default class AllocationsController {
       const allocationData = {
         userId: auth?.user?.id,
         bucketId: Number(data.bucketId),
-        amount: data.amount,
+        amount: Number(data.amount),
       }
-      console.log(allocationData)
       const allocation = await Allocation.create(allocationData)
       response.json(allocation)
     } catch (error) {

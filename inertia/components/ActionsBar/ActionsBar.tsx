@@ -5,16 +5,17 @@ import {BankAccountDTO} from "#models/bank_account";
 import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
 import {BucketDTO, CreateBucketDTO} from "#models/bucket";
 import {createBucket} from "~/services/bucket_service";
-import {CreateAllocationDTO} from "#models/allocation";
+import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
 import {createAllocation} from "~/services/allocation_service";
 
 type ActionBarProps = {
   updateAccounts: (account: BankAccountDTO[]) => void;
-  updateBuckets: (buckets: BucketDTO[]) => void;
+  addBucketState: (buckets: BucketDTO) => void;
+  updateAllocationsForBucket: (allocation: AllocationDTO) => void;
   buckets: BucketDTO[]
 }
 
-export default function ActionsBar({buckets, updateAccounts}: ActionBarProps) {
+export default function ActionsBar({buckets, updateAccounts, updateAllocationsForBucket, addBucketState}: ActionBarProps) {
  return (
    <ScrollArea type='auto' scrollbars='horizontal' style={{ width: '100%', paddingBottom: '1rem' }}>
      <Flex gap='2'>
@@ -42,12 +43,12 @@ export default function ActionsBar({buckets, updateAccounts}: ActionBarProps) {
 
   async function addBucket(payload: CreateBucketDTO) {
     const response: BucketDTO = await createBucket(payload)
-    console.log(response)
+    addBucketState(response)
   }
 
   async function addAllocation(payload: CreateAllocationDTO) {
-    const response = await createAllocation(payload)
-    console.log(response)
+    const response: AllocationDTO = await createAllocation(payload)
+    updateAllocationsForBucket(response)
   }
 
   function getCreateAllocationConfig(): FormModalProps<CreateAllocationDTO> {

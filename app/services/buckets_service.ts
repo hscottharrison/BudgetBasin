@@ -1,4 +1,4 @@
-import Bucket, { BucketDTO } from '#models/bucket'
+import Bucket, { BucketDTO, CreateBucketDTO } from '#models/bucket'
 
 export default class BucketsService {
   async GetAllBucketsForUser(userId: number): Promise<BucketDTO[]> {
@@ -17,5 +17,17 @@ export default class BucketsService {
         goalAmount: json.goalAmount,
       }
     })
+  }
+
+  async createBucket(bucketData: CreateBucketDTO): Promise<BucketDTO> {
+    const bucket = await Bucket.create(bucketData)
+    const json = bucket.serialize()
+    return {
+      id: json.id,
+      name: json.name,
+      description: json.description,
+      allocations: [],
+      goalAmount: Number(json.goalAmount),
+    }
   }
 }

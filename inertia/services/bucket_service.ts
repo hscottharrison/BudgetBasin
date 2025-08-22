@@ -15,3 +15,15 @@ export async function createBucket(payload: CreateBucketDTO): Promise<BucketDTO>
     return error
   }
 }
+
+export async function deleteBucket(bucketId: number): Promise<BucketDTO[]> {
+  try{
+    const response = await fetch(`/api/buckets/${bucketId}`, {
+      method: 'DELETE',
+    })
+    return response.json()
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}

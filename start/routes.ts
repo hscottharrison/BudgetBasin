@@ -36,6 +36,7 @@ router.post('/api/balances', [BalancesController, 'create']).use(middleware.auth
 
 // Buckets
 router.post('/api/buckets', [BucketsController, 'create']).use(middleware.auth())
+router.delete('/api/buckets/:id', [BucketsController, 'delete']).use(middleware.auth())
 
 // Allocations
 router.post('/api/allocations', [AllocationsController, 'create']).use(middleware.auth())

@@ -1,7 +1,7 @@
 import {Button, Dialog, Flex} from "@radix-ui/themes";
 import {PlusIcon} from "@radix-ui/react-icons";
 import Input from "~/components/CommonComponents/Input/input";
-import {FormEvent, ReactNode} from "react";
+import {FormEvent, ReactNode, useState} from "react";
 import SelectInput from "~/components/CommonComponents/Select/select";
 
 type FieldConfig<K extends string> = {
@@ -21,10 +21,11 @@ export type FormModalProps<T extends Record<string, unknown>> = {
   closeButtonLabel?: string;
   submitButtonLabel?: string;
   onSubmit: (payload: T) => Promise<void>;
-  onOpenChange?: (open: boolean) => void;
 }
 
-export default function FormModal<T extends Record<string, unknown>>({ actionLabel, title, description, formElements, closeButtonLabel = 'Cancel', submitButtonLabel = 'Submit', onSubmit, onOpenChange  }: FormModalProps<T>) {
+export default function FormModal<T extends Record<string, unknown>>({ actionLabel, title, description, formElements, closeButtonLabel = 'Cancel', submitButtonLabel = 'Submit', onSubmit
+}: FormModalProps<T>) {
+  const [open, setOpen] = useState(false)
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget)
@@ -35,10 +36,10 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
     }, {} as T)
 
     await onSubmit(payload)
-    onOpenChange?.(false)
+    setOpen(false)
   }
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
         <Button radius='full'>
           <PlusIcon />

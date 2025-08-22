@@ -1,4 +1,4 @@
-import {Avatar, Container, Flex, Grid, Heading} from "@radix-ui/themes";
+import {Avatar, Box, Flex, Grid, Heading} from "@radix-ui/themes";
 import {useMemo, useState} from "react";
 import {UserHomeDTO} from "#models/user_home_dto";
 import {BankAccountDTO} from "#models/bank_account";
@@ -7,7 +7,8 @@ import AccountsTable from "~/components/AccountsTable/accountsTable";
 import ActionsBar from "~/components/ActionsBar/ActionsBar";
 import {formatCurrency, getLatestBalance, sumAllocations} from "~/services/utils_service";
 import {BucketDTO} from "#models/bucket";
-import BucketsList from "~/components/BucketsList";
+import BucketsList from "~/components/BucketsList/BucketsList";
+import {AllocationDTO} from "#models/allocation";
 
 export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDTO) {
   const [accounts, setAccounts] = useState<BankAccountDTO[]>(userAccounts);
@@ -31,22 +32,62 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
   }, [buckets])
 
   return (
-    <Container py='6' px='4' size='4'>
-      <Flex align='center' gap='2'>
-        <Avatar fallback={user?.firstName[0] ?? ''} radius='full' />
-        <Heading as='h1' size='3'>Hello, {user?.firstName} {user?.lastName}</Heading>
+    <Box
+      style={{
+        width: '100%',
+        maxWidth: 1120,
+        marginInline: "auto",
+        padding: "2rem 1rem",
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        flex: 1,
+        minHeight: 0,
+        overflow: 'hidden',
+      }}
+    >
+      <Flex align="center" gap="2">
+        <Avatar fallback={user?.firstName?.[0] ?? ""} radius="full" />
+        <Heading as="h1" size="3">
+          Hello, {user?.firstName} {user?.lastName}
+        </Heading>
       </Flex>
-      <Flex direction='column' gap='4' mt='4'>
-        <Grid columns={{sm: '1', lg: '2'}}>
+
+      <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, marginTop: '1rem', gap: '1rem' }}>
+        <Grid columns={{ sm: "1", lg: "2" }}>
           <TotalBalance balance={balance} allocations={totalAllocations} />
         </Grid>
-        <ActionsBar updateAccounts={updateAccounts} updateBuckets={updateBuckets} buckets={buckets} />
-        <AccountsTable updateAccounts={updateAccounts} updateAccount={updateAccount} accounts={accounts} />
-        <BucketsList buckets={buckets} />
-      </Flex>
-    </Container>
+
+        <Box style={{ flex: '0 0 auto', minHeight: '0' }}>
+          <ActionsBar
+            updateAccounts={updateAccounts}
+            addBucketState={addBucket}
+            buckets={buckets}
+            updateAllocationsForBucket={updateAllocationsForBucket}
+          />
+        </Box>
+
+        <AccountsTable
+          updateAccounts={updateAccounts}
+          updateAccount={updateAccount}
+          accounts={accounts}
+        />
+
+        {/* BucketsList gets remaining space and becomes scrollable */}
+        <Box style={{ flex: 1, minHeight: 0 }}>
+          <BucketsList
+            buckets={buckets}
+            updateBuckets={updateBuckets}/>
+        </Box>
+      </Box>
+    </Box>
   )
 
+
+  /**
+   * STATE MANAGEMENT
+   */
+  // ACCOUNTS
   function updateAccounts(accounts: BankAccountDTO[]) {
     setAccounts(accounts)
   }
@@ -57,7 +98,18 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
     setAccounts([...accounts])
   }
 
-  function updateBuckets(buckets: BucketDTO[]) {
+  // BUCKETS
+  function addBucket(bucket: BucketDTO) {
+    setBuckets([...buckets, bucket])
+  }
+
+  function updateBuckets(buckets: BucketDTO[]){
     setBuckets(buckets)
+  }
+
+  function updateAllocationsForBucket(allocation: AllocationDTO) {
+    const index = buckets.findIndex((bucket) => bucket.id == allocation.bucketId)
+    buckets[index].allocations.push(allocation)
+    setBuckets([...buckets])
   }
 }

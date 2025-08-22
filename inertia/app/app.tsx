@@ -7,6 +7,7 @@ import { hydrateRoot } from 'react-dom/client'
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import {Box, Theme} from '@radix-ui/themes'
+import AppBar from '~/components/AppBar/appBar'
 // import AppBar from "~/components/AppBar/appBar";
 
 
@@ -28,8 +29,8 @@ createInertiaApp({
 
     hydrateRoot(el,
       <Theme accentColor="amber" radius="small">
-        {/*<AppBar {...props.initialPage.props}></AppBar>*/}
-        <Box style={{ height: 'calc(100vh - 5rem)'}}>
+        <AppBar {...props.initialPage.props}></AppBar>
+        <Box style={{ maxHeight: 'calc(100vh - 3rem)', overflow: 'hidden', height: 'calc(100vh - 3rem)', display: 'flex', flexDirection: 'column', minHeight: 0}}>
           <App {...props} />
         </Box>
       </Theme>)

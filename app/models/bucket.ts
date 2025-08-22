@@ -5,6 +5,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Allocation, { AllocationDTO } from '#models/allocation'
 
 export type CreateBucketDTO = {
+  userId?: number
   name: string
   description: string
   goalAmount: number

@@ -1,19 +1,30 @@
-import {Button, Dialog, Flex, IconButton} from '@radix-ui/themes'
+import {Button, Dialog, Flex} from '@radix-ui/themes'
 import {TrashIcon} from "@radix-ui/react-icons";
+import {useState} from "react";
 
 type DeleteAccountProps = {
   title: string
+  buttonText?: string
+  buttonVariant?: 'surface' | 'solid' | 'outline' | 'ghost'
   description: string
-  onConfirm: () => unknown
+  onConfirm: () => Promise<void>
 }
 
-export default function ConfirmationModal({ title, description, onConfirm }: DeleteAccountProps) {
+export default function ConfirmationModal({ title, description, onConfirm, buttonText = '', buttonVariant = 'solid' }: DeleteAccountProps) {
+  const [open, setOpen] = useState<boolean>(false)
+
+  async function onConfirmClick() {
+    await onConfirm()
+    setOpen(false)
+  }
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
-        <IconButton>
+        <Button variant={buttonVariant}>
           <TrashIcon />
-        </IconButton>
+          {buttonText}
+        </Button>
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Title>{title}</Dialog.Title>
@@ -22,9 +33,7 @@ export default function ConfirmationModal({ title, description, onConfirm }: Del
           <Dialog.Close>
             <Button type='button' variant='surface'>Cancel</Button>
           </Dialog.Close>
-          <Dialog.Close>
-            <Button type='button' onClick={onConfirm}>Delete</Button>
-          </Dialog.Close>
+          <Button type='button' onClick={onConfirmClick}>Delete</Button>
         </Flex>
       </Dialog.Content>
     </Dialog.Root>
