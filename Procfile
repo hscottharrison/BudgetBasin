@@ -1,1 +1,1 @@
-web: savings-app
+web: node ace serve
