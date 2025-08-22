@@ -16,6 +16,7 @@ export default class AuthController {
 
   async login({ request, auth, response }: HttpContext) {
     try {
+      console.log('hit /api/login', request.body())
       const { email, password } = request.body()
       const user = await User.verifyCredentials(email, password)
       await auth.use('web').login(user)
