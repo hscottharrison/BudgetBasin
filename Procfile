@@ -1,1 +1,1 @@
-web: node ace serve
+web: node build/bin/server.js
