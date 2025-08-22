@@ -1,28 +1,12 @@
 import {FormEvent} from "react";
-import Input from '~/components/CommonComponents/Input/input'
 import {Card, Container, Box, Flex, Button, Heading} from "@radix-ui/themes";
+
+import Input from '~/components/CommonComponents/Input/input'
+
 import {register} from "~/services/auth_service";
 
 
 export default function Register() {
-
-  async function handleSubmit(event: FormEvent){
-    event.preventDefault();
-    const firstName = document.getElementById("firstName") as HTMLInputElement;
-    const lastName = document.getElementById("lastName") as HTMLInputElement;
-    const email = document.getElementById("email")as HTMLInputElement;
-    const password = document.getElementById("password") as HTMLInputElement;
-
-    const payload = {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value,
-      password: password.value,
-    }
-
-    await register(payload)
-  }
-
   return (
     <Box height='100%' width='100vw' style={{display: 'flex', alignItems: 'center'}}>
       <Container size='1'>
@@ -56,4 +40,21 @@ export default function Register() {
       </Container>
     </Box>
   )
+
+  async function handleSubmit(event: FormEvent){
+    event.preventDefault();
+    const firstName = document.getElementById("firstName") as HTMLInputElement;
+    const lastName = document.getElementById("lastName") as HTMLInputElement;
+    const email = document.getElementById("email")as HTMLInputElement;
+    const password = document.getElementById("password") as HTMLInputElement;
+
+    const payload = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      password: password.value,
+    }
+
+    await register(payload)
+  }
 }

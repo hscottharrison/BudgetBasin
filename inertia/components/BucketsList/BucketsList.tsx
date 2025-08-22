@@ -1,7 +1,10 @@
-import {BucketDTO} from "#models/bucket";
 import {Grid, ScrollArea} from "@radix-ui/themes";
+
 import BucketCard from "~/components/BucketsList/BucketCard/bucketCard";
+
 import {deleteBucket} from "~/services/bucket_service";
+
+import {BucketDTO} from "#models/bucket";
 
 type BucketsListProps = {
   buckets: BucketDTO[];

@@ -1,12 +1,15 @@
 import {Flex, ScrollArea} from "@radix-ui/themes";
+
 import AddAccount from "~/components/AddAccount/addAccount";
-import {createAccount} from "~/services/account_service";
-import {BankAccountDTO} from "#models/bank_account";
 import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
-import {BucketDTO, CreateBucketDTO} from "#models/bucket";
+
 import {createBucket} from "~/services/bucket_service";
-import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
 import {createAllocation} from "~/services/allocation_service";
+import {createAccount} from "~/services/account_service";
+
+import {BankAccountDTO} from "#models/bank_account";
+import {BucketDTO, CreateBucketDTO} from "#models/bucket";
+import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
 
 type ActionBarProps = {
   updateAccounts: (account: BankAccountDTO[]) => void;

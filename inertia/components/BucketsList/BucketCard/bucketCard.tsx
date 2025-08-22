@@ -1,10 +1,13 @@
+import {useEffect, useMemo, useState} from "react";
 import {Box, Card, Flex, Text} from "@radix-ui/themes";
 import {RiWalletFill} from "@remixicon/react";
-import {formatCurrency, sumAllocations} from "~/services/utils_service";
-import {BucketDTO} from "#models/bucket";
+
 import BucketMenu from "~/components/BucketsList/BucketMenu/bucketMenu";
-import {useEffect, useMemo, useState} from "react";
 import {ProgressCircle} from "~/components/TremorComponents/ProgressCircle/progressCircle";
+
+import {formatCurrency, sumAllocations} from "~/services/utils_service";
+
+import {BucketDTO} from "#models/bucket";
 
 type BucketCardProps = {
   bucket: BucketDTO;
@@ -12,21 +15,27 @@ type BucketCardProps = {
 }
 
 export default function BucketCard({ bucket, onDeleteBucket }: BucketCardProps) {
+  /**
+   * STATE
+   */
   const [formattedAllocation, setFormattedAllocation] = useState<string>('')
   const [formattedGoal, setFormattedGoal] = useState<string>('')
+  const [progress, setProgress] = useState(0)
 
-  const allocationSum = useMemo(() => {
-    return sumAllocations(bucket.allocations)
-  }, [bucket])
+  /**
+   * MEMOS
+   */
+  const allocationSum = useMemo(calculateAllocationSums, [bucket])
 
-  const allocationPercentage = useMemo(() => {
-    return (allocationSum / bucket.goalAmount) * 100
-  }, [allocationSum])
+  const allocationPercentage = useMemo(calculateAllocationPercentage, [allocationSum])
 
-  useEffect(() => {
-    setFormattedAllocation(formatCurrency(allocationSum))
-    setFormattedGoal(formatCurrency(bucket.goalAmount))
-  }, [allocationSum])
+  /**
+   * EFFECTS
+   */
+  useEffect(formatNumbers, [allocationSum])
+
+  useEffect(animateProgress, [allocationPercentage]);
+
 
   return (
     <Card>
@@ -42,7 +51,7 @@ export default function BucketCard({ bucket, onDeleteBucket }: BucketCardProps) 
           </Flex>
           <Box>
             <Flex gap='2' align='center'>
-              <ProgressCircle value={allocationPercentage} className='mx-auto' radius={60} variant='success'>
+              <ProgressCircle value={progress} className='mx-auto' radius={60} variant='success'>
                 <Flex justify='center' align='center' wrap='wrap' p='2'>
                   <Text weight='bold' size='3'>{ formattedAllocation }</Text>
                   /
@@ -58,6 +67,39 @@ export default function BucketCard({ bucket, onDeleteBucket }: BucketCardProps) 
       </Box>
     </Card>
   )
+
+  // region MEMO METHODS
+  function calculateAllocationSums(){
+    return sumAllocations(bucket.allocations)
+  }
+
+  function calculateAllocationPercentage() {
+    return (allocationSum / bucket.goalAmount) * 100
+  }
+  // endregion
+
+  // region EFFECT METHODS
+  function animateProgress(){
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= allocationPercentage) {
+          clearInterval(timer);
+          return allocationPercentage;
+        }
+        return prevProgress + 10;
+      });
+    }, 50); // Update every 500ms
+
+    return () => {
+      clearInterval(timer); // Clear interval on component unmount
+    };
+  }
+
+  function formatNumbers() {
+    setFormattedAllocation(formatCurrency(allocationSum))
+    setFormattedGoal(formatCurrency(bucket.goalAmount))
+  }
+  // endregion
 
   async function onDeleteConfirm() {
     await onDeleteBucket(bucket.id)

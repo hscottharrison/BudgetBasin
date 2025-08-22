@@ -1,25 +1,47 @@
-import {Card, Flex, Grid, Heading, Text} from "@radix-ui/themes";
+import {useMemo} from "react";
+import {Card, Flex, Text} from "@radix-ui/themes";
+
+import {DonutChart} from "~/components/TremorComponents/DonutChart/donutChart";
+
+import { formatCurrency } from "~/services/utils_service";
 
 type TotalBalanceProps = {
-  balance: string
-  allocations: string
+  totalBalance: number
+  totalAllocations: number
+  bucketBreakdown: {name: string, amount: number}[]
 }
 
-export default function TotalBalance({ allocations, balance }: TotalBalanceProps) {
+export default function TotalBalance({ totalBalance, bucketBreakdown, totalAllocations }: TotalBalanceProps) {
+  /**
+   * MEMOS
+   */
+  const chartData = useMemo(createChartData, [bucketBreakdown]);
+
   return (
-    <Grid columns="2" gap={{ initial:'1', sm: '1', md: '3', lg: '3'}}>
-      <Card>
-        <Flex align='center' justify='between' direction='column'>
-          <Heading as='h3' size='3'>{ balance }</Heading>
-          <Text size='1'>Your Total Savings</Text>
+      <Card variant='classic'>
+        <Flex direction='column' align='center' justify='center' gap='4'>
+          <DonutChart
+            className='mx-auto'
+            data={chartData}
+            category='name'
+            value="amount"
+            showLabel={true}
+            valueFormatter={(number: number) => `${formatCurrency(number)}`} />
+          <Text size='3' weight='bold'>Your Total Savings</Text>
         </Flex>
       </Card>
-      <Card>
-        <Flex align='center' justify='between' direction='column'>
-          <Heading as='h3' size='3'>{ allocations }</Heading>
-          <Text size='1'>Total Funds Allocated</Text>
-        </Flex>
-      </Card>
-    </Grid>
   )
+
+  // region MEMO METHODS
+  function createChartData() {
+    const unallocated = totalBalance - totalAllocations;
+    return [
+      ...bucketBreakdown,
+      {
+        name: 'Unallocated',
+        amount: unallocated
+      }
+    ]
+  }
+  // endregion
 }

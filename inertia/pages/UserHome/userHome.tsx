@@ -1,35 +1,36 @@
-import {Avatar, Box, Flex, Grid, Heading} from "@radix-ui/themes";
-import {useMemo, useState} from "react";
-import {UserHomeDTO} from "#models/user_home_dto";
-import {BankAccountDTO} from "#models/bank_account";
+import {useEffect, useMemo, useState} from "react";
+import { Box, Grid } from "@radix-ui/themes";
+
 import TotalBalance from "~/components/TotalBalance/totalBalance";
 import AccountsTable from "~/components/AccountsTable/accountsTable";
 import ActionsBar from "~/components/ActionsBar/ActionsBar";
-import {formatCurrency, getLatestBalance, sumAllocations} from "~/services/utils_service";
-import {BucketDTO} from "#models/bucket";
 import BucketsList from "~/components/BucketsList/BucketsList";
+
+import { getLatestBalance, sumAllocations} from "~/services/utils_service";
+
 import {AllocationDTO} from "#models/allocation";
+import {BucketDTO} from "#models/bucket";
+import {UserHomeDTO} from "#models/user_home_dto";
+import {BankAccountDTO} from "#models/bank_account";
 
-export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDTO) {
+export default function UserHome({ userBuckets, userAccounts }: UserHomeDTO) {
+  /**
+   * STATE
+   */
   const [accounts, setAccounts] = useState<BankAccountDTO[]>(userAccounts);
+  const [bucketBreakdown, setBucketBreakdown] = useState<{name: string, amount: number}[]>([])
   const [buckets, setBuckets] = useState<BucketDTO[]>(userBuckets);
+  const [totalAllocations, setTotalAllocations] = useState<number>(0)
 
-  const balance = useMemo(() => {
-    const amount = accounts.reduce((acc: number, account: BankAccountDTO) => {
-      const latestBalance = getLatestBalance(account.balances)
-      if (!latestBalance) return acc
-      return acc += latestBalance.amount
-    }, 0)
+  /**
+   * MEMOS
+   */
+  const totalBalance = useMemo(calculateTotalBalance, [accounts])
 
-    return formatCurrency(amount)
-  }, [accounts])
-
-  const totalAllocations = useMemo(() => {
-    const amount = buckets.reduce((acc: number, bucket: BucketDTO) => {
-      return acc += sumAllocations(bucket.allocations)
-    }, 0)
-    return formatCurrency(amount)
-  }, [buckets])
+  /**
+   * EFFECTS
+   */
+  useEffect(parseBucketData, [buckets])
 
   return (
     <Box
@@ -46,16 +47,9 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
         overflow: 'hidden',
       }}
     >
-      <Flex align="center" gap="2">
-        <Avatar fallback={user?.firstName?.[0] ?? ""} radius="full" />
-        <Heading as="h1" size="3">
-          Hello, {user?.firstName} {user?.lastName}
-        </Heading>
-      </Flex>
-
       <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, marginTop: '1rem', gap: '1rem' }}>
         <Grid columns={{ sm: "1", lg: "2" }}>
-          <TotalBalance balance={balance} allocations={totalAllocations} />
+          <TotalBalance totalAllocations={totalAllocations} totalBalance={totalBalance} bucketBreakdown={bucketBreakdown} />
         </Grid>
 
         <Box style={{ flex: '0 0 auto', minHeight: '0' }}>
@@ -73,7 +67,6 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
           accounts={accounts}
         />
 
-        {/* BucketsList gets remaining space and becomes scrollable */}
         <Box style={{ flex: 1, minHeight: 0 }}>
           <BucketsList
             buckets={buckets}
@@ -83,10 +76,7 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
     </Box>
   )
 
-
-  /**
-   * STATE MANAGEMENT
-   */
+  // region STATE MANAGEMENT
   // ACCOUNTS
   function updateAccounts(accounts: BankAccountDTO[]) {
     setAccounts(accounts)
@@ -112,4 +102,28 @@ export default function UserHome({ userBuckets, user, userAccounts }: UserHomeDT
     buckets[index].allocations.push(allocation)
     setBuckets([...buckets])
   }
+  // endregion
+
+  // region MEMO METHODS
+  function calculateTotalBalance() {
+    return accounts.reduce((acc: number, account: BankAccountDTO) => {
+      const latestBalance = getLatestBalance(account.balances)
+      if (!latestBalance) return acc
+      return acc += latestBalance.amount
+    }, 0)
+  }
+  // endregion
+
+  //region EFFECT METHODS
+  function parseBucketData(){
+    const breakdownArr: {name: string, amount: number}[] = []
+    const amount = buckets.reduce((acc: number, bucket: BucketDTO) => {
+      const sum = sumAllocations(bucket.allocations)
+      breakdownArr.push({name: bucket.name, amount: sum})
+      return acc += sum
+    }, 0)
+    setTotalAllocations(amount)
+    setBucketBreakdown(breakdownArr)
+  }
+  //endregion
 }

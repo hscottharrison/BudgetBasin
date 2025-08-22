@@ -1,13 +1,17 @@
-import {ChevronDownIcon, Flex, ScrollArea, Table} from '@radix-ui/themes'
 import { Accordion } from 'radix-ui'
-import './style.css'
+import {ChevronDownIcon, Flex, ScrollArea, Table} from '@radix-ui/themes'
 import {DateTime} from "luxon";
-import {BankAccountDTO} from "#models/bank_account";
+
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
-import {deleteAccount} from "~/services/account_service";
 import EditBalance from "~/components/EditBalance/editBalance";
+
 import {createBalance} from "~/services/balance_service";
-import {getLatestBalance} from "~/services/utils_service";
+import {formatCurrency, getLatestBalance} from "~/services/utils_service";
+import {deleteAccount} from "~/services/account_service";
+
+import {BankAccountDTO} from "#models/bank_account";
+
+import './style.css'
 
 type AccountsTableProps = {
   accounts: BankAccountDTO[],
@@ -47,7 +51,7 @@ export default function AccountsTable({ accounts, updateAccounts, updateAccount 
                         {account.name}
                       </Flex>
                     </Table.RowHeaderCell>
-                    <Table.Cell className='no-wrap-cell'>{latestBalance?.amount}</Table.Cell>
+                    <Table.Cell className='no-wrap-cell'>{formatCurrency(latestBalance?.amount ?? 0)}</Table.Cell>
                     <Table.Cell className='no-wrap-cell'>
                       {latestBalance?.createdAt
                       ? DateTime.fromISO(latestBalance.createdAt).toFormat('yyyy-MM-dd HH:mm')

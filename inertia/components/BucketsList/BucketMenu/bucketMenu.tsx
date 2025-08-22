@@ -1,9 +1,11 @@
+import {useState} from "react";
 import { Popover } from '@radix-ui/themes'
 import {DotsVerticalIcon} from "@radix-ui/react-icons";
 import {Flex} from "@radix-ui/themes";
-import {BucketDTO} from "#models/bucket";
+
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
-import {useState} from "react";
+
+import {BucketDTO} from "#models/bucket";
 
 type BucketMenuProps = {
   bucket: BucketDTO
@@ -11,12 +13,10 @@ type BucketMenuProps = {
 }
 
 export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps) {
+  /**
+   * STATE
+   */
   const [open, setOpen] = useState<boolean>(false);
-
-  async function deleteBucket() {
-    await onDeleteConfirm();
-    setOpen(false);
-  }
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -35,4 +35,9 @@ export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps)
       </Popover.Content>
     </Popover.Root>
   )
+
+  async function deleteBucket() {
+    await onDeleteConfirm();
+    setOpen(false);
+  }
 }

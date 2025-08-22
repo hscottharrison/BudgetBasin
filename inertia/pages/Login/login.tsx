@@ -1,23 +1,13 @@
 import {FormEvent} from "react";
 import {Box, Button, Card, Container, Flex, Heading} from "@radix-ui/themes";
+
 import Input from "~/components/CommonComponents/Input/input";
+
 import {login} from "~/services/auth_service";
+
 import {LoginDTO} from "#models/auth_dto";
 
 export default function Login(){
-  async function handleSubmit(event: FormEvent){
-    event.preventDefault();
-    const email = document.getElementById("email")as HTMLInputElement;
-    const password = document.getElementById("password") as HTMLInputElement;
-
-    const payload: LoginDTO = {
-      email: email.value,
-      password: password.value,
-    }
-
-    await login(payload)
-  }
-
   return (
     <Box height='100%' width='100vw' style={{display: 'flex', alignItems: 'center'}}>
       <Container size='1'>
@@ -43,4 +33,17 @@ export default function Login(){
       </Container>
     </Box>
   )
+
+  async function handleSubmit(event: FormEvent){
+    event.preventDefault();
+    const email = document.getElementById("email")as HTMLInputElement;
+    const password = document.getElementById("password") as HTMLInputElement;
+
+    const payload: LoginDTO = {
+      email: email.value,
+      password: password.value,
+    }
+
+    await login(payload)
+  }
 }

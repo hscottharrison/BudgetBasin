@@ -1,7 +1,9 @@
+import {FormEvent} from "react";
 import {Button, Dialog, Flex, IconButton} from "@radix-ui/themes";
 import {Pencil1Icon} from "@radix-ui/react-icons";
+
 import Input from "~/components/CommonComponents/Input/input";
-import {FormEvent} from "react";
+
 import {BankAccountDTO} from "#models/bank_account";
 
 type EditBalanceProps = {
@@ -10,12 +12,6 @@ type EditBalanceProps = {
 }
 
 export default function EditBalance({ onSubmit, metadata }: EditBalanceProps) {
-  function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
-    const balance = document.getElementById('balance') as HTMLInputElement;
-    onSubmit(balance.value, metadata.id)
-  }
   return (
     <Dialog.Root>
       <Dialog.Trigger>
@@ -44,5 +40,12 @@ export default function EditBalance({ onSubmit, metadata }: EditBalanceProps) {
         </form>
       </Dialog.Content>
     </Dialog.Root>
-    )
+  )
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    const balance = document.getElementById('balance') as HTMLInputElement;
+    onSubmit(balance.value, metadata.id)
+  }
 }
