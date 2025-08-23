@@ -22,7 +22,7 @@ export default class AuthController {
       await auth.use('web').login(user)
       response.redirect().toPath('/user-home')
     } catch (error) {
-      return response.status(error.status ?? 500).send({ code: error.code, message: error.message})
+      return response.status(error.status ?? 500).send({ code: error.code, message: error.message })
     }
   }
 
