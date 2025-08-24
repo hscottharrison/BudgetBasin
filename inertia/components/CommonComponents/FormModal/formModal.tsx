@@ -6,15 +6,16 @@ import SelectInput from "~/components/CommonComponents/Select/select";
 
 type FieldConfig<K extends string> = {
   name: K;
-  label: string;
+  label?: string;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   inputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, "name" | "id" | "type">;
   render?: (name: K) => ReactNode;
   options?: {label: string, value: string}[]// escape hatch for custom inputs
+  value?: string | number;
 };
 
 export type FormModalProps<T extends Record<string, unknown>> = {
-  actionLabel: string;
+  actionLabel?: string;
   title: string;
   description: string;
   formElements: FieldConfig<Extract<keyof T, string>>[]
@@ -56,10 +57,14 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
                 case 'select':
                   if (!!formElement.options) {
                     return (
-                      <SelectInput label={formElement.label} name={formElement.name} options={formElement.options} />
+                      <SelectInput label={formElement.label ?? ''} name={formElement.name} options={formElement.options} />
                     )
                   }
                   break;
+                case 'hidden':
+                  return (
+                    <input type='hidden' name={formElement.name} value={formElement.value} />
+                  )
                 default:
                   return (
                     <Input

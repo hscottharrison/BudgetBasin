@@ -6,6 +6,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 export type BalanceDTO = {
   id: number
   amount: number
+  bankAccountId: number
   createdAt: string | null
 }
 

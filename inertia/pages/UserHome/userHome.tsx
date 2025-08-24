@@ -12,6 +12,7 @@ import {AllocationDTO} from "#models/allocation";
 import {BucketDTO} from "#models/bucket";
 import {UserHomeDTO} from "#models/user_home_dto";
 import {BankAccountDTO} from "#models/bank_account";
+import {BalanceDTO} from "#models/balance";
 
 export default function UserHome({ userBuckets, userAccounts }: UserHomeDTO) {
   /**
@@ -63,7 +64,7 @@ export default function UserHome({ userBuckets, userAccounts }: UserHomeDTO) {
 
         <AccountsTable
           updateAccounts={updateAccounts}
-          updateAccount={updateAccount}
+          updateAccountBalance={updateAccountBalance}
           accounts={accounts}
         />
 
@@ -82,9 +83,15 @@ export default function UserHome({ userBuckets, userAccounts }: UserHomeDTO) {
     setAccounts(accounts)
   }
 
-  function updateAccount(account: BankAccountDTO) {
-    const index = accounts.findIndex((acc: BankAccountDTO) => acc.id === account.id)
-    accounts[index] = account
+  // function updateAccount(account: BankAccountDTO) {
+  //   const index = accounts.findIndex((acc: BankAccountDTO) => acc.id == Number(account.id))
+  //   accounts[index] = account
+  //   setAccounts([...accounts])
+  // }
+
+  function updateAccountBalance(balance: BalanceDTO) {
+    const index = accounts.findIndex((acc: BankAccountDTO) => acc.id == balance.bankAccountId)
+    accounts[index]?.balances.push(balance)
     setAccounts([...accounts])
   }
 

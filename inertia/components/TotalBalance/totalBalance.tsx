@@ -15,7 +15,7 @@ export default function TotalBalance({ totalBalance, bucketBreakdown, totalAlloc
   /**
    * MEMOS
    */
-  const chartData = useMemo(createChartData, [bucketBreakdown]);
+  const chartData = useMemo(createChartData, [bucketBreakdown, totalBalance]);
 
   return (
       <Card variant='classic'>

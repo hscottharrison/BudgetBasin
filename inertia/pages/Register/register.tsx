@@ -1,5 +1,5 @@
 import {FormEvent} from "react";
-import {Card, Container, Box, Flex, Button, Heading} from "@radix-ui/themes";
+import {Card, Link, Container, Box, Flex, Button, Heading, Text} from "@radix-ui/themes";
 
 import Input from '~/components/CommonComponents/Input/input'
 
@@ -30,9 +30,11 @@ export default function Register() {
                 label="Password"
                 name="password"
                 type="password"/>
-              <Flex align='center' justify='end' gap='3'>
+              <Flex direction='column' align='end' justify='center' gap='3'>
                 <Button type='button' variant='surface'> Sign In </Button>
-                <Button type='submit'> Register </Button>
+                <Text as='div' size='2'>
+                  Already have an account? <Link href='/login'>Sign in</Link>
+                </Text>
               </Flex>
             </Flex>
           </form>

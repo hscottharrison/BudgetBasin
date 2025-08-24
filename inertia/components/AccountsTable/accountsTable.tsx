@@ -3,23 +3,24 @@ import {ChevronDownIcon, Flex, ScrollArea, Table} from '@radix-ui/themes'
 import {DateTime} from "luxon";
 
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
-import EditBalance from "~/components/EditBalance/editBalance";
+import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
 
 import {createBalance} from "~/services/balance_service";
 import {formatCurrency, getLatestBalance} from "~/services/utils_service";
 import {deleteAccount} from "~/services/account_service";
 
 import {BankAccountDTO} from "#models/bank_account";
+import {BalanceDTO, CreateBalanceDTO} from "#models/balance";
 
 import './style.css'
 
 type AccountsTableProps = {
   accounts: BankAccountDTO[],
   updateAccounts: (accounts: BankAccountDTO[]) => void,
-  updateAccount: (account: BankAccountDTO) => void,
+  updateAccountBalance: (balance: BalanceDTO) => void,
 }
 
-export default function AccountsTable({ accounts, updateAccounts, updateAccount }: AccountsTableProps) {
+export default function AccountsTable({ accounts, updateAccounts, updateAccountBalance }: AccountsTableProps) {
   return (
     <Accordion.Root
       className='accordion-root'
@@ -59,9 +60,10 @@ export default function AccountsTable({ accounts, updateAccounts, updateAccount 
                     </Table.Cell>
                     <Table.Cell>
                       <Flex align='center' justify='start' gap='4'>
-                        <EditBalance
-                          metadata={account}
-                          onSubmit={onEditBalance} />
+                        <FormModal {...getEditBalanceConfig(account.id)} />
+                        {/*<EditBalance*/}
+                        {/*  metadata={account}*/}
+                        {/*  onSubmit={onEditBalance} />*/}
                         <ConfirmationModal
                           title='Delete Account'
                           description='This account and all balance/allocation information will be permanently deleted'
@@ -83,13 +85,29 @@ export default function AccountsTable({ accounts, updateAccounts, updateAccount 
     updateAccounts(accounts)
   }
 
-  async function onEditBalance(balance: string, id: number){
-    const payload = {
-      bankAccountId: id,
-      amount: balance,
-    }
+  async function onEditBalance(payload: CreateBalanceDTO){
+    const response: BalanceDTO = await createBalance(payload)
+    updateAccountBalance(response)
+  }
 
-    const response = await createBalance(payload)
-    updateAccount(response)
+  function getEditBalanceConfig(id: number): FormModalProps<CreateBalanceDTO> {
+    return {
+      title: 'Edit Balance',
+      description: 'Update the balance of your account',
+      submitButtonLabel: 'Update',
+      onSubmit: onEditBalance,
+      formElements: [
+        {
+          name: 'bankAccountId',
+          type: 'hidden',
+          value: id
+        },
+        {
+          name: 'amount',
+          label: 'Updated Balance',
+          type: 'number'
+        }
+      ]
+    }
   }
 }
