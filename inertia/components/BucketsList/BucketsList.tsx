@@ -16,6 +16,7 @@ export default function BucketsList({ buckets, updateBuckets }: BucketsListProps
       <Grid columns={{ xs: '1', sm: '3', md: '3', lg: '3'}} gap='3' width='auto'>
         {buckets.map((bucket: BucketDTO) => (
           <BucketCard
+            key={bucket.id}
             bucket={bucket}
             onDeleteBucket={onDeleteBucket}/>
         ))}

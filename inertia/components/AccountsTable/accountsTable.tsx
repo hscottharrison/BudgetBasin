@@ -1,5 +1,6 @@
 import { Accordion } from 'radix-ui'
 import {ChevronDownIcon, Flex, ScrollArea, Table} from '@radix-ui/themes'
+import {Pencil1Icon} from "@radix-ui/react-icons";
 import {DateTime} from "luxon";
 
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
@@ -94,6 +95,7 @@ export default function AccountsTable({ accounts, updateAccounts, updateAccountB
     return {
       title: 'Edit Balance',
       description: 'Update the balance of your account',
+      actionLabelIcon: <Pencil1Icon />,
       submitButtonLabel: 'Update',
       onSubmit: onEditBalance,
       formElements: [
@@ -105,7 +107,8 @@ export default function AccountsTable({ accounts, updateAccounts, updateAccountB
         {
           name: 'amount',
           label: 'Updated Balance',
-          type: 'number'
+          type: 'number',
+          step: '0.01'
         }
       ]
     }

@@ -106,7 +106,11 @@ export default function UserHome({ userBuckets, userAccounts }: UserHomeDTO) {
 
   function updateAllocationsForBucket(allocation: AllocationDTO) {
     const index = buckets.findIndex((bucket) => bucket.id == allocation.bucketId)
-    buckets[index].allocations.push(allocation)
+    const bucketToUpdate = buckets[index];
+    buckets[index] = {
+      ...bucketToUpdate,
+      allocations: [...bucketToUpdate.allocations, allocation]
+    }
     setBuckets([...buckets])
   }
   // endregion

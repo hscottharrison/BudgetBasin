@@ -8,13 +8,10 @@ import AppBar from '~/components/AppBar/appBar'
 import '@radix-ui/themes/styles.css'
 import '../css/app.css';
 
-
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
-
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: (title) => `${title} - ${appName}`,
+  title: () => `Budget Basin`,
 
   resolve: (name) => {
     return resolvePageComponent(

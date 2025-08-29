@@ -72,6 +72,7 @@ export default function ActionsBar({buckets, updateAccounts, updateAllocationsFo
          name: 'amount',
          label: 'Amount',
          type: 'number',
+         step: '0.01'
        }
      ]
    }
@@ -96,7 +97,8 @@ export default function ActionsBar({buckets, updateAccounts, updateAllocationsFo
         {
           name: 'goalAmount',
           label: 'Goal Amount',
-          type: 'number'
+          type: 'number',
+          step: '0.01'
         }
       ]
     }

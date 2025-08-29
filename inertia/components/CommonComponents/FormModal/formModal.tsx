@@ -12,10 +12,12 @@ type FieldConfig<K extends string> = {
   render?: (name: K) => ReactNode;
   options?: {label: string, value: string}[]// escape hatch for custom inputs
   value?: string | number;
+  step?: string
 };
 
 export type FormModalProps<T extends Record<string, unknown>> = {
   actionLabel?: string;
+  actionLabelIcon?: React.ReactNode;
   title: string;
   description: string;
   formElements: FieldConfig<Extract<keyof T, string>>[]
@@ -24,7 +26,7 @@ export type FormModalProps<T extends Record<string, unknown>> = {
   onSubmit: (payload: T) => Promise<void>;
 }
 
-export default function FormModal<T extends Record<string, unknown>>({ actionLabel, title, description, formElements, closeButtonLabel = 'Cancel', submitButtonLabel = 'Submit', onSubmit
+export default function FormModal<T extends Record<string, unknown>>({ actionLabel, actionLabelIcon, title, description, formElements, closeButtonLabel = 'Cancel', submitButtonLabel = 'Submit', onSubmit
 }: FormModalProps<T>) {
   const [open, setOpen] = useState(false)
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -43,7 +45,7 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
         <Button radius='full'>
-          <PlusIcon />
+          { actionLabelIcon ?? <PlusIcon /> }
           { actionLabel }
         </Button>
       </Dialog.Trigger>
@@ -70,7 +72,8 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
                     <Input
                       label={formElement.label}
                       name={formElement.name}
-                      type={formElement.type ?? 'text'}/>
+                      type={formElement.type ?? 'text'}
+                      step={formElement.step}/>
                   )
               }
             })}
