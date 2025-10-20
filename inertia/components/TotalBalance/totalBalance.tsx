@@ -5,13 +5,11 @@ import {DonutChart} from "~/components/TremorComponents/DonutChart/donutChart";
 
 import { formatCurrency } from "~/services/utils_service";
 
-type TotalBalanceProps = {
-  totalBalance: number
-  totalAllocations: number
-  bucketBreakdown: {name: string, amount: number}[]
-}
+import './style.css';
+import {useUserHome} from "~/context/UserHomeContext";
 
-export default function TotalBalance({ totalBalance, bucketBreakdown, totalAllocations }: TotalBalanceProps) {
+export default function TotalBalance() {
+  const { bucketBreakdown, totalBalance, totalAllocations } = useUserHome();
   /**
    * MEMOS
    */
@@ -21,19 +19,20 @@ export default function TotalBalance({ totalBalance, bucketBreakdown, totalAlloc
       <Card variant='classic'>
         <Flex direction='column' align='center' justify='center' gap='4'>
           <DonutChart
-            className='mx-auto'
+            className='mx-auto donut-chart-class'
             data={chartData}
             category='name'
             value="amount"
             showLabel={true}
             valueFormatter={(number: number) => `${formatCurrency(number)}`} />
-          <Text size='3' weight='bold'>Your Total Savings</Text>
+          <Text size='2' weight='bold'>Your Total Savings</Text>
         </Flex>
       </Card>
   )
 
   // region MEMO METHODS
   function createChartData() {
+    debugger;
     const unallocated = totalBalance - totalAllocations;
     return [
       ...bucketBreakdown,

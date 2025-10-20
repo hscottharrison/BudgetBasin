@@ -11,7 +11,8 @@ type FieldConfig<K extends string> = {
   inputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, "name" | "id" | "type">;
   render?: (name: K) => ReactNode;
   options?: {label: string, value: string}[]// escape hatch for custom inputs
-  value?: string | number;
+  value?: string;
+  disabled?: boolean;
   step?: string
 };
 
@@ -59,7 +60,11 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
                 case 'select':
                   if (!!formElement.options) {
                     return (
-                      <SelectInput label={formElement.label ?? ''} name={formElement.name} options={formElement.options} />
+                      <SelectInput
+                        label={formElement.label ?? ''}
+                        name={formElement.name}
+                        options={formElement.options}
+                        value={formElement.value}/>
                     )
                   }
                   break;

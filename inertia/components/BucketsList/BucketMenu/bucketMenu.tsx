@@ -6,6 +6,10 @@ import {Flex} from "@radix-ui/themes";
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
 
 import {BucketDTO} from "#models/bucket";
+import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
+import FormModal from "~/components/CommonComponents/FormModal/formModal";
+import {createAllocationConfig} from "~/services/modal_config_service";
+import {createAllocation} from "~/services/allocation_service";
 
 type BucketMenuProps = {
   bucket: BucketDTO
@@ -24,7 +28,8 @@ export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps)
         <DotsVerticalIcon />
       </Popover.Trigger>
       <Popover.Content size='2'>
-        <Flex direction="column">
+        <Flex direction="column" gap='2'>
+          <FormModal<CreateAllocationDTO> {...createAllocationConfig(addAllocation, [bucket], bucket.id.toString())}/>
           <ConfirmationModal
           title='Delete Bucket'
           buttonText='Delete Bucket'
@@ -39,5 +44,9 @@ export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps)
   async function deleteBucket() {
     await onDeleteConfirm();
     setOpen(false);
+  }
+
+  async function addAllocation(payload: CreateAllocationDTO) {
+    const response: AllocationDTO = await createAllocation(payload);
   }
 }

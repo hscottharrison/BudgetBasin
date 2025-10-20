@@ -4,9 +4,11 @@ type SelectInputProps = {
   label: string
   name: string
   options: { label: string; value: string }[]
+  value?: string | undefined
+  disabled?: boolean
 }
 
-export default function SelectInput({ options, label, name }: SelectInputProps) {
+export default function SelectInput({ options, label, name, value, disabled }: SelectInputProps) {
   return (
     <Flex direction='column'>
       <label htmlFor={name}>
@@ -14,8 +16,8 @@ export default function SelectInput({ options, label, name }: SelectInputProps) 
           {label}
         </Text>
       </label>
-        <Select.Root name={name}>
-          <Select.Trigger />
+        <Select.Root name={name} defaultValue={value}>
+          <Select.Trigger disabled={disabled} />
           <Select.Content>
             {options.map((option) => (
               <Select.Item id={option.value} value={option.value}>{option.label}</Select.Item>

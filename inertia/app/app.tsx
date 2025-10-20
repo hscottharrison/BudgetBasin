@@ -3,6 +3,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import {Box, Theme} from '@radix-ui/themes'
 
+
 import AppBar from '~/components/AppBar/appBar'
 
 import '@radix-ui/themes/styles.css'

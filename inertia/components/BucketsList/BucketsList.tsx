@@ -5,12 +5,10 @@ import BucketCard from "~/components/BucketsList/BucketCard/bucketCard";
 import {deleteBucket} from "~/services/bucket_service";
 
 import {BucketDTO} from "#models/bucket";
+import {useUserHome} from "~/context/UserHomeContext";
 
-type BucketsListProps = {
-  buckets: BucketDTO[];
-  updateBuckets: (buckets: BucketDTO[]) => void
-}
-export default function BucketsList({ buckets, updateBuckets }: BucketsListProps){
+export default function BucketsList(){
+  const { buckets, updateBuckets } = useUserHome();
   return (
     <ScrollArea scrollbars='vertical' type='auto' style={{ height: '100%', paddingRight: '1rem' }}>
       <Grid columns={{ xs: '1', sm: '3', md: '3', lg: '3'}} gap='3' width='auto'>

@@ -10,18 +10,14 @@ import {createBalance} from "~/services/balance_service";
 import {formatCurrency, getLatestBalance} from "~/services/utils_service";
 import {deleteAccount} from "~/services/account_service";
 
-import {BankAccountDTO} from "#models/bank_account";
 import {BalanceDTO, CreateBalanceDTO} from "#models/balance";
 
 import './style.css'
+import {useUserHome} from "~/context/UserHomeContext";
 
-type AccountsTableProps = {
-  accounts: BankAccountDTO[],
-  updateAccounts: (accounts: BankAccountDTO[]) => void,
-  updateAccountBalance: (balance: BalanceDTO) => void,
-}
+export default function AccountsTable() {
+  const { accounts, updateAccounts, updateAccountBalance } = useUserHome();
 
-export default function AccountsTable({ accounts, updateAccounts, updateAccountBalance }: AccountsTableProps) {
   return (
     <Accordion.Root
       className='accordion-root'
