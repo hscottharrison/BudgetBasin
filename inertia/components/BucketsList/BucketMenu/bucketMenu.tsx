@@ -14,9 +14,10 @@ import {createAllocation} from "~/services/allocation_service";
 type BucketMenuProps = {
   bucket: BucketDTO
   onDeleteConfirm: () => Promise<void>
+  allocateFunds: (allocation: AllocationDTO) => void;
 }
 
-export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps) {
+export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: BucketMenuProps) {
   /**
    * STATE
    */
@@ -48,5 +49,6 @@ export default function BucketMenu({ bucket, onDeleteConfirm }: BucketMenuProps)
 
   async function addAllocation(payload: CreateAllocationDTO) {
     const response: AllocationDTO = await createAllocation(payload);
+    allocateFunds(response);
   }
 }

@@ -8,13 +8,15 @@ import {ProgressCircle} from "~/components/TremorComponents/ProgressCircle/progr
 import {formatCurrency, sumAllocations} from "~/services/utils_service";
 
 import {BucketDTO} from "#models/bucket";
+import {AllocationDTO} from "#models/allocation";
 
 type BucketCardProps = {
   bucket: BucketDTO;
   onDeleteBucket: (bucketId: number) => Promise<void>;
+  allocateFunds: (allocation: AllocationDTO) => void;
 }
 
-export default function BucketCard({ bucket, onDeleteBucket }: BucketCardProps) {
+export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: BucketCardProps) {
   /**
    * STATE
    */
@@ -60,7 +62,8 @@ export default function BucketCard({ bucket, onDeleteBucket }: BucketCardProps) 
               </ProgressCircle>
               <BucketMenu
                 bucket={bucket}
-                onDeleteConfirm={onDeleteConfirm}/>
+                onDeleteConfirm={onDeleteConfirm}
+                allocateFunds={allocateFunds}/>
             </Flex>
           </Box>
         </Flex>

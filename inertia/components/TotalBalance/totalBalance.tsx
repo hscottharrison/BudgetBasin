@@ -32,7 +32,6 @@ export default function TotalBalance() {
 
   // region MEMO METHODS
   function createChartData() {
-    debugger;
     const unallocated = totalBalance - totalAllocations;
     return [
       ...bucketBreakdown,
