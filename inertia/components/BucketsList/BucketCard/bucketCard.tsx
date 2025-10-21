@@ -5,15 +5,15 @@ import {RiWalletFill} from "@remixicon/react";
 import BucketMenu from "~/components/BucketsList/BucketMenu/bucketMenu";
 import {ProgressCircle} from "~/components/TremorComponents/ProgressCircle/progressCircle";
 
-import {formatCurrency, sumAllocations} from "~/services/utils_service";
+import {formatCurrency, sumTransactions} from "~/services/utils_service";
 
 import {BucketDTO} from "#models/bucket";
-import {AllocationDTO} from "#models/allocation";
+import {TransactionDTO} from "#models/transaction";
 
 type BucketCardProps = {
   bucket: BucketDTO;
   onDeleteBucket: (bucketId: number) => Promise<void>;
-  allocateFunds: (allocation: AllocationDTO) => void;
+  allocateFunds: (allocation: TransactionDTO) => void;
 }
 
 export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: BucketCardProps) {
@@ -27,14 +27,14 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
   /**
    * MEMOS
    */
-  const allocationSum = useMemo(calculateAllocationSums, [bucket])
+  const transactionSum = useMemo(calculateTransactionsSums, [bucket])
 
-  const allocationPercentage = useMemo(calculateAllocationPercentage, [allocationSum])
+  const allocationPercentage = useMemo(calculateAllocationPercentage, [transactionSum])
 
   /**
    * EFFECTS
    */
-  useEffect(formatNumbers, [allocationSum])
+  useEffect(formatNumbers, [transactionSum])
 
   useEffect(animateProgress, [allocationPercentage]);
 
@@ -72,12 +72,12 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
   )
 
   // region MEMO METHODS
-  function calculateAllocationSums(){
-    return sumAllocations(bucket.allocations)
+  function calculateTransactionsSums(){
+    return sumTransactions(bucket.transactions)
   }
 
   function calculateAllocationPercentage() {
-    return (allocationSum / bucket.goalAmount) * 100
+    return (transactionSum / bucket.goalAmount) * 100
   }
   // endregion
 
@@ -99,7 +99,7 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
   }
 
   function formatNumbers() {
-    setFormattedAllocation(formatCurrency(allocationSum))
+    setFormattedAllocation(formatCurrency(transactionSum))
     setFormattedGoal(formatCurrency(bucket.goalAmount))
   }
   // endregion

@@ -3,20 +3,23 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Bucket from '#models/bucket'
+import TransactionType, { TransactionTypeDTO } from '#models/transaction_type'
 
-export type AllocationDTO = {
+export type TransactionDTO = {
   bucketId: number
   userId: number
   amount: number
+  transactionType: TransactionTypeDTO
   createdAt: string | null
 }
 
-export type CreateAllocationDTO = {
+export type CreateTransactionDTO = {
   bucketId: number
+  transactionTypeId: number
   amount: number
 }
 
-export default class Allocation extends BaseModel {
+export default class Transaction extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -33,6 +36,13 @@ export default class Allocation extends BaseModel {
     foreignKey: 'bucketId',
   })
   declare bucket: BelongsTo<typeof Bucket>
+
+  @column()
+  declare transactionTypeId: number
+  @belongsTo(() => TransactionType, {
+    foreignKey: 'transactionTypeId',
+  })
+  declare transactionType: BelongsTo<typeof TransactionType>
 
   @column()
   declare amount: number

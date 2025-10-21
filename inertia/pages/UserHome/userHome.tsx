@@ -7,9 +7,9 @@ import ActionsBar from "~/components/ActionsBar/ActionsBar";
 import AccountsTable from "~/components/AccountsTable/accountsTable";
 import BucketsList from "~/components/BucketsList/BucketsList";
 
-export default function UserHome ({userBuckets, userAccounts}: UserHomeDTO) {
+export default function UserHome ({userBuckets, userAccounts, transactionTypes}: UserHomeDTO) {
   return (
-    <UserHomeProvider userBuckets={userBuckets} userAccounts={userAccounts}>
+    <UserHomeProvider userBuckets={userBuckets} userAccounts={userAccounts} transactionTypes={transactionTypes}>
       <UserHomePage />
     </UserHomeProvider>
   )

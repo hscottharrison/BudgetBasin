@@ -1,9 +1,10 @@
 import React, {createContext, useContext, useMemo, useState, ReactNode, useEffect} from "react";
 import { BankAccountDTO } from "#models/bank_account";
 import { BucketDTO } from "#models/bucket";
-import { AllocationDTO } from "#models/allocation";
+import { TransactionDTO } from "#models/transaction";
 import { BalanceDTO } from "#models/balance";
-import {sumAllocations} from "~/services/utils_service";
+import {sumTransactions} from "~/services/utils_service";
+import {TransactionTypeDTO} from "#models/transaction_type";
 
 // Define the context value type
 export interface UserHomeContextProps {
@@ -12,11 +13,12 @@ export interface UserHomeContextProps {
   bucketBreakdown: { name: string; amount: number }[];
   totalAllocations: number;
   totalBalance: number;
+  transactionTypes: TransactionTypeDTO[];
   updateAccounts: (accounts: BankAccountDTO[]) => void;
   updateAccountBalance: (balance: BalanceDTO) => void;
   addBucket: (bucket: BucketDTO) => void;
   updateBuckets: (buckets: BucketDTO[]) => void;
-  updateAllocationsForBucket: (allocation: AllocationDTO) => void;
+  updateTransactionsForBucket: (allocation: TransactionDTO) => void;
 }
 
 // Create the context
@@ -26,8 +28,9 @@ const UserHomeContext = createContext<UserHomeContextProps | undefined>(undefine
 export const UserHomeProvider: React.FC<{
   userBuckets: BucketDTO[];
   userAccounts: BankAccountDTO[];
+  transactionTypes: TransactionTypeDTO[];
   children: ReactNode;
-}> = ({ userBuckets, userAccounts, children }) => {
+}> = ({ userBuckets, userAccounts, children, transactionTypes }) => {
   /**
    * STATE
    */
@@ -66,12 +69,12 @@ export const UserHomeProvider: React.FC<{
 
   const updateBuckets = (newBuckets: BucketDTO[]) => setBuckets(newBuckets);
 
-  const updateAllocationsForBucket = (allocation: AllocationDTO) => {
+  const updateTransactionsForBucket = (allocation: TransactionDTO) => {
     const index = buckets.findIndex((bucket) => bucket.id === allocation.bucketId);
     const bucketToUpdate = buckets[index];
     buckets[index] = {
       ...bucketToUpdate,
-      allocations: [...bucketToUpdate.allocations, allocation],
+      transactions: [...bucketToUpdate.transactions, allocation],
     };
     setBuckets([...buckets]);
   };
@@ -80,7 +83,7 @@ export const UserHomeProvider: React.FC<{
   function parseBucketData(){
     const breakdownArr: {name: string, amount: number}[] = []
     const amount = buckets.reduce((acc: number, bucket: BucketDTO) => {
-      const sum = sumAllocations(bucket.allocations)
+      const sum = sumTransactions(bucket.transactions)
       breakdownArr.push({name: bucket.name, amount: sum})
       return acc += sum
     }, 0)
@@ -99,11 +102,12 @@ export const UserHomeProvider: React.FC<{
     bucketBreakdown,
     totalAllocations,
     totalBalance,
+    transactionTypes,
     updateAccounts,
     updateAccountBalance,
     addBucket,
     updateBuckets,
-    updateAllocationsForBucket,
+    updateTransactionsForBucket,
   };
 
   return <UserHomeContext.Provider value={value}>{children}</UserHomeContext.Provider>;

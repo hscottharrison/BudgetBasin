@@ -98,7 +98,7 @@ export default function AccountsTable() {
         {
           name: 'bankAccountId',
           type: 'hidden',
-          value: id
+          value: `${id}`
         },
         {
           name: 'amount',

@@ -6,10 +6,10 @@ import {deleteBucket} from "~/services/bucket_service";
 
 import {BucketDTO} from "#models/bucket";
 import {useUserHome} from "~/context/UserHomeContext";
-import {AllocationDTO} from "#models/allocation";
+import {TransactionDTO} from "#models/transaction";
 
 export default function BucketsList(){
-  const { buckets, updateBuckets, updateAllocationsForBucket } = useUserHome();
+  const { buckets, updateBuckets, updateTransactionsForBucket } = useUserHome();
   return (
     <ScrollArea scrollbars='vertical' type='auto' style={{ height: '100%', paddingRight: '1rem' }}>
       <Grid columns={{ xs: '1', sm: '3', md: '3', lg: '3'}} gap='3' width='auto'>
@@ -29,7 +29,7 @@ export default function BucketsList(){
     updateBuckets(buckets)
   }
 
-  function allocateFunds(allocation: AllocationDTO){
-    updateAllocationsForBucket(allocation);
+  function allocateFunds(transaction: TransactionDTO){
+    updateTransactionsForBucket(transaction);
   }
 }

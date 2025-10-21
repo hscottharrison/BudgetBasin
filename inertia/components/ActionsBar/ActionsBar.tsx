@@ -4,24 +4,24 @@ import AddAccount from "~/components/AddAccount/addAccount";
 import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
 
 import {createBucket} from "~/services/bucket_service";
-import {createAllocation} from "~/services/allocation_service";
+import {createTransaction} from "~/services/transaction_service";
 import {createAccount} from "~/services/account_service";
 
 import {BankAccountDTO} from "#models/bank_account";
 import {BucketDTO, CreateBucketDTO} from "#models/bucket";
-import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
+import {TransactionDTO, CreateTransactionDTO} from "#models/transaction";
 import {createAllocationConfig} from "~/services/modal_config_service";
 import {useUserHome} from "~/context/UserHomeContext";
 
 export default function ActionsBar() {
 
-  const {updateAccounts, addBucket, updateAllocationsForBucket, buckets} = useUserHome();
+  const {updateAccounts, addBucket, updateTransactionsForBucket, buckets} = useUserHome();
  return (
    <ScrollArea type='auto' scrollbars='horizontal' style={{ width: '100%', paddingBottom: '1rem' }}>
      <Flex gap='2'>
        <AddAccount onSubmit={addAccount} />
        <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
-       <FormModal<CreateAllocationDTO> {...createAllocationConfig(addAllocation, buckets)} />
+       <FormModal<CreateTransactionDTO> {...createAllocationConfig(addTransaction, buckets)} />
      </Flex>
    </ScrollArea>
  )
@@ -46,9 +46,9 @@ export default function ActionsBar() {
     addBucket(response)
   }
 
-  async function addAllocation(payload: CreateAllocationDTO) {
-    const response: AllocationDTO = await createAllocation(payload)
-    updateAllocationsForBucket(response)
+  async function addTransaction(payload: CreateTransactionDTO) {
+    const response: TransactionDTO = await createTransaction(payload)
+    updateTransactionsForBucket(response)
   }
 
   function getCreateBucketConfig(): FormModalProps<CreateBucketDTO> {

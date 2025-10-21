@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import Allocation, { AllocationDTO } from '#models/allocation'
+import Transaction, { TransactionDTO } from '#models/transaction'
 
 export type CreateBucketDTO = {
   userId?: number
@@ -16,7 +16,7 @@ export type BucketDTO = {
   name: string
   description: string
   goalAmount: number
-  allocations: AllocationDTO[]
+  transactions: TransactionDTO[]
 }
 
 export default class Bucket extends BaseModel {
@@ -45,8 +45,8 @@ export default class Bucket extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @hasMany(() => Allocation, {
+  @hasMany(() => Transaction, {
     foreignKey: 'bucketId',
   })
-  declare allocations: HasMany<typeof Allocation>
+  declare transactions: HasMany<typeof Transaction>
 }

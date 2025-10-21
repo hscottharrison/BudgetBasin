@@ -1,5 +1,5 @@
 import { BalanceDTO } from '#models/balance'
-import { AllocationDTO } from '#models/allocation'
+import { TransactionDTO } from '#models/transaction'
 
 export function getLatestBalance(balances: BalanceDTO[]): BalanceDTO | null {
   const validBalances = balances.filter((b) => b.createdAt !== null)
@@ -19,8 +19,16 @@ export function formatCurrency(amount: number): string {
   return formatter.format(amount)
 }
 
-export function sumAllocations(allocations: AllocationDTO[]): number {
-  return allocations.reduce((acc: number, allocation: AllocationDTO) => {
-    return (acc += allocation.amount)
+export function sumTransactions(allocations: TransactionDTO[]): number {
+  return allocations.reduce((acc: number, allocation: TransactionDTO) => {
+    switch (allocation.transactionType.value) {
+      case 'allocation':
+        return (acc += allocation.amount)
+      case 'spend':
+      case 'transfer':
+        return (acc -= allocation.amount)
+      default:
+        return (acc += allocation.amount)
+    }
   }, 0)
 }

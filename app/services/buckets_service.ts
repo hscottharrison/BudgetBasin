@@ -3,7 +3,9 @@ import Bucket, { BucketDTO, CreateBucketDTO } from '#models/bucket'
 export default class BucketsService {
   async GetAllBucketsForUser(userId: number): Promise<BucketDTO[]> {
     const buckets = await Bucket.query()
-      .preload('allocations')
+      .preload('transactions', (transactionQuery) => {
+        transactionQuery.preload('transactionType')
+      })
       .select('buckets.*')
       .where('user_id', userId)
 
@@ -13,7 +15,7 @@ export default class BucketsService {
         id: json.id,
         name: json.name,
         description: json.description,
-        allocations: json.allocations ?? [],
+        transactions: json.transactions ?? [],
         goalAmount: json.goalAmount,
       }
     })
@@ -26,7 +28,7 @@ export default class BucketsService {
       id: json.id,
       name: json.name,
       description: json.description,
-      allocations: [],
+      transactions: [],
       goalAmount: Number(json.goalAmount),
     }
   }

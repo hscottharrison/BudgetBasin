@@ -9,7 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-const AllocationsController = () => import('#controllers/allocations_controller')
+const TransactionsController = () => import('#controllers/transactions_controller')
 const BucketsController = () => import('#controllers/buckets_controller')
 const BalancesController = () => import('#controllers/balances_controller')
 const AccountsController = () => import('#controllers/accounts_controller')
@@ -39,4 +39,4 @@ router.post('/api/buckets', [BucketsController, 'create']).use(middleware.auth()
 router.delete('/api/buckets/:id', [BucketsController, 'delete']).use(middleware.auth())
 
 // Allocations
-router.post('/api/allocations', [AllocationsController, 'create']).use(middleware.auth())
+router.post('/api/transactions', [TransactionsController, 'create']).use(middleware.auth())

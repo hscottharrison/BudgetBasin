@@ -6,18 +6,24 @@ import {Flex} from "@radix-ui/themes";
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
 
 import {BucketDTO} from "#models/bucket";
-import {AllocationDTO, CreateAllocationDTO} from "#models/allocation";
+import {TransactionDTO, CreateTransactionDTO} from "#models/transaction";
 import FormModal from "~/components/CommonComponents/FormModal/formModal";
 import {createAllocationConfig} from "~/services/modal_config_service";
-import {createAllocation} from "~/services/allocation_service";
+import {createTransaction} from "~/services/transaction_service";
+import {useUserHome} from "~/context/UserHomeContext";
+import {TransactionTypes} from "#models/transaction_type";
 
 type BucketMenuProps = {
   bucket: BucketDTO
   onDeleteConfirm: () => Promise<void>
-  allocateFunds: (allocation: AllocationDTO) => void;
+  allocateFunds: (allocation: TransactionDTO) => void;
 }
 
 export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: BucketMenuProps) {
+  /**
+   * CONTEXT
+   */
+  const { transactionTypes } = useUserHome();
   /**
    * STATE
    */
@@ -30,7 +36,8 @@ export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: B
       </Popover.Trigger>
       <Popover.Content size='2'>
         <Flex direction="column" gap='2'>
-          <FormModal<CreateAllocationDTO> {...createAllocationConfig(addAllocation, [bucket], bucket.id.toString())}/>
+          <FormModal<CreateTransactionDTO> {...createAllocationConfig(addAllocation, [bucket], bucket.id.toString())}/>
+          {/*<FormModal<CreateTransactionDTO> {...createSpendConfig(addSpend, [bucket], bucket.id.toString())}/>*/}
           <ConfirmationModal
           title='Delete Bucket'
           buttonText='Delete Bucket'
@@ -47,8 +54,17 @@ export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: B
     setOpen(false);
   }
 
-  async function addAllocation(payload: CreateAllocationDTO) {
-    const response: AllocationDTO = await createAllocation(payload);
+  async function addAllocation(payload: CreateTransactionDTO) {
+    const type = transactionTypes.find((type) => type.value === TransactionTypes.ALLOCATION);
+    payload.transactionTypeId = type?.id ?? 0;
+    const response: TransactionDTO = await createTransaction(payload);
     allocateFunds(response);
   }
+
+  // async function addSpend(payload: CreateTransactionDTO) {
+  //   const type = transactionTypes.find((type) => type.value === TransactionTypes.SPEND);
+  //   payload.transactionTypeId = type?.id ?? 0;
+  //   const response: TransactionDTO = await createTransaction(payload);
+  //   allocateFunds(response);
+  // }
 }
