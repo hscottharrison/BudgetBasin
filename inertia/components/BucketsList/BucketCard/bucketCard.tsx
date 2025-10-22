@@ -1,6 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
 import {Box, Card, Flex, Text} from "@radix-ui/themes";
-import {RiWalletFill} from "@remixicon/react";
 
 import BucketMenu from "~/components/BucketsList/BucketMenu/bucketMenu";
 import {ProgressCircle} from "~/components/TremorComponents/ProgressCircle/progressCircle";
@@ -44,21 +43,17 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
       <Box>
         <Flex align='center' justify='between'>
           <Flex align='center'>
-            <RiWalletFill />
             <Box ml='4'>
-              <Text weight='bold' size='3'>{ bucket.name }</Text>
+              <Text weight='bold' size='2'>{ bucket.name }</Text>
               <br />
-              <Text size='1'> { bucket.description }</Text>
+              <Text weight='bold' size='4'>{ formattedAllocation }</Text>
+              <br />
+              <Text size='2'>Goal: { formattedGoal }</Text>
             </Box>
           </Flex>
           <Box>
             <Flex gap='2' align='center'>
-              <ProgressCircle value={progress} className='mx-auto' radius={60} variant='success'>
-                <Flex justify='center' align='center' wrap='wrap' p='2'>
-                  <Text weight='bold' size='3'>{ formattedAllocation }</Text>
-                  /
-                  <Text size='2'>{ formattedGoal }</Text>
-                </Flex>
+              <ProgressCircle value={progress} className='mx-auto' radius={30} variant='success'>
               </ProgressCircle>
               <BucketMenu
                 bucket={bucket}

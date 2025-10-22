@@ -1,6 +1,6 @@
 import {useState} from "react";
 import { Popover } from '@radix-ui/themes'
-import {DotsVerticalIcon} from "@radix-ui/react-icons";
+import {DotsVerticalIcon, MinusIcon} from "@radix-ui/react-icons";
 import {Flex} from "@radix-ui/themes";
 
 import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
@@ -37,7 +37,7 @@ export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: B
       <Popover.Content size='2'>
         <Flex direction="column" gap='2'>
           <FormModal<CreateTransactionDTO> {...createAllocationConfig(addAllocation, [bucket], bucket.id.toString())}/>
-          <FormModal<CreateTransactionDTO> {...createSpendConfig(addSpend, [bucket], bucket.id.toString())}/>
+          <FormModal<CreateTransactionDTO> {...createSpendConfig(addSpend, [bucket], bucket.id.toString())} actionLabelIcon={<MinusIcon />}/>
           <ConfirmationModal
           title='Delete Bucket'
           buttonText='Delete Bucket'
