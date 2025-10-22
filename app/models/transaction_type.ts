@@ -3,11 +3,6 @@ import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import Transaction from '#models/transaction'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 
-export enum TransactionTypes {
-  ALLOCATION = 'allocation',
-  SPEND = 'spend',
-  TRANSFER = 'transfer',
-}
 
 export type TransactionTypeDTO = {
   id: number

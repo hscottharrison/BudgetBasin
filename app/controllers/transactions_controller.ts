@@ -1,8 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Transaction from '#models/transaction'
-import { inject } from '@adonisjs/core'
+import TransactionType from '#models/transaction_type'
 
-@inject()
 export default class TransactionsController {
   constructor() {}
   async create({ auth, request, response }: HttpContext): Promise<void> {
@@ -15,7 +14,14 @@ export default class TransactionsController {
         amount: Number(data.amount),
       }
       const transaction = await Transaction.create(transactionData)
-      response.json(transaction)
+      const transactionType = await TransactionType.findOrFail(transaction.transactionTypeId)
+      const transactionJson = transaction.serialize()
+      const transactionTypeJson = transactionType.serialize()
+      const res = {
+        ...transactionJson,
+        transactionType: transactionTypeJson,
+      }
+      response.json(res)
     } catch (error) {
       response.internalServerError(error.message)
     }

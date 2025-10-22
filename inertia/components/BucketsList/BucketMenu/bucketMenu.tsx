@@ -8,10 +8,10 @@ import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/c
 import {BucketDTO} from "#models/bucket";
 import {TransactionDTO, CreateTransactionDTO} from "#models/transaction";
 import FormModal from "~/components/CommonComponents/FormModal/formModal";
-import {createAllocationConfig} from "~/services/modal_config_service";
+import {createAllocationConfig, createSpendConfig} from "~/services/modal_config_service";
 import {createTransaction} from "~/services/transaction_service";
 import {useUserHome} from "~/context/UserHomeContext";
-import {TransactionTypes} from "#models/transaction_type";
+import {TransactionTypes} from "~/types/enums";
 
 type BucketMenuProps = {
   bucket: BucketDTO
@@ -37,7 +37,7 @@ export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: B
       <Popover.Content size='2'>
         <Flex direction="column" gap='2'>
           <FormModal<CreateTransactionDTO> {...createAllocationConfig(addAllocation, [bucket], bucket.id.toString())}/>
-          {/*<FormModal<CreateTransactionDTO> {...createSpendConfig(addSpend, [bucket], bucket.id.toString())}/>*/}
+          <FormModal<CreateTransactionDTO> {...createSpendConfig(addSpend, [bucket], bucket.id.toString())}/>
           <ConfirmationModal
           title='Delete Bucket'
           buttonText='Delete Bucket'
@@ -61,10 +61,10 @@ export default function BucketMenu({ allocateFunds, bucket, onDeleteConfirm }: B
     allocateFunds(response);
   }
 
-  // async function addSpend(payload: CreateTransactionDTO) {
-  //   const type = transactionTypes.find((type) => type.value === TransactionTypes.SPEND);
-  //   payload.transactionTypeId = type?.id ?? 0;
-  //   const response: TransactionDTO = await createTransaction(payload);
-  //   allocateFunds(response);
-  // }
+  async function addSpend(payload: CreateTransactionDTO) {
+    const type = transactionTypes.find((type) => type.value === TransactionTypes.SPEND);
+    payload.transactionTypeId = type?.id ?? 0;
+    const response: TransactionDTO = await createTransaction(payload);
+    allocateFunds(response);
+  }
 }

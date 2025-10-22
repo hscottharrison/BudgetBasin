@@ -2,32 +2,32 @@ import { FormModalProps } from '~/components/CommonComponents/FormModal/formModa
 import { CreateTransactionDTO } from '#models/transaction'
 import { BucketDTO } from '#models/bucket'
 
-// export function createSpendConfig(
-//   cb: any,
-//   buckets: BucketDTO[],
-//   bucketId?: string
-// ): FormModalProps<CreateTransactionDTO> {
-//   const b = buckets.find((bucket) => bucket.id === Number(bucketId))
-//   return {
-//     actionLabel: 'Spend Funds',
-//     title: 'Spend',
-//     description: `Enter the amount you want to spend from ${b?.name || 'your bucket'}`,
-//     submitButtonLabel: 'Spend',
-//     onSubmit: cb,
-//     formElements: [
-//       {
-//         name: 'amount',
-//         label: 'Amount',
-//         type: 'number',
-//       },
-//       {
-//         name: 'bucketId',
-//         type: 'hidden',
-//         value: bucketId,
-//       },
-//     ],
-//   }
-// }
+export function createSpendConfig(
+  cb: any,
+  buckets: BucketDTO[],
+  bucketId?: string
+): FormModalProps<CreateTransactionDTO> {
+  const b = buckets.find((bucket) => bucket.id === Number(bucketId))
+  return {
+    actionLabel: 'Spend Funds',
+    title: 'Spend',
+    description: `Enter the amount you want to spend from ${b?.name || 'your bucket'}`,
+    submitButtonLabel: 'Spend',
+    onSubmit: cb,
+    formElements: [
+      {
+        name: 'amount',
+        label: 'Amount',
+        type: 'number',
+      },
+      {
+        name: 'bucketId',
+        type: 'hidden',
+        value: bucketId,
+      },
+    ],
+  }
+}
 
 export function createAllocationConfig(
   cb: any,
