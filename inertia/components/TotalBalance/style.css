@@ -2,3 +2,24 @@
   height: 8rem;
   width: 8rem;
 }
+
+@media (min-width: 1023px) {
+  .bar-list-toggle {
+    display: none !important;
+  }
+  .bar-list-desktop {
+    display: block !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .bar-list-desktop {
+    display: none !important;
+  }
+  .bar-list-toggle {
+    display: block !important;
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+  }
+}

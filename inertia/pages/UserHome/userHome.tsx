@@ -1,4 +1,4 @@
-import { Box, Grid } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import { UserHomeProvider } from '../../context/UserHomeContext';
 
 import TotalBalance from "~/components/TotalBalance/totalBalance";
@@ -33,9 +33,11 @@ function UserHomePage() {
       }}
     >
       <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, marginTop: '1rem', gap: '1rem' }}>
-        <Grid columns={{ sm: "1", lg: "2" }}>
-          <TotalBalance />
-        </Grid>
+        <Box mb="4" px="2">
+          {/*<Grid columns={{ sm: "1", md: "2", lg: "2" }}>*/}
+            <TotalBalance />
+          {/*</Grid>*/}
+        </Box>
 
         <Box style={{ flex: '0 0 auto', minHeight: '0' }}>
           <ActionsBar />

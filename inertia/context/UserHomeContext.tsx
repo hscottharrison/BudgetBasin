@@ -10,7 +10,7 @@ import {TransactionTypeDTO} from "#models/transaction_type";
 export interface UserHomeContextProps {
   accounts: BankAccountDTO[];
   buckets: BucketDTO[];
-  bucketBreakdown: { name: string; amount: number }[];
+  bucketBreakdown: { name: string; value: number }[];
   totalAllocations: number;
   totalBalance: number;
   transactionTypes: TransactionTypeDTO[];
@@ -36,7 +36,7 @@ export const UserHomeProvider: React.FC<{
    */
   const [accounts, setAccounts] = useState<BankAccountDTO[]>(userAccounts);
   const [buckets, setBuckets] = useState<BucketDTO[]>(userBuckets);
-  const [bucketBreakdown, setBucketBreakdown] = useState<{ name: string; amount: number }[]>([]);
+  const [bucketBreakdown, setBucketBreakdown] = useState<{ name: string; value: number }[]>([]);
   const [totalAllocations, setTotalAllocations] = useState<number>(0);
 
   /**
@@ -81,10 +81,10 @@ export const UserHomeProvider: React.FC<{
 
   //region EFFECT METHODS
   function parseBucketData(){
-    const breakdownArr: {name: string, amount: number}[] = []
+    const breakdownArr: {name: string, value: number}[] = []
     const amount = buckets.reduce((acc: number, bucket: BucketDTO) => {
       const sum = sumTransactions(bucket.transactions)
-      breakdownArr.push({name: bucket.name, amount: sum})
+      breakdownArr.push({name: bucket.name, value: sum})
       return acc += sum
     }, 0)
     setTotalAllocations(amount)
