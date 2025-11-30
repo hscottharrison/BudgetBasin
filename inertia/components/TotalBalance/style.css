@@ -9,6 +9,7 @@
   }
   .bar-list-desktop {
     display: block !important;
+    flex: 1 !important;
   }
 }
 

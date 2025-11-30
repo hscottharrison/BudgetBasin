@@ -1,6 +1,7 @@
 import {Button, Dialog, Flex} from '@radix-ui/themes'
 import {TrashIcon} from "@radix-ui/react-icons";
 import {useState} from "react";
+import LoadingButton from '~/components/CommonComponents/LoadingButton/loadingButton'
 
 type DeleteAccountProps = {
   title: string
@@ -33,7 +34,8 @@ export default function ConfirmationModal({ title, description, onConfirm, butto
           <Dialog.Close>
             <Button type='button' variant='surface'>Cancel</Button>
           </Dialog.Close>
-          <Button type='button' onClick={onConfirmClick}>Delete</Button>
+          <LoadingButton type='button' cb={onConfirmClick} label='Delete' />
+          {/*<Button type='button' onClick={onConfirmClick}>Delete</Button>*/}
         </Flex>
       </Dialog.Content>
     </Dialog.Root>

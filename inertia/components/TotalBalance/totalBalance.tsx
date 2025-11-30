@@ -1,26 +1,27 @@
 import { useMemo, useState } from 'react'
-import { Box, Card, ChevronDownIcon, Grid, IconButton, Text } from '@radix-ui/themes'
+import { Box, Card, ChevronDownIcon, Flex, IconButton, Text } from '@radix-ui/themes'
 import { motion, AnimatePresence } from "framer-motion";
 
 import {useUserHome} from "~/context/UserHomeContext";
 
-import { BarList } from '~/components/TremorComponents/BarList/barList'
+import { LineChart } from '~/components/TremorComponents/LineChart/lineChart'
 
 import { formatCurrency } from "~/services/utils_service";
 
 import './style.css';
 
 export default function TotalBalance() {
-  const { bucketBreakdown, totalBalance, totalAllocations } = useUserHome();
+  const { bucketBreakdown, totalBalance, totalAllocations, accounts } = useUserHome();
   const [showBarList, setShowBarList] = useState(false);
   /**
    * MEMOS
    */
-  const { chartData, unallocated } = useMemo(createChartData, [bucketBreakdown, totalBalance]);
+  const { chartData, unallocated, accountNames } = useMemo(createChartData, [bucketBreakdown, totalBalance]);
 
   return (
       <Card variant='ghost' style={{ position: 'relative', padding: '1rem 2rem',background: 'linear-gradient(to right, #F9FEFD, #9ce0d0)'}}>
-        <Grid gap="4" columns={{ sm: "1", md: "2", lg: "2" }}>
+        <Flex gap="6">
+
           <Box>
             <Text size='2'>Your Total Savings</Text>
             <br />
@@ -40,11 +41,13 @@ export default function TotalBalance() {
             <ChevronDownIcon />
           </IconButton>
           <Box className='bar-list-desktop'>
-            <BarList
+            <LineChart
               data={chartData}
-              valueFormatter={(number: number) => `${formatCurrency(number)}`} />
+              index="date"
+              valueFormatter={(n: number) => `${formatCurrency(n)}`}
+              categories={accountNames}/>
           </Box>
-        </Grid>
+        </Flex>
 
         <AnimatePresence>
           {showBarList && (
@@ -56,10 +59,12 @@ export default function TotalBalance() {
               transition={{ duration: 0.25, ease: "easeInOut" }}
             >
               <Box mt="3">
-                <BarList
+                <LineChart
                   data={chartData}
+                  index="date"
+                  xAxisLabel="Date"
                   valueFormatter={(n: number) => `${formatCurrency(n)}`}
-                />
+                  categories={accountNames}/>
               </Box>
             </motion.div>
           )}
@@ -70,18 +75,31 @@ export default function TotalBalance() {
   // region MEMO METHODS
   function createChartData() {
     const unallocated = totalBalance - totalAllocations;
-    const pageStats = {
-      chartData: [
-        ...bucketBreakdown,
-        {
-          name: 'Unallocated',
-          value: unallocated
+    const accountNames: string[] = [];
+    const data: Record<string, Record<string, string>> = accounts.reduce((balanceHistoryMap: Record<string, Record<string, string>>, account) => {
+      accountNames.push(account.name);
+      account.balances.forEach((balance) => {
+        const formattedDate = new Date(balance.createdAt ?? '').toLocaleDateString('en-US');
+        if (!balanceHistoryMap[formattedDate]) {
+          balanceHistoryMap[formattedDate] = {};
         }
-      ],
+        balanceHistoryMap[formattedDate][account.name] = balance.amount.toString();
+      })
+      return balanceHistoryMap;
+    }, {})
+
+    const chartData = Object.keys(data).map((date) => {
+      return {
+        date,
+        ...data[date]
+      }
+    })
+    return {
+      chartData,
       allocatedPercentage: totalAllocations / totalBalance * 100,
       unallocated,
+      accountNames
     }
-    return pageStats
   }
   // endregion
 }

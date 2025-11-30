@@ -19,6 +19,7 @@ export function createSpendConfig(
         name: 'amount',
         label: 'Amount',
         type: 'number',
+        step: '0.01',
       },
       {
         name: 'bucketId',

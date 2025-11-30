@@ -8,6 +8,7 @@ import AppBar from '~/components/AppBar/appBar'
 
 import '@radix-ui/themes/styles.css'
 import '../css/app.css';
+import { LoadingProvider } from '~/context/LoadingContext'
 
 createInertiaApp({
   progress: { color: '#5468FF' },
@@ -24,12 +25,13 @@ createInertiaApp({
   setup({ el, App, props }) {
 
     hydrateRoot(el,
-      <Theme accentColor="teal" radius="full">
-        <AppBar {...props.initialPage.props}></AppBar>
-        <Box style={{ maxHeight: 'calc(100vh - 3rem)', overflow: 'hidden', height: 'calc(100vh - 3rem)', display: 'flex', flexDirection: 'column', minHeight: 0, backgroundColor: 'var(--accent-2)'}}>
-          <App {...props} />
-        </Box>
-      </Theme>)
-
+      <LoadingProvider>
+        <Theme accentColor="teal" radius="full">
+          <AppBar {...props.initialPage.props}></AppBar>
+          <Box style={{ maxHeight: 'calc(100vh - 3rem)', overflow: 'hidden', height: 'calc(100vh - 3rem)', display: 'flex', flexDirection: 'column', minHeight: 0, backgroundColor: 'var(--accent-2)'}}>
+            <App {...props} />
+          </Box>
+        </Theme>
+      </LoadingProvider>)
   },
 });

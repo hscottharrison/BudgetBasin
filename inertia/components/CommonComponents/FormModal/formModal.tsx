@@ -3,6 +3,8 @@ import {PlusIcon} from "@radix-ui/react-icons";
 import Input from "~/components/CommonComponents/Input/input";
 import {FormEvent, ReactNode, useState} from "react";
 import SelectInput from "~/components/CommonComponents/Select/select";
+import { useLoading } from '~/context/LoadingContext'
+import LoadingButton from '~/components/CommonComponents/LoadingButton/loadingButton'
 
 type FieldConfig<K extends string> = {
   name: K;
@@ -30,6 +32,7 @@ export type FormModalProps<T extends Record<string, unknown>> = {
 export default function FormModal<T extends Record<string, unknown>>({ actionLabel, actionLabelIcon, title, description, formElements, closeButtonLabel = 'Cancel', submitButtonLabel = 'Submit', onSubmit
 }: FormModalProps<T>) {
   const [open, setOpen] = useState(false)
+  const { isLoading } = useLoading();
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget)
@@ -84,9 +87,10 @@ export default function FormModal<T extends Record<string, unknown>>({ actionLab
             })}
             <Flex gap='4' justify='end'>
               <Dialog.Close>
-                <Button type='button' variant='surface'>{ closeButtonLabel }</Button>
+                <Button type='button' variant='surface' disabled={isLoading}>{ closeButtonLabel }</Button>
               </Dialog.Close>
-              <Button type='submit'>{ submitButtonLabel }</Button>
+              <LoadingButton type='submit' label={submitButtonLabel} />
+              {/*<Button type='submit'>{isLoading ? 'loading' :  submitButtonLabel }</Button>*/}
             </Flex>
           </Flex>
         </form>
