@@ -7,6 +7,9 @@ import BankAccount from '#models/bank_account'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Bucket from '#models/bucket'
 import Transaction from '#models/transaction'
+import BudgetCategory from '#models/budget_category'
+import BudgetTemplate from '#models/budget_template'
+import BudgetPeriod from '#models/budget_period'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -49,4 +52,19 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare allocations: HasMany<typeof Transaction>
+
+  @hasMany(() => BudgetCategory, {
+    foreignKey: 'userId',
+  })
+  declare budgetCategories: HasMany<typeof BudgetCategory>
+
+  @hasMany(() => BudgetTemplate, {
+    foreignKey: 'userId',
+  })
+  declare budgetTemplates: HasMany<typeof BudgetTemplate>
+
+  @hasMany(() => BudgetPeriod, {
+    foreignKey: 'userId',
+  })
+  declare budgetPeriods: HasMany<typeof BudgetPeriod>
 }

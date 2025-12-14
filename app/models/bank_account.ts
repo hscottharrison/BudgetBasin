@@ -4,9 +4,12 @@ import User from '#models/user'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import Balance, { BalanceDTO } from '#models/balance'
 
+export type BankAccountType = 'savings' | 'checking'
+
 export type BankAccountDTO = {
   id: number
   name: string
+  accountType: BankAccountType
   balances: BalanceDTO[]
   createdAt: string | null
 }
@@ -27,6 +30,9 @@ export default class BankAccount extends BaseModel {
 
   @column()
   declare description: string
+
+  @column()
+  declare accountType: BankAccountType
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
