@@ -15,6 +15,7 @@ const BalancesController = () => import('#controllers/balances_controller')
 const AccountsController = () => import('#controllers/accounts_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ViewsController = () => import('#controllers/views_controller')
+const BudgetController = () => import('#controllers/budget_controller')
 
 // Views
 router.get('/', [ViewsController, 'home'])
@@ -41,3 +42,11 @@ router.delete('/api/buckets/:id', [BucketsController, 'delete']).use(middleware.
 
 // Allocations
 router.post('/api/transactions', [TransactionsController, 'create']).use(middleware.auth())
+
+// Budget
+router.post('/api/budget/setup', [BudgetController, 'createFullSetup']).use(middleware.auth())
+router.post('/api/budget/categories', [BudgetController, 'createCategory']).use(middleware.auth())
+router.post('/api/budget/periods', [BudgetController, 'createPeriod']).use(middleware.auth())
+router.post('/api/budget/entries', [BudgetController, 'createEntry']).use(middleware.auth())
+router.delete('/api/budget/all', [BudgetController, 'deleteAll']).use(middleware.auth())
+router.delete('/api/budget/periods/:id', [BudgetController, 'deletePeriod']).use(middleware.auth())

@@ -45,6 +45,19 @@ export interface BudgetPeriodDTO {
   entries: BudgetEntryDTO[]
 }
 
+export interface BankAccountDTO {
+  id: number
+  name: string
+  accountType: 'checking' | 'savings'
+  balances: {
+    id: number
+    amount: number
+    bankAccountId: number
+    createdAt: string | null
+  }[]
+  createdAt: string | null
+}
+
 export interface MonthlyBudgetPageDTO {
   user: {
     firstName: string

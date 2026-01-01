@@ -3,14 +3,15 @@ import { inject } from '@adonisjs/core'
 import AccountsService from '#services/accounts_service'
 import BucketsService from '#services/buckets_service'
 import EnumService from '#services/enum_service'
-// import {UserHomeDTO} from "#models/user_home_dto";
+import BudgetService from '#services/budget_service'
 
 @inject()
 export default class ViewsController {
   constructor(
     private accountService: AccountsService,
     private bucketsService: BucketsService,
-    private enumService: EnumService
+    private enumService: EnumService,
+    private budgetService: BudgetService
   ) {}
   async home({ inertia }: HttpContext) {
     return inertia.render('home')
@@ -42,19 +43,19 @@ export default class ViewsController {
   }
 
   async monthlyBudget({ inertia, auth }: HttpContext) {
-    // TODO: Fetch actual data from budget services once implemented
-    // const categories = await this.budgetService.getCategoriesForUser(auth?.user?.id ?? 0)
-    // const template = await this.budgetService.getActiveTemplateForUser(auth?.user?.id ?? 0)
-    // const currentPeriod = await this.budgetService.getCurrentPeriodForUser(auth?.user?.id ?? 0)
+    const userId = auth?.user?.id ?? 0
+    const categories = await this.budgetService.getCategoriesForUser(userId)
+    const template = await this.budgetService.getActiveTemplateForUser(userId)
+    const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
 
     return inertia.render('MonthlyBudget/monthlyBudget', {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
       },
-      categories: [],
-      template: null,
-      currentPeriod: null,
+      categories,
+      template,
+      currentPeriod,
     })
   }
 }

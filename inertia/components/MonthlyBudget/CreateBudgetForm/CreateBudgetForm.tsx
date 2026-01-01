@@ -15,13 +15,16 @@ interface CreateBudgetFormProps {
   onSubmit?: (data: {
     name: string
     income: number
+    startingBalance: number
     expenses: { category: string; amount: number }[]
   }) => void
+  isLoading?: boolean
 }
 
-export default function CreateBudgetForm({ onCancel, onSubmit }: CreateBudgetFormProps) {
+export default function CreateBudgetForm({ onCancel, onSubmit, isLoading }: CreateBudgetFormProps) {
   const [budgetName, setBudgetName] = useState('')
   const [projectedIncome, setProjectedIncome] = useState<number>(0)
+  const [startingBalance, setStartingBalance] = useState<number>(0)
   const [expenses, setExpenses] = useState<ExpenseItem[]>([])
   const [newCategory, setNewCategory] = useState('')
   const [newAmount, setNewAmount] = useState<number>(0)
@@ -65,6 +68,7 @@ export default function CreateBudgetForm({ onCancel, onSubmit }: CreateBudgetFor
     onSubmit?.({
       name: budgetName,
       income: projectedIncome,
+      startingBalance,
       expenses: expenses.map(({ category, amount }) => ({ category, amount })),
     })
   }
@@ -106,6 +110,22 @@ export default function CreateBudgetForm({ onCancel, onSubmit }: CreateBudgetFor
                 value={projectedIncome || ''}
                 onChange={(e) => setProjectedIncome(Number(e.target.value))}
               />
+            </Box>
+
+            <Box>
+              <Text as="label" size="2" weight="medium" mb="1" style={{ display: 'block' }}>
+                Checking Account Balance (Optional)
+              </Text>
+              <TextField.Root
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={startingBalance || ''}
+                onChange={(e) => setStartingBalance(Number(e.target.value))}
+              />
+              <Text size="1" color="gray" mt="1" style={{ display: 'block' }}>
+                Creates a checking account for reconciliation. This is NOT counted as income.
+              </Text>
             </Box>
           </Flex>
         </Box>
@@ -199,8 +219,8 @@ export default function CreateBudgetForm({ onCancel, onSubmit }: CreateBudgetFor
                 Cancel
               </Button>
             )}
-            <Button type="submit" disabled={!budgetName.trim() || projectedIncome <= 0}>
-              Create Budget
+            <Button type="submit" disabled={!budgetName.trim() || projectedIncome <= 0 || isLoading}>
+              {isLoading ? 'Creating...' : 'Create Budget'}
             </Button>
           </Flex>
         </Box>
