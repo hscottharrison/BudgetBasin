@@ -1,0 +1,55 @@
+.budget-setup-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.setup-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gray-a3) 0%, var(--gray-a5) 100%);
+  color: var(--gray-11);
+}
+
+.setup-icon.ready {
+  background: linear-gradient(135deg, var(--accent-a3) 0%, var(--accent-a5) 100%);
+  color: var(--accent-11);
+}
+
+.setup-step {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: var(--gray-a2);
+  min-width: 280px;
+  transition: background-color 0.15s ease;
+}
+
+.setup-step.completed {
+  background-color: var(--green-a2);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--gray-a4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-11);
+  flex-shrink: 0;
+}
+
+.setup-step.completed .step-number {
+  background-color: var(--green-9);
+  color: white;
+}
+
+
+

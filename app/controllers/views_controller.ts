@@ -40,4 +40,21 @@ export default class ViewsController {
 
     return inertia.render('UserHome/userHome', dto)
   }
+
+  async monthlyBudget({ inertia, auth }: HttpContext) {
+    // TODO: Fetch actual data from budget services once implemented
+    // const categories = await this.budgetService.getCategoriesForUser(auth?.user?.id ?? 0)
+    // const template = await this.budgetService.getActiveTemplateForUser(auth?.user?.id ?? 0)
+    // const currentPeriod = await this.budgetService.getCurrentPeriodForUser(auth?.user?.id ?? 0)
+
+    return inertia.render('MonthlyBudget/monthlyBudget', {
+      user: {
+        firstName: auth?.user?.firstName || '',
+        lastName: auth?.user?.lastName || '',
+      },
+      categories: [],
+      template: null,
+      currentPeriod: null,
+    })
+  }
 }

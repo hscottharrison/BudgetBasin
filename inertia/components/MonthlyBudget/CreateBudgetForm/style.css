@@ -1,0 +1,56 @@
+.create-budget-card {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.create-budget-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.form-section {
+  padding: 1.25rem;
+}
+
+.expenses-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.expense-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid var(--gray-a4);
+  border-radius: 8px;
+  background: var(--gray-a2);
+}
+
+.expense-row {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--gray-a3);
+}
+
+.expense-row:last-child {
+  border-bottom: none;
+}
+
+.expense-row:hover {
+  background: var(--gray-a3);
+}
+
+.form-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--gray-a4);
+  background: var(--gray-a2);
+}
+

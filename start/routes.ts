@@ -21,6 +21,7 @@ router.get('/', [ViewsController, 'home'])
 router.get('/register', [ViewsController, 'register'])
 router.get('/login', [ViewsController, 'login'])
 router.get('/user-home', [ViewsController, 'userHome']).use(middleware.auth())
+router.get('/monthly-budget', [ViewsController, 'monthlyBudget']).use(middleware.auth())
 
 // AUTH
 router.post('/api/register', [AuthController, 'register'])
