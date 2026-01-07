@@ -1,17 +1,31 @@
-import {Button, Dialog, Flex} from '@radix-ui/themes'
-import {TrashIcon} from "@radix-ui/react-icons";
-import {useState} from "react";
+import { Button } from '~/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog'
+import { Trash2 } from 'lucide-react'
+import { useState } from 'react'
 import LoadingButton from '~/components/CommonComponents/LoadingButton/loadingButton'
 
 type DeleteAccountProps = {
   title: string
   buttonText?: string
-  buttonVariant?: 'surface' | 'solid' | 'outline' | 'ghost'
+  buttonVariant?: 'outline' | 'default' | 'destructive' | 'secondary' | 'ghost' | 'link'
   description: string
   onConfirm: () => Promise<void>
 }
 
-export default function ConfirmationModal({ title, description, onConfirm, buttonText = '', buttonVariant = 'solid' }: DeleteAccountProps) {
+export default function ConfirmationModal({
+  title,
+  description,
+  onConfirm,
+  buttonText = '',
+  buttonVariant = 'default',
+}: DeleteAccountProps) {
   const [open, setOpen] = useState<boolean>(false)
 
   async function onConfirmClick() {
@@ -20,24 +34,23 @@ export default function ConfirmationModal({ title, description, onConfirm, butto
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button variant={buttonVariant}>
-          <TrashIcon />
+          <Trash2 className="h-4 w-4" />
           {buttonText}
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Title>{title}</Dialog.Title>
-        <Dialog.Description>{description}</Dialog.Description>
-        <Flex gap='4' justify='end'>
-          <Dialog.Close>
-            <Button type='button' variant='surface'>Cancel</Button>
-          </Dialog.Close>
-          <LoadingButton type='button' cb={onConfirmClick} label='Delete' />
-          {/*<Button type='button' onClick={onConfirmClick}>Delete</Button>*/}
-        </Flex>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <LoadingButton type="button" cb={onConfirmClick} label="Delete" variant="destructive" />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

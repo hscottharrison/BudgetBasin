@@ -1,7 +1,8 @@
-import { Box, Card, Flex, Grid, Text, Heading } from '@radix-ui/themes'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { formatCurrency } from '~/services/utils_service'
 import { BudgetCategoryDTO } from '~/types/budget'
+import { cn } from '~/lib/utils'
 import './style.css'
 
 interface CategoryListProps {
@@ -10,12 +11,8 @@ interface CategoryListProps {
 }
 
 export default function CategoryList({ type, title }: CategoryListProps) {
-  const {
-    incomeCategories,
-    expenseCategories,
-    getCategoryActual,
-    getCategoryTarget,
-  } = useMonthlyBudget()
+  const { incomeCategories, expenseCategories, getCategoryActual, getCategoryTarget } =
+    useMonthlyBudget()
 
   const categories = type === 'income' ? incomeCategories : expenseCategories
   const colorClass = type === 'income' ? 'income' : 'expense'
@@ -23,28 +20,36 @@ export default function CategoryList({ type, title }: CategoryListProps) {
   if (categories.length === 0) {
     return (
       <Card className="category-list-card">
-        <Heading size="3" mb="3">{title}</Heading>
-        <Text size="2" color="gray">
-          No {type} categories yet. Add one to get started.
-        </Text>
+        <CardHeader>
+          <CardTitle className="text-lg">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            No {type} categories yet. Add one to get started.
+          </p>
+        </CardContent>
       </Card>
     )
   }
 
   return (
     <Card className="category-list-card">
-      <Heading size="3" mb="3">{title}</Heading>
-      <Grid gap="2">
-        {categories.map((category) => (
-          <CategoryRow
-            key={category.id}
-            category={category}
-            actual={getCategoryActual(category.id)}
-            target={getCategoryTarget(category.id)}
-            colorClass={colorClass}
-          />
-        ))}
-      </Grid>
+      <CardHeader>
+        <CardTitle className="text-lg">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          {categories.map((category) => (
+            <CategoryRow
+              key={category.id}
+              category={category}
+              actual={getCategoryActual(category.id)}
+              target={getCategoryTarget(category.id)}
+              colorClass={colorClass}
+            />
+          ))}
+        </div>
+      </CardContent>
     </Card>
   )
 }
@@ -61,31 +66,31 @@ function CategoryRow({ category, actual, target, colorClass }: CategoryRowProps)
   const isOver = actual > target && target > 0
 
   return (
-    <Box className="category-row">
-      <Flex justify="between" align="center" mb="1">
-        <Text size="2" weight="medium">{category.name}</Text>
-        <Flex align="baseline" gap="1">
-          <Text size="2" weight="bold" color={isOver && colorClass === 'expense' ? 'red' : undefined}>
+    <div className="category-row">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm font-medium">{category.name}</span>
+        <div className="flex items-baseline gap-1">
+          <span
+            className={cn(
+              'text-sm font-bold',
+              isOver && colorClass === 'expense' && 'text-red-600'
+            )}
+          >
             {formatCurrency(actual)}
-          </Text>
+          </span>
           {target > 0 && (
-            <Text size="1" color="gray">
-              / {formatCurrency(target)}
-            </Text>
+            <span className="text-xs text-muted-foreground">/ {formatCurrency(target)}</span>
           )}
-        </Flex>
-      </Flex>
+        </div>
+      </div>
       {target > 0 && (
-        <Box className="category-progress-bar">
-          <Box
-            className={`category-progress-fill ${colorClass} ${isOver ? 'over' : ''}`}
+        <div className="category-progress-bar">
+          <div
+            className={cn('category-progress-fill', colorClass, isOver && 'over')}
             style={{ width: `${progress}%` }}
           />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
-
-
-

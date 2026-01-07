@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Flex, Grid } from '@radix-ui/themes'
+import { Button } from '~/components/ui/button'
 import { Trash2Icon } from 'lucide-react'
 import { MonthlyBudgetProvider, useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { MonthlyBudgetPageDTO } from '~/types/budget'
@@ -17,12 +17,18 @@ import CategoryList from '~/components/MonthlyBudget/CategoryList/CategoryList'
 import BudgetSetupPrompt from '~/components/MonthlyBudget/BudgetSetupPrompt/BudgetSetupPrompt'
 import CreateBudgetForm from '~/components/MonthlyBudget/CreateBudgetForm/CreateBudgetForm'
 
-export default function MonthlyBudget({ categories, template, currentPeriod }: MonthlyBudgetPageDTO) {
+export default function MonthlyBudget({
+  categories,
+  template,
+  currentPeriod,
+  checkingAccount,
+}: MonthlyBudgetPageDTO) {
   return (
     <MonthlyBudgetProvider
       initialCategories={categories ?? []}
       initialTemplate={template ?? null}
       initialPeriod={currentPeriod ?? null}
+      initialCheckingAccount={checkingAccount ?? null}
     >
       <MonthlyBudgetPage />
     </MonthlyBudgetProvider>
@@ -40,6 +46,8 @@ function MonthlyBudgetPage() {
     setPeriod,
     addEntry,
     addCategory,
+    setCheckingAccount,
+    updateCheckingBalance,
   } = useMonthlyBudget()
   const [showCreateBudgetForm, setShowCreateBudgetForm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -52,24 +60,11 @@ function MonthlyBudgetPage() {
   // Show setup prompt if not fully configured
   if (!hasSetup || !hasPeriod) {
     return (
-      <Box
-        style={{
-          width: '100%',
-          maxWidth: 1120,
-          marginInline: 'auto',
-          padding: '2rem 1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          flex: 1,
-          minHeight: 0,
-          overflow: 'auto',
-        }}
-      >
+      <div className="w-full max-w-[1120px] mx-auto p-8 flex flex-col gap-4 flex-1 min-h-0 overflow-auto">
         {error && (
-          <Box style={{ padding: '1rem', backgroundColor: 'var(--red-3)', color: 'var(--red-11)', borderRadius: '8px', marginBottom: '1rem' }}>
+          <div className="p-4 bg-destructive/10 text-destructive rounded-lg mb-4">
             {error}
-          </Box>
+          </div>
         )}
         {showCreateBudgetForm ? (
           <CreateBudgetForm
@@ -86,62 +81,47 @@ function MonthlyBudgetPage() {
             setShowCreateBudgetForm={setShowCreateBudgetForm}
           />
         )}
-      </Box>
+      </div>
     )
   }
 
   // Full budget view
   return (
-    <Box
-      style={{
-        width: '100%',
-        maxWidth: 1120,
-        marginInline: 'auto',
-        padding: '2rem 1rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-        flex: 1,
-        minHeight: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: '1rem' }}>
+    <div className="w-full max-w-[1120px] mx-auto p-8 flex flex-col gap-4 flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 gap-4">
         {/* Summary Card */}
-        <Box px="2">
+        <div className="px-2">
           <BudgetSummaryCard />
-        </Box>
+        </div>
 
         {/* Actions Bar */}
-        <Box style={{ flex: '0 0 auto' }}>
-          <Flex justify="between" align="center" gap="2">
+        <div className="flex-shrink-0">
+          <div className="flex justify-between items-center gap-2">
             <BudgetActionsBar onAddEntry={handleAddEntry} onAddCategory={handleAddCategory} />
-            <Button
-              variant="soft"
-              color="red"
-              size="2"
-              onClick={handleDeleteBudget}
-              disabled={isLoading}
-            >
+            <Button variant="destructive" size="default" onClick={handleDeleteBudget} disabled={isLoading}>
               <Trash2Icon size={16} />
               Start Over
             </Button>
-          </Flex>
-        </Box>
+          </div>
+        </div>
 
         {/* Category Lists */}
-        <Box style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-          <Grid columns={{ xs: '1', md: '2' }} gap="4">
+        <div className="flex-1 min-h-0 overflow-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CategoryList type="income" title="📈 Income" />
             <CategoryList type="expense" title="📉 Expenses" />
-          </Grid>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 
   // Handler to add a budget entry
-  async function handleAddEntry(entry: { budgetCategoryId: number; amount: number; note?: string }) {
+  async function handleAddEntry(entry: {
+    budgetCategoryId: number
+    amount: number
+    note?: string
+  }) {
     if (!currentPeriod) return
 
     try {
@@ -152,7 +132,12 @@ function MonthlyBudgetPage() {
         amount: entry.amount,
         note: entry.note,
       })
-      addEntry(response)
+      // Add the entry to the period
+      addEntry(response.entry)
+      // Update the checking balance if returned
+      if (response.newBalance !== null) {
+        updateCheckingBalance(response.newBalance)
+      }
     } catch (err) {
       console.error('Add entry error:', err)
       setError(err instanceof Error ? err.message : 'Failed to add entry')
@@ -196,6 +181,10 @@ function MonthlyBudgetPage() {
       updateCategories(result.categories)
       setTemplate(result.template)
       setPeriod(result.period)
+      // Set the checking account if created
+      if (result.checkingAccount) {
+        setCheckingAccount(result.checkingAccount)
+      }
       setShowCreateBudgetForm(false)
     } catch (err) {
       console.error('Create budget error:', err)

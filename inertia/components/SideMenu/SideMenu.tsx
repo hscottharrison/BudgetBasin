@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Box, Flex, Text, IconButton } from '@radix-ui/themes'
-import { ChevronRightIcon, ChevronLeftIcon, HamburgerMenuIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
+import { ChevronRight, ChevronLeft, Menu } from 'lucide-react'
 import { menuConfig, MenuItem } from './menu_config'
+import { cn } from '~/lib/utils'
 import './style.css'
 
 type SideMenuProps = {
@@ -59,84 +60,79 @@ export default function SideMenu({ isAuthenticated, currentUrl }: SideMenuProps)
     const Icon = item.icon
 
     return (
-      <Box key={item.id} className="side-menu-item-wrapper">
+      <div key={item.id} className="side-menu-item-wrapper">
         {item.href && !hasChildren ? (
           <a href={item.href} className="side-menu-link">
-            <Flex
-              className={`side-menu-item ${active ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
-              align="center"
-              gap="3"
+            <div
+              className={cn(
+                'side-menu-item',
+                active && 'active',
+                isCollapsed && 'collapsed'
+              )}
               style={{ paddingLeft: isCollapsed ? undefined : `${12 + depth * 16}px` }}
             >
               {Icon && (
-                <Box className="side-menu-icon">
+                <div className="side-menu-icon">
                   <Icon size={18} />
-                </Box>
+                </div>
               )}
               {!isCollapsed && (
-                <Text size="2" weight={active ? 'medium' : 'regular'}>
-                  {item.label}
-                </Text>
+                <span className={cn('text-sm', active && 'font-medium')}>{item.label}</span>
               )}
-            </Flex>
+            </div>
           </a>
         ) : (
-          <Flex
-            className={`side-menu-item has-children ${isExpanded ? 'expanded' : ''} ${isCollapsed ? 'collapsed' : ''}`}
-            align="center"
-            justify="between"
+          <div
+            className={cn(
+              'side-menu-item has-children',
+              isExpanded && 'expanded',
+              isCollapsed && 'collapsed'
+            )}
             onClick={() => !isCollapsed && toggleExpand(item.id)}
-            style={{ 
+            style={{
               paddingLeft: isCollapsed ? undefined : `${12 + depth * 16}px`,
-              cursor: hasChildren ? 'pointer' : 'default'
+              cursor: hasChildren ? 'pointer' : 'default',
             }}
           >
-            <Flex align="center" gap="3">
+            <div className="flex items-center gap-3">
               {Icon && (
-                <Box className="side-menu-icon">
+                <div className="side-menu-icon">
                   <Icon size={18} />
-                </Box>
+                </div>
               )}
-              {!isCollapsed && (
-                <Text size="2">{item.label}</Text>
-              )}
-            </Flex>
+              {!isCollapsed && <span className="text-sm">{item.label}</span>}
+            </div>
             {!isCollapsed && hasChildren && (
-              <Box className={`side-menu-chevron ${isExpanded ? 'expanded' : ''}`}>
-                <ChevronRightIcon />
-              </Box>
+              <div className={cn('side-menu-chevron', isExpanded && 'expanded')}>
+                <ChevronRight size={16} />
+              </div>
             )}
-          </Flex>
+          </div>
         )}
 
         {/* Submenu */}
         {hasChildren && !isCollapsed && (
-          <Box className={`side-menu-submenu ${isExpanded ? 'expanded' : ''}`}>
+          <div className={cn('side-menu-submenu', isExpanded && 'expanded')}>
             {item.children!.map((child) => renderMenuItem(child, depth + 1))}
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
     )
   }
 
   return (
-    <Box className={`side-menu ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={cn('side-menu', isCollapsed && 'collapsed')}>
       {/* Toggle Button */}
-      <Flex className="side-menu-header" align="center" justify={isCollapsed ? 'center' : 'end'}>
-        <IconButton
-          variant="ghost"
-          size="2"
-          onClick={toggleCollapse}
-          className="side-menu-toggle"
-        >
-          {isCollapsed ? <HamburgerMenuIcon /> : <ChevronLeftIcon />}
-        </IconButton>
-      </Flex>
+      <div className={cn('side-menu-header', isCollapsed ? 'justify-center' : 'justify-end')}>
+        <Button variant="ghost" size="icon" onClick={toggleCollapse} className="side-menu-toggle">
+          {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+        </Button>
+      </div>
 
       {/* Menu Items */}
-      <Flex direction="column" className="side-menu-items">
+      <div className="side-menu-items">
         {menuConfig.map((item) => renderMenuItem(item))}
-      </Flex>
-    </Box>
+      </div>
+    </div>
   )
 }

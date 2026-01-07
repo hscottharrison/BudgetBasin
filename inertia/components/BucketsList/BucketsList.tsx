@@ -1,35 +1,34 @@
-import {Grid, ScrollArea} from "@radix-ui/themes";
+import BucketCard from '~/components/BucketsList/BucketCard/bucketCard'
 
-import BucketCard from "~/components/BucketsList/BucketCard/bucketCard";
+import { deleteBucket } from '~/services/bucket_service'
 
-import {deleteBucket} from "~/services/bucket_service";
+import { BucketDTO } from '#models/bucket'
+import { useUserHome } from '~/context/UserHomeContext'
+import { TransactionDTO } from '#models/transaction'
 
-import {BucketDTO} from "#models/bucket";
-import {useUserHome} from "~/context/UserHomeContext";
-import {TransactionDTO} from "#models/transaction";
-
-export default function BucketsList(){
-  const { buckets, updateBuckets, updateTransactionsForBucket } = useUserHome();
+export default function BucketsList() {
+  const { buckets, updateBuckets, updateTransactionsForBucket } = useUserHome()
   return (
-    <ScrollArea scrollbars='vertical' type='auto' style={{ height: '100%', paddingRight: '1rem' }}>
-      <Grid columns={{ xs: '1', sm: '3', md: '3', lg: '3'}} gap='3' width='auto'>
+    <div className="overflow-y-auto h-full pr-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-auto">
         {buckets.map((bucket: BucketDTO) => (
           <BucketCard
             key={bucket.id}
             bucket={bucket}
             allocateFunds={allocateFunds}
-            onDeleteBucket={onDeleteBucket}/>
+            onDeleteBucket={onDeleteBucket}
+          />
         ))}
-      </Grid>
-    </ScrollArea>
+      </div>
+    </div>
   )
 
-  async function onDeleteBucket(bucketId: number){
+  async function onDeleteBucket(bucketId: number) {
     const buckets = await deleteBucket(bucketId)
     updateBuckets(buckets)
   }
 
-  function allocateFunds(transaction: TransactionDTO){
-    updateTransactionsForBucket(transaction);
+  function allocateFunds(transaction: TransactionDTO) {
+    updateTransactionsForBucket(transaction)
   }
 }

@@ -1,104 +1,124 @@
 import { useMemo, useState } from 'react'
-import { Box, Card, ChevronDownIcon, Flex, IconButton, Text } from '@radix-ui/themes'
-import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from '~/components/ui/card'
+import { Button } from '~/components/ui/button'
+import { ChevronDown } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-import {useUserHome} from "~/context/UserHomeContext";
+import { useUserHome } from '~/context/UserHomeContext'
 
-import { LineChart } from '~/components/TremorComponents/LineChart/lineChart'
+import { AreaChart } from '~/components/ui/area-chart'
 
-import { formatCurrency } from "~/services/utils_service";
+import { formatCurrency } from '~/services/utils_service'
 
-import './style.css';
+import './style.css'
 
 export default function TotalBalance() {
-  const { bucketBreakdown, totalBalance, totalAllocations, accounts } = useUserHome();
-  const [showBarList, setShowBarList] = useState(false);
+  const { bucketBreakdown, totalBalance, totalAllocations, accounts } = useUserHome()
+  const [showBarList, setShowBarList] = useState(false)
   /**
    * MEMOS
    */
-  const { chartData, unallocated, accountNames } = useMemo(createChartData, [bucketBreakdown, totalBalance]);
+  const { chartData, unallocated, accountNames } = useMemo(createChartData, [
+    bucketBreakdown,
+    totalBalance,
+  ])
 
   return (
-      <Card variant='ghost' style={{ position: 'relative', padding: '1rem 2rem',background: 'linear-gradient(to right, #F9FEFD, #9ce0d0)'}}>
-        <Flex gap="6">
-
-          <Box>
-            <Text size='2'>Your Total Savings</Text>
-            <br />
-            <Text size='4' weight='bold'>{formatCurrency(totalBalance)}</Text>
-            <br />
-            <Text size='1'>{formatCurrency(unallocated)} left to allocate</Text>
-          </Box>
-          <IconButton
-            variant='ghost'
-            className='bar-list-toggle'
-            size='2'
+    <Card
+      className="relative"
+      style={{ background: 'linear-gradient(to right, #F9FEFD, #9ce0d0)' }}
+    >
+      <CardContent className="pt-6">
+        <div className="flex gap-6">
+          <div>
+            <p className="text-sm">Your Total Savings</p>
+            <p className="text-2xl font-bold mt-1">{formatCurrency(totalBalance)}</p>
+            <p className="text-xs mt-1">{formatCurrency(unallocated)} left to allocate</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bar-list-toggle hidden transition-transform"
             onClick={() => setShowBarList(!showBarList)}
             style={{
-              display: 'none',
-              transition: 'transform 0.3s ease',
-              transform: showBarList ? 'rotate(180deg)' : 'rotate(0deg)',}}>
-            <ChevronDownIcon />
-          </IconButton>
-          <Box className='bar-list-desktop'>
-            <LineChart
+              transform: showBarList ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+          <div className="bar-list-desktop">
+            <AreaChart
               data={chartData}
               index="date"
               valueFormatter={(n: number) => `${formatCurrency(n)}`}
-              categories={accountNames}/>
-          </Box>
-        </Flex>
+              categories={accountNames}
+              height={200}
+              showGridLines={true}
+              showXAxis={true}
+              showYAxis={false}
+            />
+          </div>
+        </div>
 
         <AnimatePresence>
           {showBarList && (
             <motion.div
               className="barlist-mobile"
               initial={{ opacity: 0, height: 0, y: -10 }}
-              animate={{ opacity: 1, height: "auto", y: 0 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
               exit={{ opacity: 0, height: 0, y: -10 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
+              transition={{ duration: 0.25, easeInOut: true }}
             >
-              <Box mt="3">
-                <LineChart
+              <div className="mt-3">
+                <AreaChart
                   data={chartData}
                   index="date"
                   xAxisLabel="Date"
                   valueFormatter={(n: number) => `${formatCurrency(n)}`}
-                  categories={accountNames}/>
-              </Box>
+                  categories={accountNames}
+                  height={200}
+                  showGridLines={true}
+                  showXAxis={true}
+                  showYAxis={false}
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </Card>
+      </CardContent>
+    </Card>
   )
 
   // region MEMO METHODS
   function createChartData() {
-    const unallocated = totalBalance - totalAllocations;
-    const accountNames: string[] = [];
-    const data: Record<string, Record<string, string>> = accounts.reduce((balanceHistoryMap: Record<string, Record<string, string>>, account) => {
-      accountNames.push(account.name);
-      account.balances.forEach((balance) => {
-        const formattedDate = new Date(balance.createdAt ?? '').toLocaleDateString('en-US');
-        if (!balanceHistoryMap[formattedDate]) {
-          balanceHistoryMap[formattedDate] = {};
-        }
-        balanceHistoryMap[formattedDate][account.name] = balance.amount.toString();
-      })
-      return balanceHistoryMap;
-    }, {})
+    const unallocated = totalBalance - totalAllocations
+    const accountNames: string[] = []
+    const data: Record<string, Record<string, string>> = accounts.reduce(
+      (balanceHistoryMap: Record<string, Record<string, string>>, account) => {
+        accountNames.push(account.name)
+        account.balances.forEach((balance) => {
+          const formattedDate = new Date(balance.createdAt ?? '').toLocaleDateString('en-US')
+          if (!balanceHistoryMap[formattedDate]) {
+            balanceHistoryMap[formattedDate] = {}
+          }
+          balanceHistoryMap[formattedDate][account.name] = balance.amount.toString()
+        })
+        return balanceHistoryMap
+      },
+      {}
+    )
 
     const chartData = Object.keys(data).map((date) => {
       return {
         date,
-        ...data[date]
+        ...data[date],
       }
     })
     return {
       chartData,
-      allocatedPercentage: totalAllocations / totalBalance * 100,
+      allocatedPercentage: (totalAllocations / totalBalance) * 100,
       unallocated,
-      accountNames
+      accountNames,
     }
   }
   // endregion

@@ -1,18 +1,18 @@
-import {useEffect, useMemo, useState} from "react";
-import {Box, Card, Flex, Text} from "@radix-ui/themes";
+import { useEffect, useMemo, useState } from 'react'
+import { Card, CardContent } from '~/components/ui/card'
 
-import BucketMenu from "~/components/BucketsList/BucketMenu/bucketMenu";
-import {ProgressCircle} from "~/components/TremorComponents/ProgressCircle/progressCircle";
+import BucketMenu from '~/components/BucketsList/BucketMenu/bucketMenu'
+import { ProgressCircle } from '~/components/TremorComponents/ProgressCircle/progressCircle'
 
-import {formatCurrency, sumTransactions} from "~/services/utils_service";
+import { formatCurrency, sumTransactions } from '~/services/utils_service'
 
-import {BucketDTO} from "#models/bucket";
-import {TransactionDTO} from "#models/transaction";
+import { BucketDTO } from '#models/bucket'
+import { TransactionDTO } from '#models/transaction'
 
 type BucketCardProps = {
-  bucket: BucketDTO;
-  onDeleteBucket: (bucketId: number) => Promise<void>;
-  allocateFunds: (allocation: TransactionDTO) => void;
+  bucket: BucketDTO
+  onDeleteBucket: (bucketId: number) => Promise<void>
+  allocateFunds: (allocation: TransactionDTO) => void
 }
 
 export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: BucketCardProps) {
@@ -35,39 +35,36 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
    */
   useEffect(formatNumbers, [transactionSum])
 
-  useEffect(animateProgress, [allocationPercentage]);
-
+  useEffect(animateProgress, [allocationPercentage])
 
   return (
     <Card>
-      <Box>
-        <Flex align='center' justify='between'>
-          <Flex align='center'>
-            <Box ml='4'>
-              <Text weight='bold' size='2'>{ bucket.name }</Text>
-              <br />
-              <Text weight='bold' size='4'>{ formattedAllocation }</Text>
-              <br />
-              <Text size='2'>Goal: { formattedGoal }</Text>
-            </Box>
-          </Flex>
-          <Box>
-            <Flex gap='2' align='center'>
-              <ProgressCircle value={progress} className='mx-auto' radius={30} variant='success'>
-              </ProgressCircle>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="ml-4">
+              <p className="text-sm font-bold">{bucket.name}</p>
+              <p className="text-xl font-bold mt-1">{formattedAllocation}</p>
+              <p className="text-sm mt-1">Goal: {formattedGoal}</p>
+            </div>
+          </div>
+          <div>
+            <div className="flex gap-2 items-center">
+              <ProgressCircle value={progress} className="mx-auto" radius={30} variant="success" />
               <BucketMenu
                 bucket={bucket}
                 onDeleteConfirm={onDeleteConfirm}
-                allocateFunds={allocateFunds}/>
-            </Flex>
-          </Box>
-        </Flex>
-      </Box>
+                allocateFunds={allocateFunds}
+              />
+            </div>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   )
 
   // region MEMO METHODS
-  function calculateTransactionsSums(){
+  function calculateTransactionsSums() {
     return sumTransactions(bucket.transactions)
   }
 
@@ -77,20 +74,20 @@ export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: Bu
   // endregion
 
   // region EFFECT METHODS
-  function animateProgress(){
+  function animateProgress() {
     const timer = setInterval(() => {
       setProgress((prevProgress) => {
         if (prevProgress >= allocationPercentage) {
-          clearInterval(timer);
-          return allocationPercentage;
+          clearInterval(timer)
+          return allocationPercentage
         }
-        return prevProgress + 10;
-      });
-    }, 50); // Update every 500ms
+        return prevProgress + 10
+      })
+    }, 50) // Update every 500ms
 
     return () => {
-      clearInterval(timer); // Clear interval on component unmount
-    };
+      clearInterval(timer) // Clear interval on component unmount
+    }
   }
 
   function formatNumbers() {

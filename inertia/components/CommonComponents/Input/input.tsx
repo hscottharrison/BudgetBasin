@@ -1,39 +1,47 @@
-import { useCallback } from 'react';
-import './style.css'
-import {Box, Text, TextField} from '@radix-ui/themes'
-import { applyMask } from './masks';
-import { getRawValue } from './masks';
+import { useCallback } from 'react'
+import { Input as BaseInput } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { applyMask, getRawValue } from './masks'
+import { cn } from '~/lib/utils'
 
-export default function Input(props: any) {
-  const { label, type, name, step, value, onChange, maskType} = props;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string
+  maskType?: 'USD' | string
+  error?: string
+}
 
+export default function Input({ label, maskType, error, className, onChange, ...props }: InputProps) {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const formatted = applyMask(e.target.value, maskType)
-      const raw = getRawValue(formatted, maskType)
-      onChange(raw, formatted) 
+      if (maskType && onChange) {
+        const formatted = applyMask(e.target.value, maskType)
+        const raw = getRawValue(formatted, maskType)
+        // Create a custom event-like object
+        const customEvent = {
+          ...e,
+          target: {
+            ...e.target,
+            value: formatted,
+          },
+        }
+        onChange(customEvent as any)
+      } else if (onChange) {
+        onChange(e)
+      }
     },
-    [maskType, onChange],
+    [maskType, onChange]
   )
 
   return (
-    <Box>
-      <Text as='label' weight='bold'>
-        {label}
-        {!!value || !!onChange ? (
-          <TextField.Root 
-            type={type} 
-            id={name} 
-            name={name} 
-            step={step} 
-            value={value} 
-            inputMode={maskType === 'USD' ? 'decimal' : 'text'}
-            onChange={onChange} 
-          />
-        ) : (
-          <TextField.Root type={type} id={name} name={name} step={step} />
-        )}
-      </Text>
-    </Box>
+    <div className="space-y-2">
+      {label && <Label htmlFor={props.id || props.name}>{label}</Label>}
+      <BaseInput
+        className={cn(error && "border-destructive", className)}
+        inputMode={maskType === 'USD' ? 'decimal' : undefined}
+        onChange={handleChange}
+        {...props}
+      />
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
   )
 }

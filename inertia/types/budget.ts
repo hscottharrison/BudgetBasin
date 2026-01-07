@@ -66,6 +66,7 @@ export interface MonthlyBudgetPageDTO {
   categories: BudgetCategoryDTO[]
   template: BudgetTemplateDTO | null
   currentPeriod: BudgetPeriodDTO | null
+  checkingAccount: BankAccountDTO | null
 }
 
 

@@ -4,6 +4,7 @@ import {
   BudgetTemplateDTO,
   BudgetPeriodDTO,
   BudgetEntryDTO,
+  BankAccountDTO,
 } from '~/types/budget'
 
 export interface MonthlyBudgetContextProps {
@@ -11,6 +12,7 @@ export interface MonthlyBudgetContextProps {
   categories: BudgetCategoryDTO[]
   template: BudgetTemplateDTO | null
   currentPeriod: BudgetPeriodDTO | null
+  checkingAccount: BankAccountDTO | null
   hasSetup: boolean
 
   // Computed
@@ -21,6 +23,7 @@ export interface MonthlyBudgetContextProps {
   totalActualIncome: number
   totalActualExpenses: number
   remainingBudget: number
+  checkingBalance: number
 
   // Category totals
   getCategoryActual: (categoryId: number) => number
@@ -32,6 +35,8 @@ export interface MonthlyBudgetContextProps {
   setTemplate: (template: BudgetTemplateDTO) => void
   setPeriod: (period: BudgetPeriodDTO) => void
   addEntry: (entry: BudgetEntryDTO) => void
+  setCheckingAccount: (account: BankAccountDTO | null) => void
+  updateCheckingBalance: (newBalance: number) => void
 }
 
 const MonthlyBudgetContext = createContext<MonthlyBudgetContextProps | undefined>(undefined)
@@ -40,11 +45,13 @@ export const MonthlyBudgetProvider: React.FC<{
   initialCategories: BudgetCategoryDTO[]
   initialTemplate: BudgetTemplateDTO | null
   initialPeriod: BudgetPeriodDTO | null
+  initialCheckingAccount: BankAccountDTO | null
   children: ReactNode
-}> = ({ initialCategories, initialTemplate, initialPeriod, children }) => {
+}> = ({ initialCategories, initialTemplate, initialPeriod, initialCheckingAccount, children }) => {
   const [categories, setCategories] = useState<BudgetCategoryDTO[]>(initialCategories)
   const [template, setTemplateState] = useState<BudgetTemplateDTO | null>(initialTemplate)
   const [currentPeriod, setCurrentPeriod] = useState<BudgetPeriodDTO | null>(initialPeriod)
+  const [checkingAccount, setCheckingAccountState] = useState<BankAccountDTO | null>(initialCheckingAccount)
 
   // Check if user has completed setup
   const hasSetup = useMemo(() => {
@@ -108,6 +115,12 @@ export const MonthlyBudgetProvider: React.FC<{
     return totalActualIncome - totalActualExpenses
   }, [totalActualIncome, totalActualExpenses])
 
+  // Get current checking account balance
+  const checkingBalance = useMemo(() => {
+    if (!checkingAccount || checkingAccount.balances.length === 0) return 0
+    return checkingAccount.balances[0].amount
+  }, [checkingAccount])
+
   // Get actual spent/received for a category
   const getCategoryActual = (categoryId: number): number => {
     if (!currentPeriod) return 0
@@ -148,10 +161,28 @@ export const MonthlyBudgetProvider: React.FC<{
     })
   }
 
+  const setCheckingAccount = (account: BankAccountDTO | null) => {
+    setCheckingAccountState(account)
+  }
+
+  const updateCheckingBalance = (newBalance: number) => {
+    if (!checkingAccount || checkingAccount.balances.length === 0) return
+    setCheckingAccountState({
+      ...checkingAccount,
+      balances: [
+        {
+          ...checkingAccount.balances[0],
+          amount: newBalance,
+        },
+      ],
+    })
+  }
+
   const value: MonthlyBudgetContextProps = {
     categories,
     template,
     currentPeriod,
+    checkingAccount,
     hasSetup,
     incomeCategories,
     expenseCategories,
@@ -160,6 +191,7 @@ export const MonthlyBudgetProvider: React.FC<{
     totalActualIncome,
     totalActualExpenses,
     remainingBudget,
+    checkingBalance,
     getCategoryActual,
     getCategoryTarget,
     addCategory,
@@ -167,6 +199,8 @@ export const MonthlyBudgetProvider: React.FC<{
     setTemplate,
     setPeriod,
     addEntry,
+    setCheckingAccount,
+    updateCheckingBalance,
   }
 
   return <MonthlyBudgetContext.Provider value={value}>{children}</MonthlyBudgetContext.Provider>

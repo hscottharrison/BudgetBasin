@@ -1,25 +1,27 @@
-import {Flex, Button, Heading, Container, Box, Avatar} from "@radix-ui/themes";
-
+import { Button } from '~/components/ui/button'
+import { cn } from '~/lib/utils'
 
 export default function AppBar(props: any) {
   return (
-    <Box style={{ borderBottom: '1px solid var(--gray-a6)', height: '3rem' }}>
-      <Container size='4'>
-        <Flex className='app-bar-wrapper' as="div" align="center" justify="between" p="2">
+    <div className="border-b h-12 flex items-center">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
           <a href={props.user ? '/user-home' : '/'}>
-            <Heading size="5">Budget Basin</Heading>
+            <h1 className="text-xl font-bold">Budget Basin</h1>
           </a>
-          <Flex gap="4">
-            {props.user
-              ? <Avatar fallback={props.user?.firstName?.[0] ?? ""} radius="full" size='2' />
-              : (
-                <a href='/register'>
-                  <Button>Sign up for FREE</Button>
-                </a>
-              )}
-          </Flex>
-        </Flex>
-      </Container>
-    </Box>
+          <div className="flex gap-4 items-center">
+            {props.user ? (
+              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                {props.user?.firstName?.[0] ?? ''}
+              </div>
+            ) : (
+              <a href="/register">
+                <Button>Sign up for FREE</Button>
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

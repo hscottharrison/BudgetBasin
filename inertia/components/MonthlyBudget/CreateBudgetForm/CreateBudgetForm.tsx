@@ -1,7 +1,12 @@
 import { FormEvent, useMemo, useState } from 'react'
-import { Box, Button, Card, Flex, Heading, IconButton, Separator, Text, TextField } from '@radix-ui/themes'
+import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Separator } from '@radix-ui/react-separator'
 import { Trash2Icon } from 'lucide-react'
 import { formatCurrency } from '~/services/utils_service'
+import { cn } from '~/lib/utils'
 import './style.css'
 
 interface ExpenseItem {
@@ -30,15 +35,9 @@ export default function CreateBudgetForm({ onCancel, onSubmit, isLoading }: Crea
   const [newAmount, setNewAmount] = useState<number>(0)
 
   // Calculate totals
-  const totalExpenses = useMemo(
-    () => expenses.reduce((sum, exp) => sum + exp.amount, 0),
-    [expenses]
-  )
+  const totalExpenses = useMemo(() => expenses.reduce((sum, exp) => sum + exp.amount, 0), [expenses])
 
-  const leftToSpend = useMemo(
-    () => projectedIncome - totalExpenses,
-    [projectedIncome, totalExpenses]
-  )
+  const leftToSpend = useMemo(() => projectedIncome - totalExpenses, [projectedIncome, totalExpenses])
 
   function handleAddExpense() {
     if (!newCategory.trim()) return
@@ -58,9 +57,7 @@ export default function CreateBudgetForm({ onCancel, onSubmit, isLoading }: Crea
   }
 
   function handleUpdateAmount(id: string, amount: number) {
-    setExpenses(
-      expenses.map((exp) => (exp.id === id ? { ...exp, amount: Math.max(0, amount) } : exp))
-    )
+    setExpenses(expenses.map((exp) => (exp.id === id ? { ...exp, amount: Math.max(0, amount) } : exp)))
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -84,146 +81,145 @@ export default function CreateBudgetForm({ onCancel, onSubmit, isLoading }: Crea
     <Card className="create-budget-card">
       <form onSubmit={handleSubmit} className="create-budget-form">
         {/* Header Section */}
-        <Box className="form-section">
-          <Heading size="4" mb="4">Create New Budget</Heading>
-          
-          <Flex direction="column" gap="3">
-            <Box>
-              <Text as="label" size="2" weight="medium" mb="1" style={{ display: 'block' }}>
-                Budget Name
-              </Text>
-              <TextField.Root
+        <CardHeader>
+          <CardTitle>Create New Budget</CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="budget-name">Budget Name</Label>
+              <Input
+                id="budget-name"
                 placeholder="e.g., December 2024"
                 value={budgetName}
                 onChange={(e) => setBudgetName(e.target.value)}
               />
-            </Box>
+            </div>
 
-            <Box>
-              <Text as="label" size="2" weight="medium" mb="1" style={{ display: 'block' }}>
-                Projected Income
-              </Text>
-              <TextField.Root
+            <div className="space-y-2">
+              <Label htmlFor="projected-income">Projected Income</Label>
+              <Input
+                id="projected-income"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
                 value={projectedIncome || ''}
                 onChange={(e) => setProjectedIncome(Number(e.target.value))}
               />
-            </Box>
+            </div>
 
-            <Box>
-              <Text as="label" size="2" weight="medium" mb="1" style={{ display: 'block' }}>
-                Checking Account Balance (Optional)
-              </Text>
-              <TextField.Root
+            <div className="space-y-2">
+              <Label htmlFor="starting-balance">Checking Account Balance (Optional)</Label>
+              <Input
+                id="starting-balance"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
                 value={startingBalance || ''}
                 onChange={(e) => setStartingBalance(Number(e.target.value))}
               />
-              <Text size="1" color="gray" mt="1" style={{ display: 'block' }}>
+              <p className="text-xs text-muted-foreground">
                 Creates a checking account for reconciliation. This is NOT counted as income.
-              </Text>
-            </Box>
-          </Flex>
-        </Box>
+              </p>
+            </div>
+          </div>
 
-        <Separator size="4" />
+          <Separator className="my-4" />
 
-        {/* Expenses Section */}
-        <Box className="form-section expenses-section">
-          <Flex justify="between" align="center" mb="3">
-            <Heading size="3">Expenses</Heading>
-            <Text
-              size="2"
-              weight="medium"
-              color={leftToSpend < 0 ? 'red' : leftToSpend === 0 ? 'gray' : 'green'}
-            >
-              {formatCurrency(leftToSpend)} left
-            </Text>
-          </Flex>
+          {/* Expenses Section */}
+          <div className="expenses-section space-y-3">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Expenses</h3>
+              <span
+                className={cn(
+                  'text-sm font-medium',
+                  leftToSpend < 0
+                    ? 'text-red-600'
+                    : leftToSpend === 0
+                      ? 'text-muted-foreground'
+                      : 'text-green-600'
+                )}
+              >
+                {formatCurrency(leftToSpend)} left
+              </span>
+            </div>
 
-          {/* Add Expense Row */}
-          <Flex gap="2" align="end" mb="3">
-            <Box style={{ flex: 1 }}>
-              <Text as="label" size="1" color="gray" mb="1" style={{ display: 'block' }}>
-                Category
-              </Text>
-              <TextField.Root
-                size="2"
-                placeholder="e.g., Groceries"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-            </Box>
-            <Box style={{ width: 100 }}>
-              <Text as="label" size="1" color="gray" mb="1" style={{ display: 'block' }}>
-                Amount
-              </Text>
-              <TextField.Root
-                size="2"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={newAmount || ''}
-                onChange={(e) => setNewAmount(Number(e.target.value))}
-                onKeyDown={handleKeyDown}
-              />
-            </Box>
-            <Button type="button" size="2" onClick={handleAddExpense} disabled={!newCategory.trim()}>
-              Add
-            </Button>
-          </Flex>
+            {/* Add Expense Row */}
+            <div className="flex gap-2 items-end">
+              <div className="flex-1 space-y-1">
+                <Label htmlFor="new-category" className="text-xs text-muted-foreground">
+                  Category
+                </Label>
+                <Input
+                  id="new-category"
+                  placeholder="e.g., Groceries"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+              <div className="w-24 space-y-1">
+                <Label htmlFor="new-amount" className="text-xs text-muted-foreground">
+                  Amount
+                </Label>
+                <Input
+                  id="new-amount"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={newAmount || ''}
+                  onChange={(e) => setNewAmount(Number(e.target.value))}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+              <Button type="button" onClick={handleAddExpense} disabled={!newCategory.trim()}>
+                Add
+              </Button>
+            </div>
 
-          {/* Expense List */}
-          <Box className="expense-list">
-            {expenses.length === 0 ? (
-              <Text size="2" color="gray" style={{ textAlign: 'center', padding: '1rem' }}>
-                No expenses added yet
-              </Text>
-            ) : (
-              expenses.map((expense) => (
-                <Flex key={expense.id} align="center" gap="2" className="expense-row">
-                  <Text size="2" style={{ flex: 1 }}>{expense.category}</Text>
-                  <TextField.Root
-                    size="1"
-                    type="number"
-                    step="0.01"
-                    value={expense.amount || ''}
-                    onChange={(e) => handleUpdateAmount(expense.id, Number(e.target.value))}
-                    style={{ width: 80 }}
-                  />
-                  <IconButton
-                    type="button"
-                    size="1"
-                    variant="ghost"
-                    color="gray"
-                    onClick={() => handleDeleteExpense(expense.id)}
-                  >
-                    <Trash2Icon size={14} />
-                  </IconButton>
-                </Flex>
-              ))
-            )}
-          </Box>
-        </Box>
+            {/* Expense List */}
+            <div className="expense-list space-y-1">
+              {expenses.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">No expenses added yet</p>
+              ) : (
+                expenses.map((expense) => (
+                  <div key={expense.id} className="expense-row flex items-center gap-2 p-2 rounded-md hover:bg-accent">
+                    <span className="flex-1 text-sm">{expense.category}</span>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={expense.amount || ''}
+                      onChange={(e) => handleUpdateAmount(expense.id, Number(e.target.value))}
+                      className="w-20 h-8"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleDeleteExpense(expense.id)}
+                    >
+                      <Trash2Icon size={14} />
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </CardContent>
 
         {/* Footer */}
-        <Box className="form-footer">
-          <Flex gap="2" justify="end">
-            {onCancel && (
-              <Button type="button" variant="soft" color="gray" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            <Button type="submit" disabled={!budgetName.trim() || projectedIncome <= 0 || isLoading}>
-              {isLoading ? 'Creating...' : 'Create Budget'}
+        <CardFooter className="flex gap-2 justify-end">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
             </Button>
-          </Flex>
-        </Box>
+          )}
+          <Button type="submit" disabled={!budgetName.trim() || projectedIncome <= 0 || isLoading}>
+            {isLoading ? 'Creating...' : 'Create Budget'}
+          </Button>
+        </CardFooter>
       </form>
     </Card>
   )

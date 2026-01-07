@@ -1,29 +1,49 @@
-import {Flex, Select, Text} from '@radix-ui/themes'
+import { Label } from '~/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 type SelectInputProps = {
   label: string
   name: string
   options: { label: string; value: string }[]
-  value?: string | undefined
+  value?: string
   disabled?: boolean
+  onChange?: (value: string) => void
+  error?: string
 }
 
-export default function SelectInput({ options, label, name, value, disabled }: SelectInputProps) {
+export default function SelectInput({
+  options,
+  label,
+  name,
+  value,
+  disabled,
+  onChange,
+  error,
+}: SelectInputProps) {
   return (
-    <Flex direction='column'>
-      <label htmlFor={name}>
-        <Text as='label' weight='bold'>
-          {label}
-        </Text>
-      </label>
-        <Select.Root name={name} defaultValue={value}>
-          <Select.Trigger disabled={disabled} />
-          <Select.Content>
-            {options.map((option) => (
-              <Select.Item id={option.value} value={option.value}>{option.label}</Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
-    </Flex>
+    <div className="space-y-2">
+      <Label htmlFor={name}>{label}</Label>
+      <Select name={name} value={value} onValueChange={onChange} disabled={disabled}>
+        <SelectTrigger id={name} className={error ? 'border-destructive' : ''}>
+          <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      {/* Hidden input for form submission */}
+      <input type="hidden" name={name} value={value || ''} />
+    </div>
   )
 }

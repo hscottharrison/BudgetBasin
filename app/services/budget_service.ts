@@ -7,6 +7,62 @@ import BankAccount, { BankAccountDTO } from '#models/bank_account'
 import Balance from '#models/balance'
 
 export default class BudgetService {
+  // ==================== CHECKING ACCOUNT ====================
+
+  /**
+   * Get the user's checking account with current balance
+   */
+  async getCheckingAccountForUser(userId: number): Promise<BankAccountDTO | null> {
+    const account = await BankAccount.query()
+      .where('userId', userId)
+      .where('accountType', 'checking')
+      .preload('balances', (query) => {
+        query.orderBy('createdAt', 'desc').limit(1)
+      })
+      .first()
+
+    if (!account) return null
+
+    return {
+      id: account.id,
+      name: account.name,
+      accountType: account.accountType,
+      balances: account.balances.map((b) => ({
+        id: b.id,
+        amount: Number(b.amount),
+        bankAccountId: b.bankAccountId,
+        createdAt: b.createdAt?.toISO() ?? null,
+      })),
+      createdAt: account.createdAt?.toISO() ?? null,
+    }
+  }
+
+  /**
+   * Update the checking account balance by adding/subtracting an amount
+   * @param userId - The user's ID
+   * @param delta - Positive for income, negative for expense
+   */
+  async updateCheckingAccountBalance(userId: number, delta: number): Promise<number | null> {
+    const account = await BankAccount.query()
+      .where('userId', userId)
+      .where('accountType', 'checking')
+      .preload('balances', (query) => {
+        query.orderBy('createdAt', 'desc').limit(1)
+      })
+      .first()
+
+    if (!account || account.balances.length === 0) return null
+
+    const currentBalance = account.balances[0]
+    const newAmount = Number(currentBalance.amount) + delta
+
+    // Update the existing balance record
+    currentBalance.amount = newAmount
+    await currentBalance.save()
+
+    return newAmount
+  }
+
   // ==================== CATEGORIES ====================
 
   async getCategoriesForUser(userId: number): Promise<BudgetCategoryDTO[]> {
@@ -168,7 +224,14 @@ export default class BudgetService {
 
   // ==================== ENTRIES ====================
 
-  async createEntry(dto: CreateBudgetEntryDTO): Promise<BudgetEntryDTO> {
+  /**
+   * Create a budget entry and update the checking account balance accordingly
+   * Income entries increase the balance, expense entries decrease it
+   */
+  async createEntry(
+    dto: CreateBudgetEntryDTO,
+    userId?: number
+  ): Promise<{ entry: BudgetEntryDTO; newBalance: number | null }> {
     const entry = await BudgetEntry.create({
       budgetPeriodId: dto.budgetPeriodId,
       budgetCategoryId: dto.budgetCategoryId,
@@ -178,19 +241,29 @@ export default class BudgetService {
 
     await entry.load('category')
 
+    // Update checking account balance based on category type
+    let newBalance: number | null = null
+    if (userId) {
+      const delta = entry.category.type === 'income' ? dto.amount : -dto.amount
+      newBalance = await this.updateCheckingAccountBalance(userId, delta)
+    }
+
     return {
-      id: entry.id,
-      budgetPeriodId: entry.budgetPeriodId,
-      budgetCategoryId: entry.budgetCategoryId,
-      category: {
-        id: entry.category.id,
-        name: entry.category.name,
-        type: entry.category.type,
-        sortOrder: entry.category.sortOrder,
+      entry: {
+        id: entry.id,
+        budgetPeriodId: entry.budgetPeriodId,
+        budgetCategoryId: entry.budgetCategoryId,
+        category: {
+          id: entry.category.id,
+          name: entry.category.name,
+          type: entry.category.type,
+          sortOrder: entry.category.sortOrder,
+        },
+        amount: Number(entry.amount),
+        note: entry.note,
+        createdAt: entry.createdAt?.toISO() ?? null,
       },
-      amount: Number(entry.amount),
-      note: entry.note,
-      createdAt: entry.createdAt?.toISO() ?? null,
+      newBalance,
     }
   }
 

@@ -1,17 +1,19 @@
-import { Button, Spinner } from '@radix-ui/themes';
+import { Button } from '~/components/ui/button'
+import { Spinner } from '~/components/ui/spinner'
 import { useLoading } from '~/context/LoadingContext'
+import type { ButtonProps } from '~/components/ui/button'
 
-export default function LoadingButton({type, label, cb}: any) {
-  const { isLoading } = useLoading();
+interface LoadingButtonProps extends ButtonProps {
+  label: string
+  cb?: () => void
+}
+
+export default function LoadingButton({ label, cb, ...props }: LoadingButtonProps) {
+  const { isLoading } = useLoading()
 
   return (
-    <Button
-      type={type}
-      onClick={cb}>
-      {isLoading ?
-        <Spinner size='2'/> :
-        label
-      }
+    <Button onClick={cb} disabled={isLoading} {...props}>
+      {isLoading ? <Spinner size="sm" /> : label}
     </Button>
   )
 }

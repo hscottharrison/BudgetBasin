@@ -1,4 +1,3 @@
-import { Flex, ScrollArea } from '@radix-ui/themes'
 import FormModal, { FormModalProps } from '~/components/CommonComponents/FormModal/formModal'
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 
@@ -112,8 +111,8 @@ export default function BudgetActionsBar({ onAddEntry, onAddCategory }: BudgetAc
   }
 
   return (
-    <ScrollArea type="auto" scrollbars="horizontal" style={{ width: '100%', paddingBottom: '1rem' }}>
-      <Flex gap="2">
+    <div className="overflow-x-auto w-full pb-4">
+      <div className="flex gap-2">
         {hasSetup && (
           <>
             <FormModal<CreateBudgetEntryDTO> {...addIncomeConfig} />
@@ -122,10 +121,7 @@ export default function BudgetActionsBar({ onAddEntry, onAddCategory }: BudgetAc
         )}
         <FormModal<CreateBudgetCategoryDTO> {...addIncomeCategoryConfig} />
         <FormModal<CreateBudgetCategoryDTO> {...addExpenseCategoryConfig} />
-      </Flex>
-    </ScrollArea>
+      </div>
+    </div>
   )
 }
-
-
-

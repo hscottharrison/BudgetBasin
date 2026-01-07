@@ -1,47 +1,46 @@
-import {Button, Dialog, Flex} from "@radix-ui/themes";
-import {PlusIcon} from "@radix-ui/react-icons";
-import Input from "~/components/CommonComponents/Input/input";
-import {FormEvent} from "react";
+import { Button } from '~/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog'
+import { Plus } from 'lucide-react'
+import Input from '~/components/CommonComponents/Input/input'
+import { FormEvent } from 'react'
 
 type AddAccountProps = {
-  onSubmit: (e: FormEvent) => Promise<void>;
+  onSubmit: (e: FormEvent) => Promise<void>
 }
 
 export default function AddAccount({ onSubmit }: AddAccountProps) {
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <Button radius='full'>
-          <PlusIcon />
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="rounded-full">
+          <Plus className="h-4 w-4" />
           Add Account
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Title>Add New Account</Dialog.Title>
-        <Dialog.Description>Add a new savings account to your portfolio</Dialog.Description>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Add New Account</DialogTitle>
+        <DialogDescription>Add a new savings account to your portfolio</DialogDescription>
         <form onSubmit={onSubmit}>
-          <Flex direction='column' gap='4'>
-            <Input
-              name='accountName'
-              label="Account Name"/>
-            <Input
-              name='accountDescription'
-              label="Account Description"/>
-            <Input
-              name='initialBalance'
-              type='number'
-              label="Initial Balance"/>
-            <Flex gap='4' justify='end'>
-              <Dialog.Close>
-                <Button type='button' variant='surface'>Cancel</Button>
-              </Dialog.Close>
-              <Dialog.Close>
-                <Button type='submit'>Create</Button>
-              </Dialog.Close>
-            </Flex>
-          </Flex>
+          <div className="flex flex-col gap-4">
+            <Input name="accountName" id="accountName" label="Account Name" />
+            <Input name="accountDescription" id="accountDescription" label="Account Description" />
+            <Input name="initialBalance" id="initialBalance" type="number" label="Initial Balance" />
+            <DialogFooter>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit">Create</Button>
+            </DialogFooter>
+          </div>
         </form>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   )
 }

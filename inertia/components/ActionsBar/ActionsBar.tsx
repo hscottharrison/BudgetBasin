@@ -1,44 +1,41 @@
-import {Flex, ScrollArea} from "@radix-ui/themes";
+import AddAccount from '~/components/AddAccount/addAccount'
+import FormModal, { FormModalProps } from '~/components/CommonComponents/FormModal/formModal'
 
-import AddAccount from "~/components/AddAccount/addAccount";
-import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
+import { createBucket } from '~/services/bucket_service'
+import { createTransaction } from '~/services/transaction_service'
+import { createAccount } from '~/services/account_service'
 
-import {createBucket} from "~/services/bucket_service";
-import {createTransaction} from "~/services/transaction_service";
-import {createAccount} from "~/services/account_service";
-
-import {BankAccountDTO} from "#models/bank_account";
-import {BucketDTO, CreateBucketDTO} from "#models/bucket";
-import {TransactionDTO, CreateTransactionDTO} from "#models/transaction";
-import {createAllocationConfig} from "~/services/modal_config_service";
-import {useUserHome} from "~/context/UserHomeContext";
+import { BankAccountDTO } from '#models/bank_account'
+import { BucketDTO, CreateBucketDTO } from '#models/bucket'
+import { TransactionDTO, CreateTransactionDTO } from '#models/transaction'
+import { createAllocationConfig } from '~/services/modal_config_service'
+import { useUserHome } from '~/context/UserHomeContext'
 
 export default function ActionsBar() {
-
-  const {updateAccounts, addBucket, updateTransactionsForBucket, buckets} = useUserHome();
- return (
-   <ScrollArea type='auto' scrollbars='horizontal' style={{ width: '100%', paddingBottom: '1rem' }}>
-     <Flex gap='2'>
-       <AddAccount onSubmit={addAccount} />
-       <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
-       <FormModal<CreateTransactionDTO> {...createAllocationConfig(addTransaction, buckets)} />
-     </Flex>
-   </ScrollArea>
- )
+  const { updateAccounts, addBucket, updateTransactionsForBucket, buckets } = useUserHome()
+  return (
+    <div className="overflow-x-auto w-full pb-4">
+      <div className="flex gap-2">
+        <AddAccount onSubmit={addAccount} />
+        <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
+        <FormModal<CreateTransactionDTO> {...createAllocationConfig(addTransaction, buckets)} />
+      </div>
+    </div>
+  )
   async function addAccount(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
 
-    const accountName = document.getElementById("accountName") as HTMLInputElement;
-    const accountDescription = document.getElementById("accountDescription") as HTMLInputElement;
-    const initialBalance = document.getElementById("initialBalance") as HTMLInputElement;
+    const accountName = document.getElementById('accountName') as HTMLInputElement
+    const accountDescription = document.getElementById('accountDescription') as HTMLInputElement
+    const initialBalance = document.getElementById('initialBalance') as HTMLInputElement
 
     const payload = {
       accountName: accountName.value,
       accountDescription: accountDescription.value,
       initialBalance: initialBalance.value,
     }
-    const response: BankAccountDTO[] = await createAccount(payload);
-    updateAccounts(response);
+    const response: BankAccountDTO[] = await createAccount(payload)
+    updateAccounts(response)
   }
 
   async function add(payload: CreateBucketDTO) {
@@ -71,9 +68,9 @@ export default function ActionsBar() {
           name: 'goalAmount',
           label: 'Goal Amount',
           type: 'number',
-          step: '0.01'
-        }
-      ]
+          step: '0.01',
+        },
+      ],
     }
   }
 }

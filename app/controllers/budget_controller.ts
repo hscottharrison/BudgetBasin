@@ -95,7 +95,7 @@ export default class BudgetController {
 
   /**
    * POST /api/budget/entries
-   * Create a new budget entry
+   * Create a new budget entry and update checking account balance
    */
   async createEntry({ request, auth, response }: HttpContext) {
     const userId = auth.user?.id
@@ -111,13 +111,16 @@ export default class BudgetController {
     ])
 
     try {
-      const entry = await this.budgetService.createEntry({
-        budgetPeriodId,
-        budgetCategoryId,
-        amount: Number(amount),
-        note,
-      })
-      return response.created(entry)
+      const result = await this.budgetService.createEntry(
+        {
+          budgetPeriodId,
+          budgetCategoryId,
+          amount: Number(amount),
+          note,
+        },
+        userId
+      )
+      return response.created(result)
     } catch (error) {
       console.error('Create entry error:', error)
       return response.badRequest({ error: 'Failed to create entry' })

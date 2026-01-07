@@ -1,88 +1,83 @@
-import { Accordion } from 'radix-ui'
-import {ChevronDownIcon, Flex, ScrollArea, Table} from '@radix-ui/themes'
-import {Pencil1Icon} from "@radix-ui/react-icons";
-import {DateTime} from "luxon";
+import { Pencil } from 'lucide-react'
+import { DateTime } from 'luxon'
 
-import ConfirmationModal from "~/components/CommonComponents/ConfirmationModal/confirmationModal";
-import FormModal, {FormModalProps} from "~/components/CommonComponents/FormModal/formModal";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table'
+import ConfirmationModal from '~/components/CommonComponents/ConfirmationModal/confirmationModal'
+import FormModal, { FormModalProps } from '~/components/CommonComponents/FormModal/formModal'
 
-import {createBalance} from "~/services/balance_service";
-import {formatCurrency, getLatestBalance} from "~/services/utils_service";
-import {deleteAccount} from "~/services/account_service";
+import { createBalance } from '~/services/balance_service'
+import { formatCurrency, getLatestBalance } from '~/services/utils_service'
+import { deleteAccount } from '~/services/account_service'
 
-import {BalanceDTO, CreateBalanceDTO} from "#models/balance";
+import { BalanceDTO, CreateBalanceDTO } from '#models/balance'
 
 import './style.css'
-import {useUserHome} from "~/context/UserHomeContext";
+import { useUserHome } from '~/context/UserHomeContext'
 
 export default function AccountsTable() {
-  const { accounts, updateAccounts, updateAccountBalance } = useUserHome();
+  const { accounts, updateAccounts, updateAccountBalance } = useUserHome()
 
   return (
-    <Accordion.Root
-      className='accordion-root'
-      type='single'
-      collapsible>
-      <Accordion.Item value='item-1'>
-        <Accordion.Trigger className='accordion-trigger'>
-            Your Accounts ({accounts.length})
-            <ChevronDownIcon className="AccordionChevron" aria-hidden />
-        </Accordion.Trigger>
-        <Accordion.Content>
-          <ScrollArea type='auto' style={{ width: '100%'}}>
-            <Table.Root>
-              <Table.Header>
-                <Table.Row>
-                  <Table.ColumnHeaderCell>Account Name</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Balance</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Last Updated</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Actions</Table.ColumnHeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
+    <Accordion type="single" collapsible className="accordion-root">
+      <AccordionItem value="item-1">
+        <AccordionTrigger className="accordion-trigger">
+          Your Accounts ({accounts.length})
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="overflow-x-auto w-full">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Account Name</TableHead>
+                  <TableHead>Balance</TableHead>
+                  <TableHead>Last Updated</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {accounts.map((account) => {
                   const latestBalance = getLatestBalance(account.balances)
                   return (
-                  <Table.Row key={account.id}>
-                    <Table.RowHeaderCell className='no-wrap-cell'>
-                      <Flex align='center'>
-                        {account.name}
-                      </Flex>
-                    </Table.RowHeaderCell>
-                    <Table.Cell className='no-wrap-cell'>{formatCurrency(latestBalance?.amount ?? 0)}</Table.Cell>
-                    <Table.Cell className='no-wrap-cell'>
-                      {latestBalance?.createdAt
-                      ? DateTime.fromISO(latestBalance.createdAt).toFormat('yyyy-MM-dd HH:mm')
-                      : ''}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Flex align='center' justify='start' gap='4'>
-                        <FormModal {...getEditBalanceConfig(account.id)} />
-                        {/*<EditBalance*/}
-                        {/*  metadata={account}*/}
-                        {/*  onSubmit={onEditBalance} />*/}
-                        <ConfirmationModal
-                          title='Delete Account'
-                          description='This account and all balance/allocation information will be permanently deleted'
-                          onConfirm={() => onDeleteConfirm(account.id)}/>
-                      </Flex>
-                    </Table.Cell>
-                  </Table.Row>
-                )})}
-              </Table.Body>
-            </Table.Root>
-          </ScrollArea>
-        </Accordion.Content>
-      </Accordion.Item>
-    </Accordion.Root>
+                    <TableRow key={account.id}>
+                      <TableCell className="no-wrap-cell">
+                        <div className="flex items-center">{account.name}</div>
+                      </TableCell>
+                      <TableCell className="no-wrap-cell">
+                        {formatCurrency(latestBalance?.amount ?? 0)}
+                      </TableCell>
+                      <TableCell className="no-wrap-cell">
+                        {latestBalance?.createdAt
+                          ? DateTime.fromISO(latestBalance.createdAt).toFormat('yyyy-MM-dd HH:mm')
+                          : ''}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-start gap-4">
+                          <FormModal {...getEditBalanceConfig(account.id)} />
+                          <ConfirmationModal
+                            title="Delete Account"
+                            description="This account and all balance/allocation information will be permanently deleted"
+                            onConfirm={() => onDeleteConfirm(account.id)}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 
-  async function onDeleteConfirm(id: number){
-    const accounts = await deleteAccount(id);
+  async function onDeleteConfirm(id: number) {
+    const accounts = await deleteAccount(id)
     updateAccounts(accounts)
   }
 
-  async function onEditBalance(payload: CreateBalanceDTO){
+  async function onEditBalance(payload: CreateBalanceDTO) {
     const response: BalanceDTO = await createBalance(payload)
     updateAccountBalance(response)
   }
@@ -91,22 +86,22 @@ export default function AccountsTable() {
     return {
       title: 'Edit Balance',
       description: 'Update the balance of your account',
-      actionLabelIcon: <Pencil1Icon />,
+      actionLabelIcon: <Pencil className="h-4 w-4" />,
       submitButtonLabel: 'Update',
       onSubmit: onEditBalance,
       formElements: [
         {
           name: 'bankAccountId',
           type: 'hidden',
-          value: `${id}`
+          value: `${id}`,
         },
         {
           name: 'amount',
           label: 'Updated Balance',
           type: 'number',
-          step: '0.01'
-        }
-      ]
+          step: '0.01',
+        },
+      ],
     }
   }
 }

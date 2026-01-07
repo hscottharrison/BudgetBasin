@@ -47,6 +47,7 @@ export default class ViewsController {
     const categories = await this.budgetService.getCategoriesForUser(userId)
     const template = await this.budgetService.getActiveTemplateForUser(userId)
     const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
+    const checkingAccount = await this.budgetService.getCheckingAccountForUser(userId)
 
     return inertia.render('MonthlyBudget/monthlyBudget', {
       user: {
@@ -56,6 +57,7 @@ export default class ViewsController {
       categories,
       template,
       currentPeriod,
+      checkingAccount,
     })
   }
 }

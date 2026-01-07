@@ -108,12 +108,17 @@ export async function createBudgetPeriod(): Promise<BudgetPeriodDTO> {
   return res.json()
 }
 
+export interface CreateEntryResponse {
+  entry: BudgetEntryDTO
+  newBalance: number | null
+}
+
 /**
- * Create a new budget entry
+ * Create a new budget entry and update checking account balance
  */
 export async function createBudgetEntry(
   payload: CreateEntryPayload
-): Promise<BudgetEntryDTO> {
+): Promise<CreateEntryResponse> {
   const res = await fetch('/api/budget/entries', {
     method: 'POST',
     headers: {
