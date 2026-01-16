@@ -26,7 +26,7 @@ export default class ViewsController {
   }
 
   async userHome({ inertia, auth }: HttpContext) {
-    const userAccounts = await this.accountService.GetAllAccountsForUser(auth?.user?.id ?? 0)
+    const userAccounts = await this.accountService.GetSavingsAccountsForUser(auth?.user?.id ?? 0)
     const buckets = await this.bucketsService.GetAllBucketsForUser(auth?.user?.id ?? 0)
     const transactionTypes = await this.enumService.GetTransactionTypes()
     const dto = {

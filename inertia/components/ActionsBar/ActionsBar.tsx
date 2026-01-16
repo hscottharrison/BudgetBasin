@@ -13,15 +13,15 @@ import { useUserHome } from '~/context/UserHomeContext'
 
 export default function ActionsBar() {
   const { updateAccounts, addBucket, updateTransactionsForBucket, buckets } = useUserHome()
+
   return (
-    <div className="overflow-x-auto w-full pb-4">
-      <div className="flex gap-2">
-        <AddAccount onSubmit={addAccount} />
-        <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
-        <FormModal<CreateTransactionDTO> {...createAllocationConfig(addTransaction, buckets)} />
-      </div>
+    <div className="flex gap-2 flex-wrap">
+      <AddAccount onSubmit={addAccount} />
+      <FormModal<CreateBucketDTO> {...getCreateBucketConfig()} />
+      <FormModal<CreateTransactionDTO> {...createAllocationConfig(addTransaction, buckets)} />
     </div>
   )
+
   async function addAccount(e: React.FormEvent) {
     e.preventDefault()
 

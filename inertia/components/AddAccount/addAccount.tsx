@@ -19,7 +19,7 @@ export default function AddAccount({ onSubmit }: AddAccountProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="rounded-full">
+        <Button variant="outline" size="sm">
           <Plus className="h-4 w-4" />
           Add Account
         </Button>

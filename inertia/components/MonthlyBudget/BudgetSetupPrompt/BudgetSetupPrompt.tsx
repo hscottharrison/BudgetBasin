@@ -1,8 +1,6 @@
 import { Button } from '~/components/ui/button'
-import { Card, CardContent } from '~/components/ui/card'
-import { CalendarIcon, PlusIcon } from 'lucide-react'
+import { Calendar, Plus, Check } from 'lucide-react'
 import { cn } from '~/lib/utils'
-import './style.css'
 
 interface BudgetSetupPromptProps {
   hasCategories: boolean
@@ -19,34 +17,33 @@ export default function BudgetSetupPrompt({
   onCreatePeriod,
   setShowCreateBudgetForm,
 }: BudgetSetupPromptProps) {
-  // User hasn't set up anything yet
   if (!hasCategories || !hasTemplate) {
     return (
-      <Card className="budget-setup-card">
-        <CardContent className="py-12">
-          <div className="flex flex-col items-center gap-4">
-            <div className="setup-icon">
-              <CalendarIcon size={48} strokeWidth={1.5} />
+      <div className="border border-border bg-card">
+        <div className="py-12 px-6">
+          <div className="flex flex-col items-center gap-6 max-w-md mx-auto">
+            <div className="w-16 h-16 border-2 border-muted-foreground flex items-center justify-center">
+              <Calendar size={32} strokeWidth={1} className="text-muted-foreground" />
             </div>
+            
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Let's Set Up Your Budget!</h2>
-              <p className="text-sm text-muted-foreground max-w-md">
-                Create income and expense categories, set your monthly targets, and start tracking
-                your spending.
+              <h2 className="text-xl font-semibold mb-2">Set Up Your Budget</h2>
+              <p className="text-sm text-muted-foreground">
+                Create categories, set targets, and start tracking your spending.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 mt-2">
+            <div className="w-full space-y-2">
               <SetupStep
                 number={1}
                 title="Add Categories"
-                description="Create income sources and expense categories"
+                description="Income sources and expense categories"
                 completed={hasCategories}
               />
               <SetupStep
                 number={2}
                 title="Set Targets"
-                description="Define your expected income and budget limits"
+                description="Expected income and budget limits"
                 completed={hasTemplate}
               />
               <SetupStep
@@ -57,44 +54,43 @@ export default function BudgetSetupPrompt({
               />
             </div>
 
-            <Button size="lg" className="mt-4" onClick={() => setShowCreateBudgetForm(true)}>
-              <PlusIcon size={18} />
+            <Button onClick={() => setShowCreateBudgetForm(true)} className="rounded-none">
+              <Plus size={16} />
               Get Started
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
-  // User has categories and template, but no active period
   if (!hasPeriod) {
     const now = new Date()
     const monthName = now.toLocaleString('default', { month: 'long' })
     const year = now.getFullYear()
 
     return (
-      <Card className="budget-setup-card">
-        <CardContent className="py-12">
-          <div className="flex flex-col items-center gap-4">
-            <div className="setup-icon ready">
-              <CalendarIcon size={48} strokeWidth={1.5} />
+      <div className="border border-border bg-card">
+        <div className="py-12 px-6">
+          <div className="flex flex-col items-center gap-6 max-w-md mx-auto">
+            <div className="w-16 h-16 border-2 border-green-600 flex items-center justify-center">
+              <Calendar size={32} strokeWidth={1} className="text-green-600" />
             </div>
+            
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">Ready to Start {monthName}?</h2>
-              <p className="text-sm text-muted-foreground max-w-md">
-                Your budget template is set up. Start a new period to begin tracking your income
-                and expenses for {monthName} {year}.
+              <h2 className="text-xl font-semibold mb-2">Ready for {monthName}?</h2>
+              <p className="text-sm text-muted-foreground">
+                Your template is ready. Start tracking for {monthName} {year}.
               </p>
             </div>
 
-            <Button size="lg" className="mt-4" onClick={onCreatePeriod}>
-              <PlusIcon size={18} />
+            <Button onClick={onCreatePeriod} className="rounded-none">
+              <Plus size={16} />
               Start {monthName} Budget
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
@@ -110,11 +106,24 @@ interface SetupStepProps {
 
 function SetupStep({ number, title, description, completed }: SetupStepProps) {
   return (
-    <div className={cn('setup-step flex items-start gap-3', completed && 'completed')}>
-      <div className="step-number">{completed ? '✓' : number}</div>
-      <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
+    <div className={cn(
+      'flex items-center gap-3 p-3 border border-border',
+      completed ? 'bg-green-50 border-green-200' : 'bg-background'
+    )}>
+      <div className={cn(
+        'w-6 h-6 flex items-center justify-center text-xs font-bold border',
+        completed 
+          ? 'border-green-600 bg-green-600 text-white' 
+          : 'border-muted-foreground text-muted-foreground'
+      )}>
+        {completed ? <Check size={14} /> : number}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={cn(
+          'text-sm font-medium',
+          completed && 'text-green-700'
+        )}>{title}</p>
+        <p className="text-xs text-muted-foreground truncate">{description}</p>
       </div>
     </div>
   )

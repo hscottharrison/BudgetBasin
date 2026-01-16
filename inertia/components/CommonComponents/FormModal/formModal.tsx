@@ -67,7 +67,7 @@ export default function FormModal<T extends Record<string, unknown>>({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-full">
+        <Button variant="outline" size="sm">
           {actionLabelIcon ?? <PlusIcon className="h-4 w-4" />}
           {actionLabel}
         </Button>

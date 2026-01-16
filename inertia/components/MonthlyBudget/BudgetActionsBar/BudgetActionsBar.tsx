@@ -111,17 +111,15 @@ export default function BudgetActionsBar({ onAddEntry, onAddCategory }: BudgetAc
   }
 
   return (
-    <div className="overflow-x-auto w-full pb-4">
-      <div className="flex gap-2">
-        {hasSetup && (
-          <>
-            <FormModal<CreateBudgetEntryDTO> {...addIncomeConfig} />
-            <FormModal<CreateBudgetEntryDTO> {...addExpenseConfig} />
-          </>
-        )}
-        <FormModal<CreateBudgetCategoryDTO> {...addIncomeCategoryConfig} />
-        <FormModal<CreateBudgetCategoryDTO> {...addExpenseCategoryConfig} />
-      </div>
+    <div className="flex gap-2 flex-wrap">
+      {hasSetup && (
+        <>
+          <FormModal<CreateBudgetEntryDTO> {...addIncomeConfig} />
+          <FormModal<CreateBudgetEntryDTO> {...addExpenseConfig} />
+        </>
+      )}
+      <FormModal<CreateBudgetCategoryDTO> {...addIncomeCategoryConfig} />
+      <FormModal<CreateBudgetCategoryDTO> {...addExpenseCategoryConfig} />
     </div>
   )
 }

@@ -1,22 +1,11 @@
-import { Card, CardContent } from '~/components/ui/card'
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { formatCurrency } from '~/services/utils_service'
 import { cn } from '~/lib/utils'
-import './style.css'
+import { Calendar, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 
 const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
 export default function BudgetSummaryCard() {
@@ -44,99 +33,115 @@ export default function BudgetSummaryCard() {
       : 0
 
   return (
-    <Card className="budget-summary-card">
-      <CardContent className="pt-6">
-        <div className="flex justify-between items-start flex-wrap gap-4">
-          {/* Period Header */}
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-2xl font-bold">{periodLabel}</h2>
-              {currentPeriod && (
-                <span
-                  className={cn(
-                    'px-2 py-1 rounded-full text-xs font-medium',
-                    currentPeriod.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  )}
-                >
-                  {currentPeriod.status}
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-muted-foreground">Your monthly budget overview</p>
+    <div className="border border-border bg-card">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-2">
+          <Calendar size={16} className="text-muted-foreground" />
+          <h2 className="text-base font-semibold">{periodLabel}</h2>
+          {currentPeriod && (
+            <span className={cn(
+              'px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider border',
+              currentPeriod.status === 'active'
+                ? 'border-green-600 text-green-600 bg-green-50'
+                : 'border-muted-foreground text-muted-foreground'
+            )}>
+              {currentPeriod.status}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+        {/* Income */}
+        <div className="p-4">
+          <div className="flex items-center gap-1 mb-1">
+            <ArrowUpRight size={12} className="text-green-600" />
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Income</p>
           </div>
-
-          {/* Summary Stats */}
-          <div className="flex gap-6 flex-wrap">
-            {/* Income */}
-            <div className="budget-stat">
-              <p className="text-xs text-muted-foreground">Income</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold text-green-600">
-                  {formatCurrency(totalActualIncome)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  / {formatCurrency(totalExpectedIncome)}
-                </span>
-              </div>
-              <div className="budget-progress-bar">
-                <div
-                  className="budget-progress-fill income"
-                  style={{ width: `${Math.min(incomeProgress, 100)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Expenses */}
-            <div className="budget-stat">
-              <p className="text-xs text-muted-foreground">Expenses</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold text-red-600">
-                  {formatCurrency(totalActualExpenses)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  / {formatCurrency(totalBudgetedExpenses)}
-                </span>
-              </div>
-              <div className="budget-progress-bar">
-                <div
-                  className="budget-progress-fill expense"
-                  style={{ width: `${Math.min(expenseProgress, 100)}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Remaining */}
-            <div className="budget-stat">
-              <p className="text-xs text-muted-foreground">Remaining</p>
-              <span
-                className={cn(
-                  'text-lg font-bold',
-                  remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'
-                )}
-              >
-                {formatCurrency(remainingBudget)}
-              </span>
-            </div>
-
-            {/* Checking Account Balance */}
-            {checkingAccount && (
-              <div className="budget-stat checking-balance">
-                <p className="text-xs text-muted-foreground">Checking Balance</p>
-                <span
-                  className={cn(
-                    'text-lg font-bold',
-                    checkingBalance >= 0 ? 'text-blue-600' : 'text-red-600'
-                  )}
-                >
-                  {formatCurrency(checkingBalance)}
-                </span>
-              </div>
-            )}
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-bold text-green-600 tabular-nums">
+              {formatCurrency(totalActualIncome)}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              / {formatCurrency(totalExpectedIncome)}
+            </span>
+          </div>
+          <div className="mt-2 h-1 bg-muted overflow-hidden">
+            <div
+              className="h-full bg-green-600 transition-all duration-300"
+              style={{ width: `${Math.min(incomeProgress, 100)}%` }}
+            />
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Expenses */}
+        <div className="p-4">
+          <div className="flex items-center gap-1 mb-1">
+            <ArrowDownRight size={12} className="text-red-600" />
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Spent</p>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-bold text-red-600 tabular-nums">
+              {formatCurrency(totalActualExpenses)}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              / {formatCurrency(totalBudgetedExpenses)}
+            </span>
+          </div>
+          <div className="mt-2 h-1 bg-muted overflow-hidden">
+            <div
+              className={cn(
+                "h-full transition-all duration-300",
+                expenseProgress > 100 ? "bg-red-600" : "bg-primary"
+              )}
+              style={{ width: `${Math.min(expenseProgress, 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Remaining */}
+        <div className="p-4">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Remaining</p>
+          <span
+            className={cn(
+              'text-lg font-bold tabular-nums',
+              remainingBudget >= 0 ? 'text-green-600' : 'text-red-600'
+            )}
+          >
+            {formatCurrency(remainingBudget)}
+          </span>
+        </div>
+
+        {/* Checking Balance */}
+        {checkingAccount ? (
+          <div className="p-4">
+            <div className="flex items-center gap-1 mb-1">
+              <Wallet size={12} className="text-muted-foreground" />
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Checking</p>
+            </div>
+            <span
+              className={cn(
+                'text-lg font-bold tabular-nums',
+                checkingBalance >= 0 ? 'text-foreground' : 'text-red-600'
+              )}
+            >
+              {formatCurrency(checkingBalance)}
+            </span>
+          </div>
+        ) : (
+          <div className="p-4">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Net</p>
+            <span className={cn(
+              'text-lg font-bold tabular-nums',
+              (totalActualIncome - totalActualExpenses) >= 0 ? 'text-foreground' : 'text-red-600'
+            )}>
+              {formatCurrency(totalActualIncome - totalActualExpenses)}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

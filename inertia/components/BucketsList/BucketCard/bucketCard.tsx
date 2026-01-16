@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Card, CardContent } from '~/components/ui/card'
 
 import BucketMenu from '~/components/BucketsList/BucketMenu/bucketMenu'
-import { ProgressCircle } from '~/components/TremorComponents/ProgressCircle/progressCircle'
-
 import { formatCurrency, sumTransactions } from '~/services/utils_service'
+import { cn } from '~/lib/utils'
 
 import { BucketDTO } from '#models/bucket'
 import { TransactionDTO } from '#models/transaction'
@@ -16,85 +14,74 @@ type BucketCardProps = {
 }
 
 export default function BucketCard({ bucket, onDeleteBucket, allocateFunds }: BucketCardProps) {
-  /**
-   * STATE
-   */
-  const [formattedAllocation, setFormattedAllocation] = useState<string>('')
-  const [formattedGoal, setFormattedGoal] = useState<string>('')
   const [progress, setProgress] = useState(0)
 
-  /**
-   * MEMOS
-   */
-  const transactionSum = useMemo(calculateTransactionsSums, [bucket])
-
-  const allocationPercentage = useMemo(calculateAllocationPercentage, [transactionSum])
-
-  /**
-   * EFFECTS
-   */
-  useEffect(formatNumbers, [transactionSum])
-
-  useEffect(animateProgress, [allocationPercentage])
-
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="ml-4">
-              <p className="text-sm font-bold">{bucket.name}</p>
-              <p className="text-xl font-bold mt-1">{formattedAllocation}</p>
-              <p className="text-sm mt-1">Goal: {formattedGoal}</p>
-            </div>
-          </div>
-          <div>
-            <div className="flex gap-2 items-center">
-              <ProgressCircle value={progress} className="mx-auto" radius={30} variant="success" />
-              <BucketMenu
-                bucket={bucket}
-                onDeleteConfirm={onDeleteConfirm}
-                allocateFunds={allocateFunds}
-              />
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+  const transactionSum = useMemo(() => sumTransactions(bucket.transactions), [bucket])
+  const allocationPercentage = useMemo(
+    () => bucket.goalAmount > 0 ? (transactionSum / bucket.goalAmount) * 100 : 0,
+    [transactionSum, bucket.goalAmount]
   )
+  const isComplete = allocationPercentage >= 100
 
-  // region MEMO METHODS
-  function calculateTransactionsSums() {
-    return sumTransactions(bucket.transactions)
-  }
-
-  function calculateAllocationPercentage() {
-    return (transactionSum / bucket.goalAmount) * 100
-  }
-  // endregion
-
-  // region EFFECT METHODS
-  function animateProgress() {
+  useEffect(() => {
     const timer = setInterval(() => {
-      setProgress((prevProgress) => {
-        if (prevProgress >= allocationPercentage) {
+      setProgress((prev) => {
+        if (prev >= allocationPercentage) {
           clearInterval(timer)
           return allocationPercentage
         }
-        return prevProgress + 10
+        return prev + 10
       })
-    }, 50) // Update every 500ms
+    }, 50)
+    return () => clearInterval(timer)
+  }, [allocationPercentage])
 
-    return () => {
-      clearInterval(timer) // Clear interval on component unmount
-    }
-  }
+  return (
+    <div className="border border-border bg-background p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold truncate">{bucket.name}</p>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className={cn(
+              "text-lg font-bold tabular-nums",
+              isComplete && "text-green-600"
+            )}>
+              {formatCurrency(transactionSum)}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              / {formatCurrency(bucket.goalAmount)}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="text-right">
+            <span className={cn(
+              "text-sm font-bold tabular-nums",
+              isComplete ? "text-green-600" : "text-muted-foreground"
+            )}>
+              {Math.min(Math.round(progress), 100)}%
+            </span>
+          </div>
+          <BucketMenu
+            bucket={bucket}
+            onDeleteConfirm={onDeleteConfirm}
+            allocateFunds={allocateFunds}
+          />
+        </div>
+      </div>
 
-  function formatNumbers() {
-    setFormattedAllocation(formatCurrency(transactionSum))
-    setFormattedGoal(formatCurrency(bucket.goalAmount))
-  }
-  // endregion
+      {/* Progress bar */}
+      <div className="mt-3 h-1 bg-muted overflow-hidden">
+        <div
+          className={cn(
+            "h-full transition-all duration-300",
+            isComplete ? "bg-green-600" : "bg-primary"
+          )}
+          style={{ width: `${Math.min(progress, 100)}%` }}
+        />
+      </div>
+    </div>
+  )
 
   async function onDeleteConfirm() {
     await onDeleteBucket(bucket.id)

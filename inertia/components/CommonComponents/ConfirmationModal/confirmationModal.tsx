@@ -36,7 +36,7 @@ export default function ConfirmationModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={buttonVariant}>
+        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
           <Trash2 className="h-4 w-4" />
           {buttonText}
         </Button>

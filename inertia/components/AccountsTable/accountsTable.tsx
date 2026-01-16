@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react'
+import { Pencil, Building2 } from 'lucide-react'
 import { DateTime } from 'luxon'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~/components/ui/accordion'
@@ -11,65 +11,69 @@ import { formatCurrency, getLatestBalance } from '~/services/utils_service'
 import { deleteAccount } from '~/services/account_service'
 
 import { BalanceDTO, CreateBalanceDTO } from '#models/balance'
-
-import './style.css'
 import { useUserHome } from '~/context/UserHomeContext'
 
 export default function AccountsTable() {
   const { accounts, updateAccounts, updateAccountBalance } = useUserHome()
 
   return (
-    <Accordion type="single" collapsible className="accordion-root">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="accordion-trigger">
-          Your Accounts ({accounts.length})
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="overflow-x-auto w-full">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Account Name</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Last Updated</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {accounts.map((account) => {
-                  const latestBalance = getLatestBalance(account.balances)
-                  return (
-                    <TableRow key={account.id}>
-                      <TableCell className="no-wrap-cell">
-                        <div className="flex items-center">{account.name}</div>
-                      </TableCell>
-                      <TableCell className="no-wrap-cell">
-                        {formatCurrency(latestBalance?.amount ?? 0)}
-                      </TableCell>
-                      <TableCell className="no-wrap-cell">
-                        {latestBalance?.createdAt
-                          ? DateTime.fromISO(latestBalance.createdAt).toFormat('yyyy-MM-dd HH:mm')
-                          : ''}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-start gap-4">
-                          <FormModal {...getEditBalanceConfig(account.id)} />
-                          <ConfirmationModal
-                            title="Delete Account"
-                            description="This account and all balance/allocation information will be permanently deleted"
-                            onConfirm={() => onDeleteConfirm(account.id)}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="border border-border bg-card">
+      <Accordion type="single" collapsible>
+        <AccordionItem value="accounts" className="border-none">
+          <AccordionTrigger className="px-4 py-3 hover:no-underline">
+            <div className="flex items-center gap-2">
+              <Building2 size={16} className="text-muted-foreground" />
+              <span className="text-sm font-semibold uppercase tracking-wide">Accounts</span>
+              <span className="text-xs text-muted-foreground">({accounts.length})</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="border-t border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-[10px] uppercase tracking-wider font-medium">Name</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider font-medium">Balance</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider font-medium">Updated</TableHead>
+                    <TableHead className="text-[10px] uppercase tracking-wider font-medium">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {accounts.map((account) => {
+                    const latestBalance = getLatestBalance(account.balances)
+                    return (
+                      <TableRow key={account.id}>
+                        <TableCell className="font-medium text-sm whitespace-nowrap">
+                          {account.name}
+                        </TableCell>
+                        <TableCell className="text-sm tabular-nums whitespace-nowrap">
+                          {formatCurrency(latestBalance?.amount ?? 0)}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {latestBalance?.createdAt
+                            ? DateTime.fromISO(latestBalance.createdAt).toFormat('MMM d, yyyy')
+                            : '-'}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <FormModal {...getEditBalanceConfig(account.id)} />
+                            <ConfirmationModal
+                              title="Delete Account"
+                              description="This account and all balance/allocation information will be permanently deleted"
+                              onConfirm={() => onDeleteConfirm(account.id)}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   )
 
   async function onDeleteConfirm(id: number) {

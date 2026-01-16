@@ -1,16 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { formatCurrency } from '~/services/utils_service'
 import { BudgetCategoryDTO } from '~/types/budget'
 import { cn } from '~/lib/utils'
-import './style.css'
 
 interface CategoryListProps {
   type: 'income' | 'expense'
   title: string
+  icon?: React.ReactNode
+  compact?: boolean
+  scrollable?: boolean
 }
 
-export default function CategoryList({ type, title }: CategoryListProps) {
+export default function CategoryList({ 
+  type, 
+  title, 
+  icon,
+  compact = false,
+  scrollable = false 
+}: CategoryListProps) {
   const { incomeCategories, expenseCategories, getCategoryActual, getCategoryTarget } =
     useMonthlyBudget()
 
@@ -19,26 +26,47 @@ export default function CategoryList({ type, title }: CategoryListProps) {
 
   if (categories.length === 0) {
     return (
-      <Card className="category-list-card">
-        <CardHeader>
-          <CardTitle className="text-lg">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className={cn(
+        "border border-border bg-card h-full flex flex-col",
+        scrollable && "overflow-hidden"
+      )}>
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+          {icon}
+          <h3 className="text-sm font-semibold uppercase tracking-wide">{title}</h3>
+        </div>
+        <div className="px-4 py-6 text-center">
           <p className="text-sm text-muted-foreground">
-            No {type} categories yet. Add one to get started.
+            No {type} categories yet
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card className="category-list-card">
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2">
+    <div className={cn(
+      "border border-border bg-card h-full flex flex-col",
+      scrollable && "overflow-hidden"
+    )}>
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-border flex-shrink-0">
+        {icon}
+        <h3 className="text-sm font-semibold uppercase tracking-wide">{title}</h3>
+        <span className="text-xs text-muted-foreground ml-auto">
+          {categories.length} {categories.length === 1 ? 'item' : 'items'}
+        </span>
+      </div>
+      
+      {/* Content */}
+      <div className={cn(
+        "flex-1",
+        scrollable && "overflow-y-auto",
+        compact ? "p-3" : "p-4"
+      )}>
+        <div className={cn(
+          "flex flex-col",
+          compact ? "gap-2" : "gap-3"
+        )}>
           {categories.map((category) => (
             <CategoryRow
               key={category.id}
@@ -46,11 +74,13 @@ export default function CategoryList({ type, title }: CategoryListProps) {
               actual={getCategoryActual(category.id)}
               target={getCategoryTarget(category.id)}
               colorClass={colorClass}
+              compact={compact}
+              showProgress={type === 'expense'}
             />
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -59,34 +89,58 @@ interface CategoryRowProps {
   actual: number
   target: number
   colorClass: string
+  compact?: boolean
+  showProgress?: boolean
 }
 
-function CategoryRow({ category, actual, target, colorClass }: CategoryRowProps) {
+function CategoryRow({ category, actual, target, colorClass, compact = false, showProgress = true }: CategoryRowProps) {
   const progress = target > 0 ? Math.min((actual / target) * 100, 100) : 0
   const isOver = actual > target && target > 0
 
   return (
-    <div className="category-row">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-sm font-medium">{category.name}</span>
-        <div className="flex items-baseline gap-1">
+    <div className={cn(
+      "border border-border bg-background",
+      compact ? "px-3 py-2" : "px-4 py-3"
+    )}>
+      <div className="flex justify-between items-center">
+        <span className={cn(
+          "font-medium truncate",
+          compact ? "text-xs" : "text-sm"
+        )}>
+          {category.name}
+        </span>
+        <div className="flex items-baseline gap-1 ml-2 flex-shrink-0">
           <span
             className={cn(
-              'text-sm font-bold',
-              isOver && colorClass === 'expense' && 'text-red-600'
+              'font-bold tabular-nums',
+              compact ? "text-xs" : "text-sm",
+              isOver && colorClass === 'expense' ? 'text-red-600' : '',
+              colorClass === 'income' && 'text-green-600'
             )}
           >
             {formatCurrency(actual)}
           </span>
           {target > 0 && (
-            <span className="text-xs text-muted-foreground">/ {formatCurrency(target)}</span>
+            <span className={cn(
+              "text-muted-foreground tabular-nums",
+              compact ? "text-[10px]" : "text-xs"
+            )}>
+              / {formatCurrency(target)}
+            </span>
           )}
         </div>
       </div>
-      {target > 0 && (
-        <div className="category-progress-bar">
+      
+      {/* Progress bar - only for expenses with targets */}
+      {showProgress && target > 0 && (
+        <div className="mt-2 h-1 bg-muted overflow-hidden">
           <div
-            className={cn('category-progress-fill', colorClass, isOver && 'over')}
+            className={cn(
+              "h-full transition-all duration-300",
+              colorClass === 'expense' && !isOver && "bg-primary",
+              colorClass === 'expense' && isOver && "bg-red-600",
+              colorClass === 'income' && "bg-green-600"
+            )}
             style={{ width: `${progress}%` }}
           />
         </div>

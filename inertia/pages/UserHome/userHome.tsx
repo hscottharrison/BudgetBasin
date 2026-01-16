@@ -20,21 +20,25 @@ export default function UserHome({ userBuckets, userAccounts, transactionTypes }
 
 function UserHomePage() {
   return (
-    <div className="w-full max-w-[1120px] mx-auto p-8 flex flex-col gap-4 flex-1 min-h-0 overflow-hidden">
-      <div className="flex flex-col flex-1 min-h-0 mt-4 gap-4">
-        <div className="mb-4 px-2">
-          <TotalBalance />
-        </div>
+    <div className="w-full max-w-[1120px] mx-auto p-6 flex flex-col flex-1 min-h-0 overflow-hidden">
+      {/* Summary - Fixed */}
+      <div className="flex-shrink-0 mb-4">
+        <TotalBalance />
+      </div>
 
-        <div className="flex-shrink-0 min-h-0">
-          <ActionsBar />
-        </div>
+      {/* Actions Bar - Fixed */}
+      <div className="flex-shrink-0 mb-4">
+        <ActionsBar />
+      </div>
 
+      {/* Accounts Table - Collapsible */}
+      <div className="flex-shrink-0 mb-4">
         <AccountsTable />
+      </div>
 
-        <div className="flex-1 min-h-0">
-          <BucketsList />
-        </div>
+      {/* Buckets - Scrollable */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <BucketsList />
       </div>
     </div>
   )
