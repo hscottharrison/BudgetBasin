@@ -1,15 +1,16 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import BankAccount from '#models/bank_account'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import Bucket from '#models/bucket'
 import Transaction from '#models/transaction'
 import BudgetCategory from '#models/budget_category'
 import BudgetTemplate from '#models/budget_template'
 import BudgetPeriod from '#models/budget_period'
+import Subscription from '#models/subscription'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -31,6 +32,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column({ serializeAs: null })
   declare password: string
+
+  @column()
+  declare stripeCustomerId: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -67,4 +71,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'userId',
   })
   declare budgetPeriods: HasMany<typeof BudgetPeriod>
+
+  @hasOne(() => Subscription, {
+    foreignKey: 'userId',
+  })
+  declare subscription: HasOne<typeof Subscription>
 }

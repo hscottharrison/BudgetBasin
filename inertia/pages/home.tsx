@@ -1,20 +1,38 @@
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '~/components/ui/card'
 import {
-  Separator
-} from '~/components/ui/separator'
-import {
   ArrowRight,
   Lock,
   PieChart,
   Zap,
   CheckCircle2,
+  Calendar,
+  Wallet
 } from 'lucide-react'
 import * as Accordion from '@radix-ui/react-accordion'
-import { cn } from '~/lib/utils'
 
-// Replace with your brand name and links
 const APP_NAME = 'BudgetBasin'
+
+const demoItems = [
+  {
+    title: 'Buckets overview',
+    description: 'See your goals and what’s allocated in seconds.',
+    imageSrc: 'https://xmobqcpkmnftkqqxdjkx.supabase.co/storage/v1/object/sign/BudgetBasinDemo/track_savings.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83YzRkNjM2MS00OTk0LTQ0NjEtOWZkYS0zYzIzNTEzZWIzMTYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJCdWRnZXRCYXNpbkRlbW8vdHJhY2tfc2F2aW5ncy5wbmciLCJpYXQiOjE3NjkyODY0NTMsImV4cCI6MTgwMDgyMjQ1M30.enhtxSuqwMomQxcrcznTH47pTsOCU9guLlI6U5MAUQg',
+    alt: 'Buckets overview screenshot',
+  },
+  {
+    title: 'Budget template',
+    description: 'Create a reusable monthly plan with categories and planned amounts.',
+    imageSrc: '/images/demos/budget-template.png',
+    alt: 'Budget template screenshot',
+  },
+  {
+    title: 'Monthly tracking',
+    description: 'Start a month and track planned vs actual spending as you enter transactions.',
+    imageSrc: '/images/demos/monthly-tracking.png',
+    alt: 'Monthly tracking screenshot',
+  },
+]
 
 export default function LandingPage() {
   return (
@@ -33,14 +51,16 @@ export default function LandingPage() {
             <h1 className="text-5xl md:text-7xl font-bold text-center leading-tight">
               Give every dollar a job—without opening new accounts.
             </h1>
+
             <p className="text-xl text-muted-foreground text-center max-w-3xl">
-              Connect or enter your accounts, create buckets, and allocate your cash to the goals that
-              matter—house, travel, emergencies, anything.
+              Organize savings with buckets, and set a monthly budget template to plan your spending—two
+              simple tools you can use side-by-side.
             </p>
+
             <div className="flex gap-4 flex-wrap items-center justify-center">
               <a href="/register">
                 <Button size="lg">
-                  Start your first bucket <ArrowRight className="ml-2 h-4 w-4" />
+                  Start free <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </a>
               <a href="/login">
@@ -49,6 +69,25 @@ export default function LandingPage() {
                 </Button>
               </a>
             </div>
+
+            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center">
+              <span className="inline-flex items-center gap-2 rounded-full border bg-background/60 px-3 py-1">
+                <PieChart className="h-4 w-4" />
+                Buckets for goals
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border bg-background/60 px-3 py-1">
+                <Calendar className="h-4 w-4" />
+                Monthly budget templates
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border bg-background/60 px-3 py-1">
+                <Lock className="h-4 w-4" />
+                Privacy-first
+              </span>
+            </div>
+
+            <p className="text-sm text-muted-foreground text-center max-w-2xl">
+              Transactions are currently entered manually so you stay in control of what you track.
+            </p>
           </div>
         </div>
       </div>
@@ -58,18 +97,18 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <div className="flex flex-col gap-6 py-16">
             <h2 className="text-4xl md:text-5xl font-bold">How it works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader>
                   <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium w-fit mb-2">
                     Step 1
                   </span>
-                  <CardTitle>Add your savings</CardTitle>
+                  <CardTitle>Add Your Accounts</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Add balances manually or connect your accounts (coming soon). See your total savings
-                    in one place.
+                    Add your checking and savings accounts to your BudgetBasin profile along with your balances. This will serve as a starting point and allow you to reconcile your budgets with your accounts.
                   </p>
                 </CardContent>
               </Card>
@@ -82,28 +121,62 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Name your goals—Emergency, Down Payment, Travel. Set target amounts and optional
-                    dates.
+                    Name your goals—Emergency, Down Payment, Travel. Set target amounts and optional dates.
                   </p>
                 </CardContent>
               </Card>
+
               <Card>
                 <CardHeader>
                   <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium w-fit mb-2">
                     Step 3
                   </span>
-                  <CardTitle>Allocate with confidence</CardTitle>
+                  <CardTitle>Allocate your savings</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Watch progress update instantly as balances change.
+                    Assign dollars to goals and immediately see what’s funded, underfunded, or unallocated.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium w-fit mb-2">
+                    Step 4
+                  </span>
+                  <CardTitle>Build a budget template</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Create categories and planned amounts once, then reuse them each month. You can create
+                    multiple budgets for different plans.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium w-fit mb-2">
+                    Step 5
+                  </span>
+                  <CardTitle>Start a month & track</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Start a new month and track actual spending against your plan as
+                    you enter transactions.
                   </p>
                 </CardContent>
               </Card>
             </div>
-            <div>
+
+            <div className="flex gap-3 flex-wrap">
               <a href="/register">
-                <Button>Start your first bucket</Button>
+                <Button>Start free</Button>
+              </a>
+              <a href="#demos">
+                <Button variant="outline">See screenshots</Button>
               </a>
             </div>
           </div>
@@ -115,6 +188,7 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <div className="flex flex-col gap-6 py-16">
             <h2 className="text-4xl md:text-5xl font-bold">Why {APP_NAME}</h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -125,159 +199,127 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Keep your money where it already lives. Organize savings visually—no new accounts or
-                    messy transfers.
+                    Keep your money where it already lives. Buckets are a planning layer on top of your
+                    existing accounts.
                   </p>
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5" />
+                    A budget that starts with intention
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Use templates (categories + planned amounts) to set a monthly plan, then track how you
+                    actually spend.
+                  </p>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Zap className="h-5 w-5" />
-                    Allocation you can trust
+                    Manual tracking, on purpose
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Distribute your money to meet your goals. See what's fully funded, underfunded, or
-                    unallocated.
+                    Enter transactions manually and reconcile with your checking account’s running balance
+                    to keep things accurate.
                   </p>
                 </CardContent>
               </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5" />
-                    Built for real life
+                    Know what you can save
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Priorities change. Reorder goals, adjust targets, or reallocate in seconds—everything
-                    updates instantly.
+                    When you know what you spend, you can make clearer tradeoffs and fund the goals that
+                    matter most.
                   </p>
                 </CardContent>
               </Card>
             </div>
-            <div>
-              <Button variant="outline">Try the demo</Button>
+
+            <div className="flex gap-3 flex-wrap">
+              <a href="#demos">
+                <Button variant="outline">View screenshots</Button>
+              </a>
+              <a href="/register">
+                <Button>Get started</Button>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Security */}
-      <div id="security" className="bg-muted/50 border-t">
+      {/* Screenshots */}
+      <div id="demos" className="bg-muted/50 border-t">
         <div className="container mx-auto">
           <div className="flex flex-col gap-6 py-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Security & Privacy</h2>
-            <Card className="bg-primary/5 border-primary/20">
-              <CardContent className="pt-6">
-                <div className="flex gap-4">
-                  <Lock className="h-6 w-6 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="font-semibold mb-2">Private by design.</p>
-                    <p className="text-muted-foreground">
-                      We only ask for what's needed to show your savings and progress. When available,
-                      connections are read‑only and your data is protected with industry‑standard
-                      encryption.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <p className="text-sm text-muted-foreground">
-              Replace this placeholder with your exact providers, policies, and security statement.
-            </p>
-          </div>
-        </div>
-      </div>
+            <h2 className="text-4xl md:text-5xl font-bold">Screenshots</h2>
 
-      {/* Pricing */}
-      <div id="pricing" className="bg-background">
-        <div className="container mx-auto">
-          <div className="flex flex-col gap-6 py-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Pricing</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="overflow-hidden">
                 <CardHeader>
-                  <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium w-fit mb-2">
-                    Beta
-                  </span>
-                  <CardTitle>Free during beta</CardTitle>
-                  <CardDescription>
-                    Unlimited buckets and core features while we refine the experience.
-                  </CardDescription>
+                  <CardTitle>{demoItems[0].title}</CardTitle>
+                  <CardDescription>{demoItems[0].description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <a href="/register">
-                    <Button>Join the beta</Button>
-                  </a>
+                  <img
+                    src={demoItems[0].imageSrc}
+                    alt={demoItems[0].alt}
+                    className="rounded-lg border"
+                  />
                 </CardContent>
               </Card>
+
+              <div className="grid grid-cols-1 gap-6">
+                {demoItems.slice(1).map((item) => (
+                  <Card key={item.title}>
+                    <CardHeader>
+                      <CardTitle>{item.title}</CardTitle>
+                      <CardDescription>{item.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <img src={item.imageSrc} alt={item.alt} className="rounded-lg border" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* FAQ */}
-      <div id="faq" className="bg-muted/50 border-t">
-        <div className="container mx-auto">
-          <div className="flex flex-col gap-6 py-16">
-            <h2 className="text-4xl md:text-5xl font-bold">FAQ</h2>
-            <Accordion.Root type="single" collapsible className="space-y-2">
-              {faqItems.map((item, i) => (
-                <Accordion.Item key={i} value={`item-${i}`}>
-                  <Accordion.Header>
-                    <Accordion.Trigger asChild>
-                      <button className="w-full text-left p-4 bg-card rounded-lg border hover:bg-accent transition-colors">
-                        <h3 className="text-lg font-semibold">{item.q}</h3>
-                      </button>
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content asChild>
-                    <div className="px-4 pb-4">
-                      <p className="text-muted-foreground">{item.a}</p>
-                    </div>
-                  </Accordion.Content>
-                </Accordion.Item>
-              ))}
-            </Accordion.Root>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA band */}
-      <div
-        className="border-t"
-        style={{
-          background: 'linear-gradient(90deg, hsl(var(--accent)), hsl(var(--primary)))',
-        }}
-      >
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between py-12 flex-wrap gap-6">
-            <h2 className="text-3xl md:text-4xl font-bold">Ready to see your savings—sorted?</h2>
-            <div className="flex gap-4">
-              <Button size="lg">
-                Get started free <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button size="lg" variant="secondary">
-                Watch a 60‑second tour
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="bg-muted/50">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between py-12 gap-6">
-            <div className="flex flex-col gap-2">
-              <p className="font-bold">{APP_NAME}</p>
-              <p className="text-sm text-muted-foreground">Your savings, sorted.</p>
-            </div>
-          </div>
+      <div id="faq" className="bg-background border-t">
+        <div className="container mx-auto py-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">FAQ</h2>
+          <Accordion.Root type="single" collapsible className="space-y-2">
+            {faqItems.map((item, i) => (
+              <Accordion.Item key={i} value={`item-${i}`}>
+                <Accordion.Header>
+                  <Accordion.Trigger className="w-full text-left p-4 bg-card rounded-lg border">
+                    {item.q}
+                  </Accordion.Trigger>
+                </Accordion.Header>
+                <Accordion.Content className="p-4 text-muted-foreground">
+                  {item.a}
+                </Accordion.Content>
+              </Accordion.Item>
+            ))}
+          </Accordion.Root>
         </div>
       </div>
     </div>
@@ -286,19 +328,15 @@ export default function LandingPage() {
 
 const faqItems = [
   {
-    q: 'Do I have to move money between banks?',
-    a: "No. Buckets are a planning layer that sits on top of your existing accounts. Keep your money where it is; get clarity on what it's for.",
+    q: 'How does the monthly budget work?',
+    a: 'Budgets are templates (categories + planned amounts). When you start a month, you track actual spending against that plan.',
   },
   {
-    q: 'Will this affect my credit or my bank?',
-    a: "No. Viewing balances and allocating buckets doesn't touch your credit and doesn't change your bank accounts.",
+    q: 'Do budgets roll over?',
+    a: 'No. Each month resets so you can start fresh.',
   },
   {
-    q: 'What if my priorities change?',
-    a: 'Reallocate in seconds. Your targets, timeline, and progress update instantly.',
-  },
-  {
-    q: 'Is my data safe?',
-    a: 'We use industry‑standard encryption and follow strict data‑handling practices. See our Security page for details.',
+    q: 'Are buckets and budgets connected?',
+    a: 'Not yet. They are separate tools you can use side-by-side.',
   },
 ]

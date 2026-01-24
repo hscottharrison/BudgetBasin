@@ -4,6 +4,8 @@ import AccountsService from '#services/accounts_service'
 import BucketsService from '#services/buckets_service'
 import EnumService from '#services/enum_service'
 import BudgetService from '#services/budget_service'
+import StripeService from '#services/stripe_service'
+import Subscription from '#models/subscription'
 
 @inject()
 export default class ViewsController {
@@ -11,7 +13,8 @@ export default class ViewsController {
     private accountService: AccountsService,
     private bucketsService: BucketsService,
     private enumService: EnumService,
-    private budgetService: BudgetService
+    private budgetService: BudgetService,
+    private stripeService: StripeService
   ) {}
   async home({ inertia }: HttpContext) {
     return inertia.render('home')
@@ -59,5 +62,20 @@ export default class ViewsController {
       currentPeriod,
       checkingAccount,
     })
+  }
+
+  async subscription({ inertia, auth }: HttpContext) {
+    const user = auth.user!
+    const subscription = await Subscription.query().where('userId', user.id).first()
+    const pricing = this.stripeService.getPricingInfo()
+
+    return inertia.render('Subscription/subscription', {
+      subscription: subscription?.toDTO() ?? null,
+      pricing,
+    })
+  }
+
+  async subscriptionSuccess({ inertia }: HttpContext) {
+    return inertia.render('Subscription/subscriptionSuccess')
   }
 }
