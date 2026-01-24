@@ -19,7 +19,7 @@ const BudgetController = () => import('#controllers/budget_controller')
 const SubscriptionController = () => import('#controllers/subscription_controller')
 
 // Views
-router.get('/', [ViewsController, 'home'])
+router.get('/', [ViewsController, 'landing'])
 router.get('/register', [ViewsController, 'register'])
 router.get('/login', [ViewsController, 'login'])
 

@@ -16,8 +16,8 @@ export default class ViewsController {
     private budgetService: BudgetService,
     private stripeService: StripeService
   ) {}
-  async home({ inertia }: HttpContext) {
-    return inertia.render('home')
+  async landing({ inertia }: HttpContext) {
+    return inertia.render('LandingPage/landingPage')
   }
 
   async login({ inertia }: HttpContext) {

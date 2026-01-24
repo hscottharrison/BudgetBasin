@@ -3,3 +3,8 @@ export enum TransactionTypes {
   SPEND = 'spend',
   TRANSFER = 'transfer',
 }
+
+export enum BudgetCategoryTypes {
+  EXPENSE = 'expense',
+  INCOME = 'income',
+}

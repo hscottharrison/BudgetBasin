@@ -1,5 +1,6 @@
 import { BalanceDTO } from '#models/balance'
 import { TransactionDTO } from '#models/transaction'
+import { DateTime } from 'luxon'
 
 export function getLatestBalance(balances: BalanceDTO[]): BalanceDTO | null {
   const validBalances = balances.filter((b) => b.createdAt !== null)
@@ -31,4 +32,8 @@ export function sumTransactions(allocations: TransactionDTO[]): number {
         return (acc += allocation.amount)
     }
   }, 0)
+}
+
+export function formatDate(date: string): string {
+  return DateTime.fromISO(date).toFormat('MMM dd, yyyy')
 }

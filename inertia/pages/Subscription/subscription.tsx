@@ -28,7 +28,7 @@ type Props = {
 export default function Subscription({ subscription, pricing }: Props) {
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  console.log('PRICING', pricing)
+
   async function handleCheckout(priceId: string) {
     setLoading(priceId)
     setError(null)

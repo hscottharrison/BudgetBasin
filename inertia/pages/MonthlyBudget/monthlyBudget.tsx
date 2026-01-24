@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '~/components/ui/button'
-import { Trash2, TrendingUp, TrendingDown } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { MonthlyBudgetProvider, useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { MonthlyBudgetPageDTO } from '~/types/budget'
 import {
@@ -13,9 +13,9 @@ import {
 
 import BudgetSummaryCard from '~/components/MonthlyBudget/BudgetSummaryCard/BudgetSummaryCard'
 import BudgetActionsBar from '~/components/MonthlyBudget/BudgetActionsBar/BudgetActionsBar'
-import CategoryList from '~/components/MonthlyBudget/CategoryList/CategoryList'
 import BudgetSetupPrompt from '~/components/MonthlyBudget/BudgetSetupPrompt/BudgetSetupPrompt'
 import CreateBudgetForm from '~/components/MonthlyBudget/CreateBudgetForm/CreateBudgetForm'
+import BudgetViewToggle from '~/components/MonthlyBudget/BudgetViewToggle/BudgetViewToggle'
 
 export default function MonthlyBudget({
   categories,
@@ -95,10 +95,10 @@ function MonthlyBudgetPage() {
       <div className="flex-shrink-0 mb-4">
         <div className="flex justify-between items-center gap-2">
           <BudgetActionsBar onAddEntry={handleAddEntry} onAddCategory={handleAddCategory} />
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleDeleteBudget} 
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDeleteBudget}
             disabled={isLoading}
             className="text-destructive hover:text-destructive hover:bg-destructive/10"
           >
@@ -107,29 +107,7 @@ function MonthlyBudgetPage() {
           </Button>
         </div>
       </div>
-
-      {/* Two Column Layout */}
-      <div className="flex-1 min-h-0 flex gap-6">
-        {/* Income - Compact, No Scroll */}
-        <div className="w-[280px] flex-shrink-0">
-          <CategoryList 
-            type="income" 
-            title="Income" 
-            icon={<TrendingUp size={16} className="text-green-600" />}
-            compact
-          />
-        </div>
-
-        {/* Expenses - Scrollable */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <CategoryList 
-            type="expense" 
-            title="Expenses" 
-            icon={<TrendingDown size={16} className="text-red-600" />}
-            scrollable
-          />
-        </div>
-      </div>
+      <BudgetViewToggle />
     </div>
   )
 
