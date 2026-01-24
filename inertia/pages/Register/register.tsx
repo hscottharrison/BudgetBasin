@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { FormEvent, useRef } from 'react'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 
@@ -7,6 +7,24 @@ import Input from '~/components/CommonComponents/Input/input'
 import { register } from '~/services/auth_service'
 
 export default function Register() {
+  const firstNameRef = useRef<HTMLInputElement>(null)
+  const lastNameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+
+    const payload = {
+      firstName: firstNameRef.current?.value ?? '',
+      lastName: lastNameRef.current?.value ?? '',
+      email: emailRef.current?.value ?? '',
+      password: passwordRef.current?.value ?? '',
+    }
+
+    await register(payload)
+  }
+
   return (
     <div className="h-full w-screen flex items-center justify-center">
       <div className="w-full max-w-md px-4">
@@ -16,10 +34,10 @@ export default function Register() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <Input label="First Name" name="firstName" id="firstName" type="text" />
-              <Input label="Last Name" name="lastName" id="lastName" type="text" />
-              <Input label="Email" name="email" id="email" type="email" />
-              <Input label="Password" name="password" id="password" type="password" />
+              <Input ref={firstNameRef} label="First Name" name="firstName" type="text" />
+              <Input ref={lastNameRef} label="Last Name" name="lastName" type="text" />
+              <Input ref={emailRef} label="Email" name="email" type="email" />
+              <Input ref={passwordRef} label="Password" name="password" type="password" />
               <div className="flex flex-col items-end gap-3 mt-2">
                 <Button type="submit">Create Account</Button>
                 <p className="text-sm text-muted-foreground">
@@ -35,21 +53,4 @@ export default function Register() {
       </div>
     </div>
   )
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    const firstName = document.getElementById('firstName') as HTMLInputElement
-    const lastName = document.getElementById('lastName') as HTMLInputElement
-    const email = document.getElementById('email') as HTMLInputElement
-    const password = document.getElementById('password') as HTMLInputElement
-
-    const payload = {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value,
-      password: password.value,
-    }
-
-    await register(payload)
-  }
 }

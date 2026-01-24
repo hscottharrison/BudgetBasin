@@ -5,6 +5,7 @@ import BudgetPeriod, { BudgetPeriodDTO, CreateBudgetPeriodDTO } from '#models/bu
 import BudgetEntry, { BudgetEntryDTO, CreateBudgetEntryDTO } from '#models/budget_entry'
 import BankAccount, { BankAccountDTO } from '#models/bank_account'
 import Balance from '#models/balance'
+import db from '@adonisjs/lucid/services/db'
 
 export default class BudgetService {
   // ==================== CHECKING ACCOUNT ====================
@@ -98,17 +99,21 @@ export default class BudgetService {
     userId: number,
     categories: { name: string; type: 'income' | 'expense' }[]
   ): Promise<BudgetCategoryDTO[]> {
-    const created: BudgetCategoryDTO[] = []
-    for (let i = 0; i < categories.length; i++) {
-      const cat = await this.createCategory({
-        userId,
-        name: categories[i].name,
-        type: categories[i].type,
-        sortOrder: i,
-      })
-      created.push(cat)
-    }
-    return created
+    const records = categories.map((cat, i) => ({
+      userId,
+      name: cat.name,
+      type: cat.type,
+      sortOrder: i,
+    }))
+
+    const created = await BudgetCategory.createMany(records)
+
+    return created.map((c) => ({
+      id: c.id,
+      name: c.name,
+      type: c.type,
+      sortOrder: c.sortOrder,
+    }))
   }
 
   // ==================== TEMPLATES ====================
@@ -178,13 +183,13 @@ export default class BudgetService {
     templateId: number,
     items: { categoryId: number; amount: number }[]
   ): Promise<void> {
-    for (const item of items) {
-      await this.addTemplateItem({
-        budgetTemplateId: templateId,
-        budgetCategoryId: item.categoryId,
-        amount: item.amount,
-      })
-    }
+    const records = items.map((item) => ({
+      budgetTemplateId: templateId,
+      budgetCategoryId: item.categoryId,
+      amount: item.amount,
+    }))
+
+    await BudgetTemplateItem.createMany(records)
   }
 
   // ==================== PERIODS ====================
@@ -290,100 +295,163 @@ export default class BudgetService {
     period: BudgetPeriodDTO
     checkingAccount: BankAccountDTO | null
   }> {
-    // 1. Create checking account with starting balance (if provided)
-    let checkingAccount: BankAccountDTO | null = null
-    if (data.startingBalance && data.startingBalance > 0) {
-      const account = await BankAccount.create({
-        userId,
-        name: 'Checking',
-        description: 'Primary checking account',
-        accountType: 'checking',
-      })
+    return await db.transaction(async (trx) => {
+      // 1. Create checking account with starting balance (if provided)
+      let checkingAccount: BankAccountDTO | null = null
+      if (data.startingBalance && data.startingBalance > 0) {
+        const account = await BankAccount.create(
+          {
+            userId,
+            name: 'Checking',
+            description: 'Primary checking account',
+            accountType: 'checking',
+          },
+          { client: trx }
+        )
 
-      await Balance.create({
-        bankAccountId: account.id,
-        amount: data.startingBalance,
-      })
+        await Balance.create(
+          {
+            bankAccountId: account.id,
+            amount: data.startingBalance,
+          },
+          { client: trx }
+        )
 
-      // Reload with balances
-      await account.load('balances')
-      checkingAccount = {
-        id: account.id,
-        name: account.name,
-        accountType: account.accountType,
-        balances: account.balances.map((b) => ({
-          id: b.id,
-          amount: Number(b.amount),
-          bankAccountId: b.bankAccountId,
-          createdAt: b.createdAt?.toISO() ?? null,
-        })),
-        createdAt: account.createdAt?.toISO() ?? null,
+        // Reload with balances
+        await account.load('balances')
+        checkingAccount = {
+          id: account.id,
+          name: account.name,
+          accountType: account.accountType,
+          balances: account.balances.map((b) => ({
+            id: b.id,
+            amount: Number(b.amount),
+            bankAccountId: b.bankAccountId,
+            createdAt: b.createdAt?.toISO() ?? null,
+          })),
+          createdAt: account.createdAt?.toISO() ?? null,
+        }
       }
-    }
 
-    // 2. Create income category
-    const incomeCategory = await this.createCategory({
-      userId,
-      name: 'Income',
-      type: 'income',
-      sortOrder: 0,
-    })
+      // 2. Create income category
+      const incomeCategory = await BudgetCategory.create(
+        {
+          userId,
+          name: 'Income',
+          type: 'income',
+          sortOrder: 0,
+        },
+        { client: trx }
+      )
 
-    // 3. Create expense categories
-    const expenseCategories: BudgetCategoryDTO[] = []
-    for (let i = 0; i < data.expenses.length; i++) {
-      const cat = await this.createCategory({
+      // 3. Create expense categories using bulk insert
+      const expenseCategoryRecords = data.expenses.map((expense, i) => ({
         userId,
-        name: data.expenses[i].category,
-        type: 'expense',
-        sortOrder: i,
+        name: expense.category,
+        type: 'expense' as const,
+        sortOrder: i + 1,
+      }))
+
+      const expenseCategories = await BudgetCategory.createMany(expenseCategoryRecords, {
+        client: trx,
       })
-      expenseCategories.push(cat)
-    }
 
-    const allCategories = [incomeCategory, ...expenseCategories]
+      const allCategories: BudgetCategoryDTO[] = [
+        {
+          id: incomeCategory.id,
+          name: incomeCategory.name,
+          type: incomeCategory.type,
+          sortOrder: incomeCategory.sortOrder,
+        },
+        ...expenseCategories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          type: c.type,
+          sortOrder: c.sortOrder,
+        })),
+      ]
 
-    // 4. Create budget template
-    const template = await this.createTemplate({
-      userId,
-      name: data.budgetName,
-      isActive: true,
+      // 4. Deactivate any existing active templates and create new one
+      await BudgetTemplate.query({ client: trx })
+        .where('userId', userId)
+        .where('isActive', true)
+        .update({ isActive: false })
+
+      const template = await BudgetTemplate.create(
+        {
+          userId,
+          name: data.budgetName,
+          isActive: true,
+        },
+        { client: trx }
+      )
+
+      // 5. Add template items using bulk insert
+      const templateItemRecords = [
+        {
+          budgetTemplateId: template.id,
+          budgetCategoryId: incomeCategory.id,
+          amount: data.income,
+        },
+        ...expenseCategories.map((cat, i) => ({
+          budgetTemplateId: template.id,
+          budgetCategoryId: cat.id,
+          amount: data.expenses[i].amount,
+        })),
+      ]
+
+      await BudgetTemplateItem.createMany(templateItemRecords, { client: trx })
+
+      // 6. Create budget period for current month
+      const now = new Date()
+      const period = await BudgetPeriod.create(
+        {
+          userId,
+          budgetTemplateId: template.id,
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+          status: 'active',
+        },
+        { client: trx }
+      )
+
+      // Re-fetch template with items for the response
+      const fullTemplate = await BudgetTemplate.query({ client: trx })
+        .where('id', template.id)
+        .preload('items', (query) => {
+          query.preload('category')
+        })
+        .firstOrFail()
+
+      return {
+        categories: allCategories,
+        template: {
+          id: fullTemplate.id,
+          name: fullTemplate.name,
+          isActive: fullTemplate.isActive,
+          items: fullTemplate.items.map((item) => ({
+            id: item.id,
+            budgetTemplateId: item.budgetTemplateId,
+            budgetCategoryId: item.budgetCategoryId,
+            category: {
+              id: item.category.id,
+              name: item.category.name,
+              type: item.category.type,
+              sortOrder: item.category.sortOrder,
+            },
+            amount: Number(item.amount),
+          })),
+        },
+        period: {
+          id: period.id,
+          year: period.year,
+          month: period.month,
+          status: period.status,
+          entries: [],
+        },
+        checkingAccount,
+      }
     })
-
-    // 5. Add template items
-    await this.addTemplateItem({
-      budgetTemplateId: template.id,
-      budgetCategoryId: incomeCategory.id,
-      amount: data.income,
-    })
-
-    for (let i = 0; i < expenseCategories.length; i++) {
-      await this.addTemplateItem({
-        budgetTemplateId: template.id,
-        budgetCategoryId: expenseCategories[i].id,
-        amount: data.expenses[i].amount,
-      })
-    }
-
-    // Re-fetch template with items
-    const fullTemplate = await this.getActiveTemplateForUser(userId)
-
-    // 6. Create budget period for current month
-    const now = new Date()
-    const period = await this.createPeriod({
-      userId,
-      budgetTemplateId: template.id,
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      status: 'active',
-    })
-
-    return {
-      categories: allCategories,
-      template: fullTemplate!,
-      period,
-      checkingAccount,
-    }
   }
 
   // ==================== DELETE ====================

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useEffect } from 'react'
+import React, { createContext, ReactNode, useEffect, useState, useRef } from 'react'
 
 export interface LoadingContextProps {
   isLoading: boolean;
@@ -9,31 +9,41 @@ export const LoadingContext = createContext<LoadingContextProps>({ isLoading: fa
 export const LoadingProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [activeRequests, setActiveRequests] = useState(0);
+  const originalFetchRef = useRef<typeof window.fetch | null>(null);
+
+  const isLoading = activeRequests > 0;
 
   useEffect(() => {
-    const originalFetch = window.fetch;
+    originalFetchRef.current = window.fetch;
+    const originalFetch = originalFetchRef.current;
+
     window.fetch = async function (input, init) {
-      setIsLoading(true);
+      setActiveRequests((prev) => prev + 1);
       try {
         const response = await originalFetch(input, init);
-        setIsLoading(false);
         return response;
-      } catch (error) {
-        setIsLoading(false);
-        throw error; // Re-throw to propagate the error
+      } finally {
+        setActiveRequests((prev) => prev - 1);
       }
     };
-  }, [])
 
-  const value= {
+    return () => {
+      if (originalFetchRef.current) {
+        window.fetch = originalFetchRef.current;
+      }
+    };
+  }, []);
+
+  const value = {
     isLoading,
-  }
+  };
+
   return (
     <LoadingContext.Provider value={value}>
       {children}
     </LoadingContext.Provider>
-  )
-}
+  );
+};
 
 export const useLoading = () => React.useContext(LoadingContext);

@@ -39,32 +39,20 @@ export interface CreateCategoryPayload {
 export async function createBudgetSetup(
   payload: CreateBudgetSetupPayload
 ): Promise<CreateBudgetSetupResponse> {
-  console.log('budget_service: createBudgetSetup called with payload:', payload)
-  
-  try {
-    console.log('budget_service: Making fetch request to /api/budget/setup')
-    const res = await fetch('/api/budget/setup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-    console.log('budget_service: Response status:', res.status)
+  const res = await fetch('/api/budget/setup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
 
-    if (!res.ok) {
-      const error = await res.json()
-      console.log('budget_service: Error response:', error)
-      throw new Error(error.error || 'Failed to create budget setup')
-    }
-
-    const data = await res.json()
-    console.log('budget_service: Success response:', data)
-    return data
-  } catch (err) {
-    console.error('budget_service: Fetch error:', err)
-    throw err
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Failed to create budget setup')
   }
+
+  return res.json()
 }
 
 /**
@@ -140,23 +128,13 @@ export async function createBudgetEntry(
  * This allows starting fresh with a new budget
  */
 export async function deleteAllBudgetData(): Promise<void> {
-  console.log('budget_service: deleteAllBudgetData called')
-  try {
-    console.log('budget_service: Making DELETE request to /api/budget/all')
-    const res = await fetch('/api/budget/all', {
-      method: 'DELETE',
-    })
-    console.log('budget_service: Response status:', res.status)
+  const res = await fetch('/api/budget/all', {
+    method: 'DELETE',
+  })
 
-    if (!res.ok) {
-      const error = await res.json()
-      console.log('budget_service: Error response:', error)
-      throw new Error(error.error || 'Failed to delete budget data')
-    }
-    console.log('budget_service: Delete successful')
-  } catch (err) {
-    console.error('budget_service: Delete error:', err)
-    throw err
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Failed to delete budget data')
   }
 }
 

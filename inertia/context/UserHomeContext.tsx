@@ -60,9 +60,13 @@ export const UserHomeProvider: React.FC<{
   const updateAccounts = (newAccounts: BankAccountDTO[]) => setAccounts(newAccounts);
 
   const updateAccountBalance = (balance: BalanceDTO) => {
-    const index = accounts.findIndex((acc) => acc.id === balance.bankAccountId);
-    accounts[index]?.balances.push(balance);
-    setAccounts([...accounts]);
+    setAccounts((prevAccounts) =>
+      prevAccounts.map((acc) =>
+        acc.id === balance.bankAccountId
+          ? { ...acc, balances: [...acc.balances, balance] }
+          : acc
+      )
+    );
   };
 
   const addBucket = (bucket: BucketDTO) => setBuckets([...buckets, bucket]);
@@ -70,13 +74,13 @@ export const UserHomeProvider: React.FC<{
   const updateBuckets = (newBuckets: BucketDTO[]) => setBuckets(newBuckets);
 
   const updateTransactionsForBucket = (allocation: TransactionDTO) => {
-    const index = buckets.findIndex((bucket) => bucket.id === allocation.bucketId);
-    const bucketToUpdate = buckets[index];
-    buckets[index] = {
-      ...bucketToUpdate,
-      transactions: [...bucketToUpdate.transactions, allocation],
-    };
-    setBuckets([...buckets]);
+    setBuckets((prevBuckets) =>
+      prevBuckets.map((bucket) =>
+        bucket.id === allocation.bucketId
+          ? { ...bucket, transactions: [...bucket.transactions, allocation] }
+          : bucket
+      )
+    );
   };
 
   //region EFFECT METHODS

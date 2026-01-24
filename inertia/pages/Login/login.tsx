@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { FormEvent, useRef } from 'react'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 
@@ -9,6 +9,20 @@ import { login } from '~/services/auth_service'
 import { LoginDTO } from '#models/auth_dto'
 
 export default function Login() {
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+
+    const payload: LoginDTO = {
+      email: emailRef.current?.value ?? '',
+      password: passwordRef.current?.value ?? '',
+    }
+
+    await login(payload)
+  }
+
   return (
     <div className="h-full w-screen flex items-center justify-center">
       <div className="w-full max-w-md px-4">
@@ -18,8 +32,8 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <Input label="Email" name="email" id="email" type="email" />
-              <Input label="Password" name="password" id="password" type="password" />
+              <Input ref={emailRef} label="Email" name="email" type="email" />
+              <Input ref={passwordRef} label="Password" name="password" type="password" />
               <div className="flex items-center justify-end gap-3 mt-2">
                 <Button type="button" variant="outline">
                   Register
@@ -32,17 +46,4 @@ export default function Login() {
       </div>
     </div>
   )
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    const email = document.getElementById('email') as HTMLInputElement
-    const password = document.getElementById('password') as HTMLInputElement
-
-    const payload: LoginDTO = {
-      email: email.value,
-      password: password.value,
-    }
-
-    await login(payload)
-  }
 }
