@@ -512,10 +512,7 @@ export default class BudgetService {
    * Delete a specific budget period and its entries
    */
   async deletePeriod(userId: number, periodId: number): Promise<void> {
-    await BudgetPeriod.query()
-      .where('id', periodId)
-      .where('userId', userId)
-      .delete()
+    await BudgetPeriod.query().where('id', periodId).where('userId', userId).delete()
   }
 
   // ==================== HELPERS ====================
