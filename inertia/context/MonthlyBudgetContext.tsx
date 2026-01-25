@@ -6,6 +6,7 @@ import {
   BudgetEntryDTO,
   BankAccountDTO,
 } from '~/types/budget'
+import { getTotalExpenseCategoryFromBudget } from '~/services/utils_service'
 
 export interface MonthlyBudgetContextProps {
   // Data
@@ -93,22 +94,12 @@ export const MonthlyBudgetProvider: React.FC<{
   // Calculate actuals from period entries
   const totalActualIncome = useMemo(() => {
     if (!currentPeriod) return 0
-    return currentPeriod.entries
-      .filter((entry) => {
-        const cat = categories.find((c) => c.id === entry.budgetCategoryId)
-        return cat?.type === 'income'
-      })
-      .reduce((sum, entry) => sum + entry.amount, 0)
+    return getTotalExpenseCategoryFromBudget(currentPeriod, categories, 'income')
   }, [currentPeriod, categories])
 
   const totalActualExpenses = useMemo(() => {
     if (!currentPeriod) return 0
-    return currentPeriod.entries
-      .filter((entry) => {
-        const cat = categories.find((c) => c.id === entry.budgetCategoryId)
-        return cat?.type === 'expense'
-      })
-      .reduce((sum, entry) => sum + entry.amount, 0)
+    return getTotalExpenseCategoryFromBudget(currentPeriod, categories, 'expense')
   }, [currentPeriod, categories])
 
   const remainingBudget = useMemo(() => {

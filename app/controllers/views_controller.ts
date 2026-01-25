@@ -29,11 +29,19 @@ export default class ViewsController {
   }
 
   async userHome({ inertia, auth }: HttpContext) {
+    const userId = auth?.user?.id ?? 0
+    const userAccounts = await this.accountService.GetAllAccountsForUser(userId)
+    const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
+    const categories = await this.budgetService.getCategoriesForUser(userId)
+
     const dto = {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
       },
+      userAccounts,
+      currentPeriod,
+      categories,
     }
     return inertia.render('UserHome/userHome', dto)
   }

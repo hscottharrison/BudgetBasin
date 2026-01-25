@@ -3,13 +3,13 @@ import { Button } from '~/components/ui/button'
 import { ChevronDown, Wallet, PiggyBank, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { useUserHome } from '~/context/SavingsContext'
+import { useSavings } from '~/context/SavingsContext'
 import { AreaChart } from '~/components/ui/area-chart'
 import { formatCurrency } from '~/services/utils_service'
 import { cn } from '~/lib/utils'
 
 export default function TotalBalance() {
-  const { bucketBreakdown, totalBalance, totalAllocations, accounts } = useUserHome()
+  const { bucketBreakdown, totalBalance, totalAllocations, accounts } = useSavings()
   const [showChart, setShowChart] = useState(false)
 
   const { chartData, unallocated, accountNames } = useMemo(createChartData, [

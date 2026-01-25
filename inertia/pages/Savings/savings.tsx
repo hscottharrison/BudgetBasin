@@ -1,26 +1,26 @@
-import { UserHomeProvider } from '../../context/SavingsContext'
+import { SavingsProvider } from '../../context/SavingsContext'
 
 import TotalBalance from '~/components/TotalBalance/totalBalance'
-import { UserHomeDTO } from '#models/user_home_dto'
+import { SavingsDTO } from '#models/savings_dto'
 import ActionsBar from '~/components/ActionsBar/ActionsBar'
 import AccountsTable from '~/components/AccountsTable/accountsTable'
 import BucketsList from '~/components/BucketsList/BucketsList'
 
-export default function UserHome({ userBuckets, userAccounts, transactionTypes }: UserHomeDTO) {
+export default function Savings({ userBuckets, userAccounts, transactionTypes }: SavingsDTO) {
   return (
-    <UserHomeProvider
+    <SavingsProvider
       userBuckets={userBuckets}
       userAccounts={userAccounts}
       transactionTypes={transactionTypes}
     >
-      <UserHomePage />
-    </UserHomeProvider>
+      <SavingsPage />
+    </SavingsProvider>
   )
 }
 
-function UserHomePage() {
+function SavingsPage() {
   return (
-    <div className="w-full max-w-[1120px] mx-auto p-6 flex flex-col flex-1 min-h-0 overflow-hidden">
+    <>
       {/* Summary - Fixed */}
       <div className="flex-shrink-0 mb-4">
         <TotalBalance />
@@ -40,6 +40,6 @@ function UserHomePage() {
       <div className="flex-1 min-h-0 overflow-hidden">
         <BucketsList />
       </div>
-    </div>
+    </>
   )
 }

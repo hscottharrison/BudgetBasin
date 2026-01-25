@@ -1,6 +1,9 @@
 import { BalanceDTO } from '#models/balance'
 import { TransactionDTO } from '#models/transaction'
 import { DateTime } from 'luxon'
+import { BankAccountDTO } from '#models/bank_account'
+import { BudgetPeriodDTO } from '#models/budget_period'
+import { BudgetCategoryDTO } from '#models/budget_category'
 
 export function getLatestBalance(balances: BalanceDTO[]): BalanceDTO | null {
   const validBalances = balances.filter((b) => b.createdAt !== null)
@@ -54,4 +57,24 @@ const MONTH_NAMES = [
 ]
 export function formatBudgetMonth(month: number, year: number) {
   return `${MONTH_NAMES[month - 1]} ${year}`
+}
+
+export function calculateTotalAccountsBalance(accounts: BankAccountDTO[]) {
+  return accounts.reduce((acc: number, account: BankAccountDTO) => {
+    const latestBalance = account.balances[account.balances.length - 1]?.amount;
+    return latestBalance ? acc + latestBalance : acc;
+  }, 0);
+}
+
+export function getTotalExpenseCategoryFromBudget(
+  period: BudgetPeriodDTO,
+  categories: BudgetCategoryDTO[],
+  categoryType: 'expense' | 'income'
+) {
+  return period.entries
+    .filter((entry) => {
+      const cat = categories.find((c) => c.id === entry.budgetCategoryId)
+      return cat?.type === categoryType
+    })
+    .reduce((sum, entry) => sum + entry.amount, 0)
 }

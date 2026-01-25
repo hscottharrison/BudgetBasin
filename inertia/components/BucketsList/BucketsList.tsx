@@ -2,11 +2,11 @@ import { Target } from 'lucide-react'
 import BucketCard from '~/components/BucketsList/BucketCard/bucketCard'
 import { deleteBucket } from '~/services/bucket_service'
 import { BucketDTO } from '#models/bucket'
-import { useUserHome } from '~/context/SavingsContext'
+import { useSavings } from '~/context/SavingsContext'
 import { TransactionDTO } from '#models/transaction'
 
 export default function BucketsList() {
-  const { buckets, updateBuckets, updateTransactionsForBucket } = useUserHome()
+  const { buckets, updateBuckets, updateTransactionsForBucket } = useSavings()
 
   return (
     <div className="border border-border bg-card h-full flex flex-col overflow-hidden">

@@ -3,11 +3,11 @@ import { BankAccountDTO } from "#models/bank_account";
 import { BucketDTO } from "#models/bucket";
 import { TransactionDTO } from "#models/transaction";
 import { BalanceDTO } from "#models/balance";
-import {sumTransactions} from "~/services/utils_service";
+import { calculateTotalAccountsBalance, sumTransactions} from "~/services/utils_service";
 import {TransactionTypeDTO} from "#models/transaction_type";
 
 // Define the context value type
-export interface UserHomeContextProps {
+export interface SavingsContextProps {
   accounts: BankAccountDTO[];
   buckets: BucketDTO[];
   bucketBreakdown: { name: string; value: number }[];
@@ -22,10 +22,10 @@ export interface UserHomeContextProps {
 }
 
 // Create the context
-const SavingsContext = createContext<UserHomeContextProps | undefined>(undefined);
+const SavingsContext = createContext<SavingsContextProps | undefined>(undefined);
 
 // Create the Provider component
-export const UserHomeProvider: React.FC<{
+export const SavingsProvider: React.FC<{
   userBuckets: BucketDTO[];
   userAccounts: BankAccountDTO[];
   transactionTypes: TransactionTypeDTO[];
@@ -48,10 +48,7 @@ export const UserHomeProvider: React.FC<{
    * MEMOS
    */
   const totalBalance = useMemo(() => {
-    return accounts.reduce((acc: number, account: BankAccountDTO) => {
-      const latestBalance = account.balances[account.balances.length - 1]?.amount;
-      return latestBalance ? acc + latestBalance : acc;
-    }, 0);
+    return calculateTotalAccountsBalance(accounts)
   }, [accounts]);
 
   /**
@@ -118,10 +115,10 @@ export const UserHomeProvider: React.FC<{
 };
 
 // Use this hook to access the context
-export const useUserHome = (): UserHomeContextProps => {
+export const useSavings = (): SavingsContextProps => {
   const context = useContext(SavingsContext);
   if (!context) {
-    throw new Error("useUserHome must be used within a UserHomeProvider");
+    throw new Error("useSavings must be used within a SavingsProvider");
   }
   return context;
 };

@@ -41,7 +41,9 @@ createInertiaApp({
           <div className="flex flex-1 overflow-hidden">
             <SideMenu isAuthenticated={isAuthenticated} currentUrl={currentUrl} budgetList={budgetList} />
             <main className="flex-1 overflow-hidden flex flex-col bg-accent/20">
+              <div className="w-full max-w-[1120px] mx-auto p-6 flex flex-col flex-1 min-h-0 overflow-hidden">
               <App {...props} />
+              </div>
             </main>
           </div>
         </div>
