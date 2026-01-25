@@ -11,13 +11,13 @@ import { defineConfig } from '@adonisjs/core/http'
  * changed. Therefore it is recommended to keep the app key secure.
  */
 export const appKey = new Secret(env.get('APP_KEY'))
-
 /**
  * The configuration settings used by the HTTP server
  */
 export const http = defineConfig({
   generateRequestId: true,
   allowMethodSpoofing: false,
+  trustProxy: true,
 
   /**
    * Enabling async local storage will let you access HTTP context
