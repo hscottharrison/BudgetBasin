@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 import { BankAccountDTO } from '#models/bank_account'
 import { BudgetPeriodDTO } from '#models/budget_period'
 import { BudgetCategoryDTO } from '#models/budget_category'
+import { BudgetTemplateDTO } from '#models/budget_template'
 
 export function getLatestBalance(balances: BalanceDTO[]): BalanceDTO | null {
   const validBalances = balances.filter((b) => b.createdAt !== null)
@@ -61,9 +62,9 @@ export function formatBudgetMonth(month: number, year: number) {
 
 export function calculateTotalAccountsBalance(accounts: BankAccountDTO[]) {
   return accounts.reduce((acc: number, account: BankAccountDTO) => {
-    const latestBalance = account.balances[account.balances.length - 1]?.amount;
-    return latestBalance ? acc + latestBalance : acc;
-  }, 0);
+    const latestBalance = account.balances[account.balances.length - 1]?.amount
+    return latestBalance ? acc + latestBalance : acc
+  }, 0)
 }
 
 export function getTotalExpenseCategoryFromBudget(
@@ -77,4 +78,17 @@ export function getTotalExpenseCategoryFromBudget(
       return cat?.type === categoryType
     })
     .reduce((sum, entry) => sum + entry.amount, 0)
+}
+
+export function getTotalExpenseCategoryFromBudgetTemplate(
+  template: BudgetTemplateDTO,
+  categories: BudgetCategoryDTO[],
+  categoryType: 'expense' | 'income'
+) {
+  return template.items
+    .filter((item) => {
+      const cat = categories.find((c) => c.id === item.budgetCategoryId)
+      return cat?.type === categoryType
+    })
+    .reduce((sum, item) => sum + item.amount, 0)
 }

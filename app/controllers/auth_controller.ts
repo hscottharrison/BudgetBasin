@@ -33,12 +33,8 @@ export default class AuthController {
     }
   }
 
-  async logout({ session, auth, response }: HttpContext) {
+  async logout({ auth, response }: HttpContext) {
     await auth.use('web').logout()
-    session.flash('notification', {
-      type: 'success',
-      message: 'Logout successful',
-    })
-    response.redirect().toPath('/login')
+    return response.redirect().toPath('/')
   }
 }

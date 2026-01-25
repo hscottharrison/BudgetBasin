@@ -21,16 +21,19 @@ createInertiaApp({
     const isAuthenticated = !!(props.initialPage.props as any)?.user
     const currentUrl = props.initialPage.url
     let budgetList = [];
+    const currentUser = {
+      firstName: (props.initialPage.props as any)?.user?.firstName as string,
+      lastName: (props.initialPage.props as any)?.user?.lastName as string,
+      email: (props.initialPage.props as any)?.user?.email as string
+    }
 
     const budgets = async function() {
       const response = await fetch('/api/budget/list')
       return response.json()
     }
-    console.log('PROPS', props)
 
     if (isAuthenticated) {
       budgetList = await budgets()
-      console.log('BUDGETS', budgetList)
     }
 
     hydrateRoot(
@@ -39,11 +42,9 @@ createInertiaApp({
         <div className="h-screen w-screen flex flex-col">
           <AppBar {...props.initialPage.props} />
           <div className="flex flex-1 overflow-hidden">
-            <SideMenu isAuthenticated={isAuthenticated} currentUrl={currentUrl} budgetList={budgetList} />
+            <SideMenu isAuthenticated={isAuthenticated} currentUrl={currentUrl} budgetList={budgetList} currentUser={currentUser} />
             <main className="flex-1 overflow-hidden flex flex-col bg-accent/20">
-              <div className="w-full max-w-[1120px] mx-auto p-6 flex flex-col flex-1 min-h-0 overflow-hidden">
               <App {...props} />
-              </div>
             </main>
           </div>
         </div>

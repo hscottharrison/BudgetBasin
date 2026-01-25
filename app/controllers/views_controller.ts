@@ -32,16 +32,19 @@ export default class ViewsController {
     const userId = auth?.user?.id ?? 0
     const userAccounts = await this.accountService.GetAllAccountsForUser(userId)
     const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
+    const template = await this.budgetService.getActiveTemplateForUser(userId)
     const categories = await this.budgetService.getCategoriesForUser(userId)
 
     const dto = {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
+        email: auth?.user?.email || '',
       },
       userAccounts,
       currentPeriod,
       categories,
+      template,
     }
     return inertia.render('UserHome/userHome', dto)
   }
@@ -54,6 +57,7 @@ export default class ViewsController {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
+        email: auth?.user?.email || '',
       },
       userAccounts,
       transactionTypes,
@@ -85,6 +89,7 @@ export default class ViewsController {
       user: {
         firstName: auth?.user?.firstName || '',
         lastName: auth?.user?.lastName || '',
+        email: auth?.user?.email || '',
       },
       categories,
       template,

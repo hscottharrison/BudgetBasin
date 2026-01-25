@@ -36,7 +36,7 @@ export default function ConfirmationModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+        <Button variant={buttonVariant} size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
           <Trash2 className="h-4 w-4" />
           {buttonText}
         </Button>
@@ -48,7 +48,7 @@ export default function ConfirmationModal({
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <LoadingButton type="button" cb={onConfirmClick} label="Delete" variant="destructive" />
+          <LoadingButton type="button" cb={onConfirmClick} label={buttonText} variant="destructive" />
         </DialogFooter>
       </DialogContent>
     </Dialog>

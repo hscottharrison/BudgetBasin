@@ -11,11 +11,13 @@ import { cn } from '~/lib/utils'
 import { ActiveBudgetListItemDTO } from '#models/budget_template'
 import { BudgetPeriodDTO } from '#models/budget_period'
 import { formatBudgetMonth } from '~/services/utils_service'
+import UserAvatar from '~/components/UserAvatar/UserAvatar'
 
 type SideMenuProps = {
   isAuthenticated: boolean
   currentUrl: string
   budgetList: ActiveBudgetListItemDTO[]
+  currentUser: {firstName: string, lastName: string, email: string}
 }
 
 /**
@@ -40,7 +42,7 @@ function findActivePathIds(
   return []
 }
 
-export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: SideMenuProps) {
+export default function SideMenu({ isAuthenticated, currentUrl, budgetList, currentUser }: SideMenuProps) {
   const [isCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sideMenuCollapsed')
@@ -286,6 +288,14 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: Si
                 inCollapsedRail={collapsedRail}
               />
             ))}
+          </div>
+        </div>
+        {/* USER SECTION*/}
+        <div className="flex-shrink-0 px-2 py-3 flex gap-4">
+          <UserAvatar userFirstName={currentUser.firstName} />
+          <div>
+            <p className="text-[12px] uppercase tracking-wider text-muted-foreground font-medium">{currentUser?.firstName} {currentUser?.lastName}</p>
+            <p className="text-[10px] overflow-ellipsis max-w-2 uppercase tracking-wider text-muted-foreground font-medium">{currentUser?.email}</p>
           </div>
         </div>
       </div>

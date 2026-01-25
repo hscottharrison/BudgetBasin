@@ -11,10 +11,14 @@ import { formatCurrency, getLatestBalance } from '~/services/utils_service'
 import { deleteAccount } from '~/services/account_service'
 
 import { BalanceDTO, CreateBalanceDTO } from '#models/balance'
-import { useSavings } from '~/context/SavingsContext'
+import { BankAccountDTO } from '~/types/budget'
 
-export default function AccountsTable() {
-  const { accounts, updateAccounts, updateAccountBalance } = useSavings()
+type AccountsTableProps = {
+  accounts: BankAccountDTO[]
+  updateAccounts: (accounts: BankAccountDTO[]) => void
+  updateAccountBalance: (balance: BalanceDTO) => void
+}
+export default function AccountsTable({accounts, updateAccounts, updateAccountBalance}: AccountsTableProps) {
 
   return (
     <div className="border border-border bg-card">

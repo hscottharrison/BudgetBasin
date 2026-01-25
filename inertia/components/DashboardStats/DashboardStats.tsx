@@ -1,9 +1,9 @@
-import { ExternalLink, Link, PiggyBank, Target, Wallet } from 'lucide-react'
-import { formatCurrency } from '~/services/utils_service'
+import { ExternalLink, PiggyBank, Target, Wallet } from 'lucide-react'
+import { formatBudgetMonth, formatCurrency } from '~/services/utils_service'
 import { useUserHome } from '~/context/UserHomeContext'
 
 export default function DashboardStats() {
-  const { currentPeriod, totalSavings, totalChecking, totalActualExpenses } = useUserHome()
+  const { currentPeriod, totalSavings, totalChecking, totalActualExpenses, totalPlannedExpenses } = useUserHome()
 
   return (
     <div className="border border-border bg-card">
@@ -41,9 +41,10 @@ export default function DashboardStats() {
               {formatCurrency(totalActualExpenses)}
             </span>
             <span className="text-xs text-muted-foreground tabular-nums">
-              / {formatCurrency(15000)}
+              / {formatCurrency(totalPlannedExpenses)}
             </span>
           </div>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{formatBudgetMonth(currentPeriod?.month, currentPeriod?.year)}</p>
         </div>
 
         {/* Accounts */}

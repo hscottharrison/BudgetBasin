@@ -85,7 +85,7 @@ function MonthlyBudgetPage() {
   }
 
   return (
-    <>
+    <div className="w-full max-w-ci[1120px] mx-auto p-6 flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Summary - Fixed */}
       <div className="flex-shrink-0 mb-4">
         <BudgetSummaryCard />
@@ -108,7 +108,7 @@ function MonthlyBudgetPage() {
         </div>
       </div>
       <BudgetViewToggle />
-    </>
+    </div>
   )
 
   async function handleAddEntry(entry: {

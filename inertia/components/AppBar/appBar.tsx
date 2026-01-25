@@ -9,11 +9,7 @@ export default function AppBar(props: any) {
             <h1 className="text-xl font-bold">Budget Basin</h1>
           </a>
           <div className="flex gap-4 items-center">
-            {props.user ? (
-              <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                {props.user?.firstName?.[0] ?? ''}
-              </div>
-            ) : (
+            {!props.user && (
               <a href="/register">
                 <Button>Sign up for FREE</Button>
               </a>

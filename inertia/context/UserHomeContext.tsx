@@ -3,15 +3,18 @@ import { createContext, ReactNode, useContext, useMemo } from 'react'
 import {
   calculateTotalAccountsBalance,
   getTotalExpenseCategoryFromBudget,
+  getTotalExpenseCategoryFromBudgetTemplate,
 } from '~/services/utils_service'
 import { BudgetPeriodDTO } from '#models/budget_period'
 import { BudgetCategoryDTO } from '#models/budget_category'
+import { BudgetTemplateDTO } from '#models/budget_template'
 
 export interface UserHomeContextProps {
   currentPeriod: BudgetPeriodDTO
   totalSavings: number
   totalChecking: number
   totalActualExpenses: number
+  totalPlannedExpenses: number
   userAccounts: BankAccountDTO[]
 }
 
@@ -21,8 +24,9 @@ export const UserHomeProvider: React.FC<({
   userAccounts: BankAccountDTO[],
   currentPeriod: BudgetPeriodDTO,
   categories: BudgetCategoryDTO[],
+  template: BudgetTemplateDTO,
   children: ReactNode
-})> = ({ userAccounts, categories, children, currentPeriod }) => {
+})> = ({ userAccounts, categories, children, currentPeriod, template }) => {
 
   const totalSavings = useMemo(() => {
     const savingsAccounts = userAccounts
@@ -41,12 +45,18 @@ export const UserHomeProvider: React.FC<({
     return getTotalExpenseCategoryFromBudget(currentPeriod, categories, 'expense')
   }, [currentPeriod, categories])
 
+  const totalPlannedExpenses = useMemo(() => {
+    if (!currentPeriod) return 0
+    return getTotalExpenseCategoryFromBudgetTemplate(template, categories, 'expense')
+  }, [template, categories])
+
   const value = {
     currentPeriod,
     userAccounts,
     totalSavings,
     totalChecking,
     totalActualExpenses,
+    totalPlannedExpenses
   }
 
   return <UserHomeContext.Provider value={value}>{children}</UserHomeContext.Provider>

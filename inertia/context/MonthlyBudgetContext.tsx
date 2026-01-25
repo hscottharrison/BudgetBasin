@@ -6,7 +6,7 @@ import {
   BudgetEntryDTO,
   BankAccountDTO,
 } from '~/types/budget'
-import { getTotalExpenseCategoryFromBudget } from '~/services/utils_service'
+import { getTotalExpenseCategoryFromBudget, getTotalExpenseCategoryFromBudgetTemplate } from '~/services/utils_service'
 
 export interface MonthlyBudgetContextProps {
   // Data
@@ -73,22 +73,12 @@ export const MonthlyBudgetProvider: React.FC<{
   // Calculate totals from template
   const totalExpectedIncome = useMemo(() => {
     if (!template) return 0
-    return template.items
-      .filter((item) => {
-        const cat = categories.find((c) => c.id === item.budgetCategoryId)
-        return cat?.type === 'income'
-      })
-      .reduce((sum, item) => sum + item.amount, 0)
+    return getTotalExpenseCategoryFromBudgetTemplate(template, categories, 'income')
   }, [template, categories])
 
   const totalBudgetedExpenses = useMemo(() => {
     if (!template) return 0
-    return template.items
-      .filter((item) => {
-        const cat = categories.find((c) => c.id === item.budgetCategoryId)
-        return cat?.type === 'expense'
-      })
-      .reduce((sum, item) => sum + item.amount, 0)
+    return getTotalExpenseCategoryFromBudgetTemplate(template, categories, 'expense')
   }, [template, categories])
 
   // Calculate actuals from period entries
