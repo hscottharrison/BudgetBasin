@@ -3,13 +3,19 @@ import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import BudgetTemplateItem, { BudgetTemplateItemDTO } from '#models/budget_template_item'
-import BudgetPeriod from '#models/budget_period'
+import BudgetPeriod, { BudgetPeriodDTO } from '#models/budget_period'
 
 export type BudgetTemplateDTO = {
   id: number
   name: string
   isActive: boolean
   items: BudgetTemplateItemDTO[]
+}
+
+export type ActiveBudgetListItemDTO = {
+  id: number
+  name: string
+  periods: BudgetPeriodDTO[]
 }
 
 export type CreateBudgetTemplateDTO = {
@@ -51,4 +57,3 @@ export default class BudgetTemplate extends BaseModel {
   })
   declare periods: HasMany<typeof BudgetPeriod>
 }
-

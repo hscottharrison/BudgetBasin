@@ -37,3 +37,21 @@ export function sumTransactions(allocations: TransactionDTO[]): number {
 export function formatDate(date: string): string {
   return DateTime.fromISO(date).toFormat('MMM dd, yyyy')
 }
+
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+export function formatBudgetMonth(month: number, year: number) {
+  return `${MONTH_NAMES[month - 1]} ${year}`
+}

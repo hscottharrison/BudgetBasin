@@ -8,17 +8,21 @@ export type MenuItem = {
   children?: MenuItem[]
 }
 
-export const menuConfig: MenuItem[] = [
-  {
-    id: 'savings',
-    label: 'Savings',
-    href: '/user-home',
-    icon: PiggyBankIcon,
-  },
-  {
-    id: 'monthly-budget',
-    label: 'Monthly Budget',
-    icon: CalendarIcon,
-    href: '/monthly-budget',
-  },
-]
+export function getMenuConfig(budgetItems: MenuItem[]) {
+  const menu = [
+    {
+      id: 'savings',
+      label: 'Savings',
+      href: '/user-home',
+      icon: PiggyBankIcon,
+    },
+    {
+      id: 'monthly-budget',
+      label: 'Monthly Budget',
+      icon: CalendarIcon,
+      href: '/monthly-budget',
+      children: budgetItems,
+    },
+  ]
+  return menu
+}

@@ -32,7 +32,10 @@ router
   .get('/user-home', [ViewsController, 'userHome'])
   .use([middleware.auth(), middleware.subscription()])
 router
-  .get('/monthly-budget', [ViewsController, 'monthlyBudget'])
+  .get('/monthly-budget/', [ViewsController, 'monthlyBudget'])
+  .use([middleware.auth(), middleware.subscription()])
+router
+  .get('/monthly-budget/:id', [ViewsController, 'monthlyBudgetByPeriodId'])
   .use([middleware.auth(), middleware.subscription()])
 
 // AUTH
@@ -91,6 +94,9 @@ router
   .use([middleware.auth(), middleware.subscription()])
 router
   .post('/api/budget/entries', [BudgetController, 'createEntry'])
+  .use([middleware.auth(), middleware.subscription()])
+router
+  .get('/api/budget/list', [BudgetController, 'getBudgetsForUser'])
   .use([middleware.auth(), middleware.subscription()])
 router
   .delete('/api/budget/all', [BudgetController, 'deleteAll'])

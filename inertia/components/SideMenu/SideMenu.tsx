@@ -6,12 +6,16 @@ import {
   ChevronRight,
   Menu,
 } from 'lucide-react'
-import { menuConfig, MenuItem } from './menu_config'
+import { getMenuConfig, MenuItem } from './menu_config'
 import { cn } from '~/lib/utils'
+import { ActiveBudgetListItemDTO } from '#models/budget_template'
+import { BudgetPeriodDTO } from '#models/budget_period'
+import { formatBudgetMonth } from '~/services/utils_service'
 
 type SideMenuProps = {
   isAuthenticated: boolean
   currentUrl: string
+  budgetList: ActiveBudgetListItemDTO[]
 }
 
 /**
@@ -36,7 +40,7 @@ function findActivePathIds(
   return []
 }
 
-export default function SideMenu({ isAuthenticated, currentUrl }: SideMenuProps) {
+export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: SideMenuProps) {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sideMenuCollapsed')
@@ -66,6 +70,21 @@ export default function SideMenu({ isAuthenticated, currentUrl }: SideMenuProps)
     return currentUrl === href || currentUrl.startsWith(href + '/')
   }
 
+  const menuConfig: MenuItem[] = useMemo(() => {
+    const budgetListMenuItems = budgetList.map(item => {
+      const menuItem: MenuItem = {
+        id: `template - ${item.id}`,
+        label: item.name,
+        children: item.periods.map((period: BudgetPeriodDTO) => ({
+          id: `period - ${period.id}`,
+          label: formatBudgetMonth(period.month, period.year),
+          href: `/monthly-budget/`
+        }))
+      }
+     return menuItem;
+    })
+    return getMenuConfig(budgetListMenuItems)
+  }, [budgetList])
   // Expand parents of active route by default (and when route changes).
   const activePathIds = useMemo(
     () => findActivePathIds(menuConfig, isActive),

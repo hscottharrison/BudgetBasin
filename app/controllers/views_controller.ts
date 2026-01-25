@@ -45,11 +45,22 @@ export default class ViewsController {
     return inertia.render('UserHome/userHome', dto)
   }
 
-  async monthlyBudget({ inertia, auth }: HttpContext) {
+  async monthlyBudget({ inertia, auth, response }: HttpContext) {
+    const userId = auth?.user?.id ?? 0
+    const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
+    if (currentPeriod) {
+      response.redirect(`/monthly-budget/${currentPeriod.id}`)
+    } else {
+      return inertia.render('MonthlyBudget/monthlyBudget')
+    }
+  }
+
+  async monthlyBudgetByPeriodId({ auth, inertia, params }: HttpContext) {
+    const periodId = params.id
     const userId = auth?.user?.id ?? 0
     const categories = await this.budgetService.getCategoriesForUser(userId)
     const template = await this.budgetService.getActiveTemplateForUser(userId)
-    const currentPeriod = await this.budgetService.getCurrentPeriodForUser(userId)
+    const currentPeriod = await this.budgetService.getPeriodById(periodId)
     const checkingAccount = await this.budgetService.getCheckingAccountForUser(userId)
 
     return inertia.render('MonthlyBudget/monthlyBudget', {

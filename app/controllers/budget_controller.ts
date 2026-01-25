@@ -127,6 +127,20 @@ export default class BudgetController {
     }
   }
 
+  async getBudgetsForUser({ auth, response }: HttpContext) {
+    try {
+      const userId = auth.user?.id
+      if (!userId) {
+        return response.unauthorized({ error: 'Unauthorized' })
+      }
+
+      const budgetList = await this.budgetService.getBudgetListForUser(userId)
+      return response.json(budgetList)
+    } catch (error) {
+      return response.badRequest({ error: 'Failed to get budgets' })
+    }
+  }
+
   /**
    * DELETE /api/budget/all
    * Delete all budget data for the current user (start fresh)

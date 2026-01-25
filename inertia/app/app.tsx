@@ -17,9 +17,20 @@ createInertiaApp({
     return resolvePageComponent(`../pages/${name}.tsx`, import.meta.glob('../pages/**/*.tsx'))
   },
 
-  setup({ el, App, props }) {
+  async setup({ el, App, props }) {
     const isAuthenticated = !!(props.initialPage.props as any)?.user
     const currentUrl = props.initialPage.url
+    let budgetList = [];
+
+    const budgets = async function() {
+      const response = await fetch('/api/budget/list')
+      return response.json()
+    }
+
+    if (isAuthenticated) {
+      budgetList = await budgets()
+      console.log('BUDGETS', budgetList)
+    }
 
     hydrateRoot(
       el,
@@ -27,7 +38,7 @@ createInertiaApp({
         <div className="h-screen w-screen flex flex-col">
           <AppBar {...props.initialPage.props} />
           <div className="flex flex-1 overflow-hidden">
-            <SideMenu isAuthenticated={isAuthenticated} currentUrl={currentUrl} />
+            <SideMenu isAuthenticated={isAuthenticated} currentUrl={currentUrl} budgetList={budgetList} />
             <main className="flex-1 overflow-hidden flex flex-col bg-accent/20">
               <App {...props} />
             </main>

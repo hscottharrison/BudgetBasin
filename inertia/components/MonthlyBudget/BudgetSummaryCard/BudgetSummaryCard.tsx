@@ -1,12 +1,8 @@
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
-import { formatCurrency } from '~/services/utils_service'
+import { formatBudgetMonth, formatCurrency } from '~/services/utils_service'
 import { cn } from '~/lib/utils'
 import { Calendar, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
 
 export default function BudgetSummaryCard() {
   const {
@@ -21,7 +17,7 @@ export default function BudgetSummaryCard() {
   } = useMonthlyBudget()
 
   const periodLabel = currentPeriod
-    ? `${MONTH_NAMES[currentPeriod.month - 1]} ${currentPeriod.year}`
+    ? formatBudgetMonth(currentPeriod.month, currentPeriod.year)
     : 'No Active Period'
 
   const incomeProgress =

@@ -1,5 +1,9 @@
 import BudgetCategory, { BudgetCategoryDTO, CreateBudgetCategoryDTO } from '#models/budget_category'
-import BudgetTemplate, { BudgetTemplateDTO, CreateBudgetTemplateDTO } from '#models/budget_template'
+import BudgetTemplate, {
+  ActiveBudgetListItemDTO,
+  BudgetTemplateDTO,
+  CreateBudgetTemplateDTO,
+} from '#models/budget_template'
 import BudgetTemplateItem, { CreateBudgetTemplateItemDTO } from '#models/budget_template_item'
 import BudgetPeriod, { BudgetPeriodDTO, CreateBudgetPeriodDTO } from '#models/budget_period'
 import BudgetEntry, { BudgetEntryDTO, CreateBudgetEntryDTO } from '#models/budget_entry'
@@ -194,6 +198,16 @@ export default class BudgetService {
 
   // ==================== PERIODS ====================
 
+  async getPeriodById(periodId: number): Promise<BudgetPeriodDTO | null> {
+    const period = await BudgetPeriod.query()
+      .where('id', periodId)
+      .preload('entries', (query) => {
+        query.preload('category')
+      })
+      .first()
+    if (!period) return null
+    return this.periodToDTO(period)
+  }
   async getCurrentPeriodForUser(userId: number): Promise<BudgetPeriodDTO | null> {
     const now = new Date()
     const year = now.getFullYear()
@@ -450,6 +464,22 @@ export default class BudgetService {
           entries: [],
         },
         checkingAccount,
+      }
+    })
+  }
+
+  async getBudgetListForUser(userId: number): Promise<ActiveBudgetListItemDTO[]> {
+    const templates = await BudgetTemplate.query()
+      .preload('periods')
+      .where('userId', userId)
+      .orderBy('isActive', 'desc')
+      .orderBy('name', 'asc')
+    return templates.map((t) => {
+      const json = t.serialize()
+      return {
+        id: json.id,
+        name: json.name,
+        periods: json.periods ?? [],
       }
     })
   }
