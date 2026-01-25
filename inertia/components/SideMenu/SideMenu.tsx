@@ -41,12 +41,12 @@ function findActivePathIds(
 }
 
 export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: SideMenuProps) {
-  const [isCollapsed, setIsCollapsed] = useState(() => {
+  const [isCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('sideMenuCollapsed')
       return saved === 'true'
     }
-    return false
+    return true
   })
 
   // Mobile drawer state (for small screens). On desktop, the sidebar is always present.
@@ -103,13 +103,13 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: Si
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePathIds.join('|')])
 
-  const toggleCollapse = () => {
-    setIsCollapsed((v) => !v)
-    // If collapsing sidebar, collapse all submenus for a clean compact state.
-    if (!isCollapsed) {
-      setExpandedItems(new Set())
-    }
-  }
+  // const toggleCollapse = () => {
+  //   setIsCollapsed((v) => !v)
+  //   // If collapsing sidebar, collapse all submenus for a clean compact state.
+  //   if (!isCollapsed) {
+  //     setExpandedItems(new Set())
+  //   }
+  // }
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) => {
@@ -148,7 +148,7 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: Si
 
     const iconWrap = cn(
       'flex h-8 w-8 items-center justify-center rounded-md',
-      active ? 'bg-primary/10 text-primary' : 'text-muted-foreground group-hover:text-foreground',
+      active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground',
     )
 
     // When sidebar is collapsed, we still show the icon and keep an accessible label via title.
@@ -249,7 +249,7 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: Si
       >
         {/* Header */}
         <div className={cn('flex items-center justify-between p-2', collapsedRail && 'justify-center')}>
-          {variant === 'mobile' ? (
+          {variant === 'mobile' && (
             <div className="flex w-full items-center justify-between">
               <span className="px-2 text-sm font-semibold">Menu</span>
               <Button
@@ -261,16 +261,19 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList }: Si
                 <ChevronLeft size={18} />
               </Button>
             </div>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleCollapse}
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
-            </Button>
-          )}
+          )
+          //   : (
+          //   <Button
+          //     variant="ghost"
+          //     size="icon"
+          //     onClick={toggleCollapse}
+          //     aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          //     className="hover:bg-white hover:text-primary"
+          //   >
+          //     {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+          //   </Button>
+          // )
+          }
         </div>
 
         {/* Items */}

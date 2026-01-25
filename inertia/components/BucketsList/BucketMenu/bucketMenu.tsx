@@ -10,7 +10,7 @@ import { TransactionDTO, CreateTransactionDTO } from '#models/transaction'
 import FormModal from '~/components/CommonComponents/FormModal/formModal'
 import { createAllocationConfig, createSpendConfig } from '~/services/modal_config_service'
 import { createTransaction } from '~/services/transaction_service'
-import { useUserHome } from '~/context/UserHomeContext'
+import { useUserHome } from '~/context/SavingsContext'
 import { TransactionTypes } from '~/types/enums'
 
 type BucketMenuProps = {

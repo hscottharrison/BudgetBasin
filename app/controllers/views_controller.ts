@@ -29,6 +29,16 @@ export default class ViewsController {
   }
 
   async userHome({ inertia, auth }: HttpContext) {
+    const dto = {
+      user: {
+        firstName: auth?.user?.firstName || '',
+        lastName: auth?.user?.lastName || '',
+      },
+    }
+    return inertia.render('UserHome/userHome', dto)
+  }
+
+  async savings({ inertia, auth }: HttpContext) {
     const userAccounts = await this.accountService.GetSavingsAccountsForUser(auth?.user?.id ?? 0)
     const buckets = await this.bucketsService.GetAllBucketsForUser(auth?.user?.id ?? 0)
     const transactionTypes = await this.enumService.GetTransactionTypes()
@@ -42,7 +52,7 @@ export default class ViewsController {
       userBuckets: buckets,
     }
 
-    return inertia.render('UserHome/userHome', dto)
+    return inertia.render('Savings/savings', dto)
   }
 
   async monthlyBudget({ inertia, auth, response }: HttpContext) {

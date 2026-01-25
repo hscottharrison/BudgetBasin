@@ -9,7 +9,7 @@ import { BankAccountDTO } from '#models/bank_account'
 import { BucketDTO, CreateBucketDTO } from '#models/bucket'
 import { TransactionDTO, CreateTransactionDTO } from '#models/transaction'
 import { createAllocationConfig } from '~/services/modal_config_service'
-import { useUserHome } from '~/context/UserHomeContext'
+import { useUserHome } from '~/context/SavingsContext'
 
 export default function ActionsBar() {
   const { updateAccounts, addBucket, updateTransactionsForBucket, buckets } = useUserHome()

@@ -18,7 +18,7 @@ This document identifies code issues, anti-patterns, and areas that need improve
 
 ### 1. Direct State Mutation in React Context
 
-**Location:** `inertia/context/UserHomeContext.tsx:62-66`
+**Location:** `inertia/context/SavingsContext.tsx:62-66`
 
 **Current Code:**
 ```typescript
@@ -621,7 +621,7 @@ describe('CategoryList', () => {
 ## Recommended Action Plan
 
 ### Phase 1: Critical Fixes (Immediate)
-1. Fix state mutations in UserHomeContext
+1. Fix state mutations in SavingsContext
 2. Add input validation to auth endpoints
 3. Remove console.log statements
 

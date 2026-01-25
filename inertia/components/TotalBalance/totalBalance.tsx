@@ -3,7 +3,7 @@ import { Button } from '~/components/ui/button'
 import { ChevronDown, Wallet, PiggyBank, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { useUserHome } from '~/context/UserHomeContext'
+import { useUserHome } from '~/context/SavingsContext'
 import { AreaChart } from '~/components/ui/area-chart'
 import { formatCurrency } from '~/services/utils_service'
 import { cn } from '~/lib/utils'

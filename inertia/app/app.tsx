@@ -26,6 +26,7 @@ createInertiaApp({
       const response = await fetch('/api/budget/list')
       return response.json()
     }
+    console.log('PROPS', props)
 
     if (isAuthenticated) {
       budgetList = await budgets()

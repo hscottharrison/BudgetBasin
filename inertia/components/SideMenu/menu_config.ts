@@ -1,4 +1,4 @@
-import { CalendarIcon, PiggyBankIcon } from 'lucide-react'
+import { CalendarIcon, HomeIcon, PiggyBankIcon } from 'lucide-react'
 
 export type MenuItem = {
   id: string
@@ -11,9 +11,15 @@ export type MenuItem = {
 export function getMenuConfig(budgetItems: MenuItem[]) {
   const menu = [
     {
+      id: 'home',
+      label: 'Dashboard',
+      href: '/user-home',
+      icon: HomeIcon,
+    },
+    {
       id: 'savings',
       label: 'Savings',
-      href: '/user-home',
+      href: '/savings',
       icon: PiggyBankIcon,
     },
     {

@@ -11,7 +11,7 @@ import { formatCurrency, getLatestBalance } from '~/services/utils_service'
 import { deleteAccount } from '~/services/account_service'
 
 import { BalanceDTO, CreateBalanceDTO } from '#models/balance'
-import { useUserHome } from '~/context/UserHomeContext'
+import { useUserHome } from '~/context/SavingsContext'
 
 export default function AccountsTable() {
   const { accounts, updateAccounts, updateAccountBalance } = useUserHome()

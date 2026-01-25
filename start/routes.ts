@@ -32,6 +32,9 @@ router
   .get('/user-home', [ViewsController, 'userHome'])
   .use([middleware.auth(), middleware.subscription()])
 router
+  .get('/savings', [ViewsController, 'savings'])
+  .use([middleware.auth(), middleware.subscription()])
+router
   .get('/monthly-budget/', [ViewsController, 'monthlyBudget'])
   .use([middleware.auth(), middleware.subscription()])
 router

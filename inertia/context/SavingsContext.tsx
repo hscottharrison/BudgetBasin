@@ -22,7 +22,7 @@ export interface UserHomeContextProps {
 }
 
 // Create the context
-const UserHomeContext = createContext<UserHomeContextProps | undefined>(undefined);
+const SavingsContext = createContext<UserHomeContextProps | undefined>(undefined);
 
 // Create the Provider component
 export const UserHomeProvider: React.FC<{
@@ -114,12 +114,12 @@ export const UserHomeProvider: React.FC<{
     updateTransactionsForBucket,
   };
 
-  return <UserHomeContext.Provider value={value}>{children}</UserHomeContext.Provider>;
+  return <SavingsContext.Provider value={value}>{children}</SavingsContext.Provider>;
 };
 
 // Use this hook to access the context
 export const useUserHome = (): UserHomeContextProps => {
-  const context = useContext(UserHomeContext);
+  const context = useContext(SavingsContext);
   if (!context) {
     throw new Error("useUserHome must be used within a UserHomeProvider");
   }
