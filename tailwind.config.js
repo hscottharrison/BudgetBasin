@@ -2,7 +2,11 @@
 export default {
   darkMode: ["class"],
   content: [
-    "./inertia/**/*.{ts,tsx}",
+    './inertia/**/*.{ts,tsx,js,jsx}',
+    './resources/**/*.{ts,tsx,js,jsx}',
+    './app/**/*.{ts,tsx,js,jsx}',
+    './components/**/*.{ts,tsx,js,jsx}',
+    './start/**/*.{ts,tsx,js,jsx}',
   ],
   theme: {
     container: {
