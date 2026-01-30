@@ -96,6 +96,9 @@ router
   .post('/api/budget/periods', [BudgetController, 'createPeriod'])
   .use([middleware.auth(), middleware.subscription()])
 router
+  .post('/api/budget/periods/start-new', [BudgetController, 'startNewPeriod'])
+  .use([middleware.auth(), middleware.subscription()])
+router
   .post('/api/budget/entries', [BudgetController, 'createEntry'])
   .use([middleware.auth(), middleware.subscription()])
 router

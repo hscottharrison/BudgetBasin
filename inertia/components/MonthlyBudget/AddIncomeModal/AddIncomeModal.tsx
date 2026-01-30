@@ -8,7 +8,7 @@ type AddIncomeModalProps = {
 }
 
 export default function AddIncomeModal({ isOpen, handleClose }: AddIncomeModalProps) {
-  const { addEntry } = useMonthlyBudget()
+  const { addEntry, incomeCategories } = useMonthlyBudget()
 
   const addIncomeConfig: FormModalProps<CreateBudgetEntryDTO> = {
     actionLabel: 'Add Income',
@@ -17,12 +17,12 @@ export default function AddIncomeModal({ isOpen, handleClose }: AddIncomeModalPr
     submitButtonLabel: 'Add',
     onSubmit: addEntry,
     formElements: [
-      // {
-      //   name: 'budgetCategoryId',
-      //   label: 'Category',
-      //   type: 'select',
-      //   options: incomeCategories.map((c) => ({ label: c.name, value: `${c.id}` })),
-      // },
+      {
+        name: 'budgetCategoryId',
+        label: 'Category',
+        type: 'select',
+        options: incomeCategories.map((c) => ({ label: c.name, value: `${c.id}` })),
+      },
       {
         name: 'amount',
         label: 'Amount',

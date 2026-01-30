@@ -9,14 +9,18 @@ import {
   ArrowDownRight,
   BanknoteArrowUp,
   BanknoteArrowDown,
+  CalendarPlus,
 } from 'lucide-react'
+import { Button } from '~/components/ui/button'
 import AddIncomeModal from '~/components/MonthlyBudget/AddIncomeModal/AddIncomeModal'
 import AddExpenseModal from '~/components/MonthlyBudget/AddExpenseModal/AddExpenseModal'
+import StartNewPeriodWizard from '~/components/MonthlyBudget/StartNewPeriodWizard/StartNewPeriodWizard'
 
 
 export default function BudgetSummaryCard() {
   const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false)
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
+  const [isStartPeriodWizardOpen, setIsStartPeriodWizardOpen] = useState(false)
   const {
     currentPeriod,
     totalExpectedIncome,
@@ -58,6 +62,16 @@ export default function BudgetSummaryCard() {
             </span>
           )}
         </div>
+        {currentPeriod?.status === 'active' && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsStartPeriodWizardOpen(true)}
+          >
+            <CalendarPlus size={16} className="mr-2" />
+            New Period
+          </Button>
+        )}
       </div>
 
       {/* Stats */}
@@ -67,13 +81,17 @@ export default function BudgetSummaryCard() {
           <div className="flex items-center gap-1 mb-1 relative">
             <ArrowUpRight size={12} className="text-green-600" />
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Income</p>
-            <BanknoteArrowUp
-              onClick={() => setIsAddIncomeModalOpen(true)}
-              size={20}
-              className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-green-600 transition-colors duration-300"/>
-              <AddIncomeModal
-                isOpen={isAddIncomeModalOpen}
-                handleClose={() => setIsAddIncomeModalOpen(false)}/>
+            {currentPeriod?.status === 'active' && (
+              <>
+                <BanknoteArrowUp
+                  onClick={() => setIsAddIncomeModalOpen(true)}
+                  size={20}
+                  className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-green-600 transition-colors duration-300"/>
+                <AddIncomeModal
+                  isOpen={isAddIncomeModalOpen}
+                  handleClose={() => setIsAddIncomeModalOpen(false)}/>
+              </>
+            )}
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-lg font-bold text-green-600 tabular-nums">
@@ -96,13 +114,17 @@ export default function BudgetSummaryCard() {
           <div className="flex items-center gap-1 mb-1 relative">
             <ArrowDownRight size={12} className="text-red-600" />
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Spent</p>
-            <BanknoteArrowDown
-              onClick={() => setIsAddExpenseModalOpen(true)}
-              size={20}
-              className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-red-600 transition-colors duration-300"/>
-            <AddExpenseModal
-              isOpen={isAddExpenseModalOpen}
-              handleClose={() => setIsAddExpenseModalOpen(false)}/>
+            {currentPeriod?.status === 'active' && (
+              <>
+                <BanknoteArrowDown
+                  onClick={() => setIsAddExpenseModalOpen(true)}
+                  size={20}
+                  className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-red-600 transition-colors duration-300"/>
+                <AddExpenseModal
+                  isOpen={isAddExpenseModalOpen}
+                  handleClose={() => setIsAddExpenseModalOpen(false)}/>
+              </>
+            )}
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-lg font-bold text-red-600 tabular-nums">
@@ -164,6 +186,16 @@ export default function BudgetSummaryCard() {
           </div>
         )}
       </div>
+
+      {/* Start New Period Wizard */}
+      <StartNewPeriodWizard
+        isOpen={isStartPeriodWizardOpen}
+        onClose={() => setIsStartPeriodWizardOpen(false)}
+        onSuccess={() => {
+          // Context is already updated in the wizard
+          setIsStartPeriodWizardOpen(false)
+        }}
+      />
     </div>
   )
 }

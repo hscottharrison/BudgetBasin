@@ -94,6 +94,40 @@ export default class BudgetController {
   }
 
   /**
+   * POST /api/budget/periods/start-new
+   * Start a new budget period (closes current period, creates new period, updates balance)
+   */
+  async startNewPeriod({ request, auth, response }: HttpContext) {
+    const userId = auth.user?.id
+    if (!userId) {
+      return response.unauthorized({ error: 'Unauthorized' })
+    }
+
+    const { year, month, actualBalance } = request.only(['year', 'month', 'actualBalance'])
+
+    try {
+      const result = await this.budgetService.startNewPeriod(userId, {
+        year: Number(year),
+        month: Number(month),
+        actualBalance: actualBalance ? Number(actualBalance) : undefined,
+      })
+      return response.created(result)
+    } catch (error: any) {
+      console.error('Start new period error:', error)
+
+      // Handle specific error cases
+      if (error.message.includes('already exists')) {
+        return response.conflict({ error: error.message })
+      }
+      if (error.message.includes('No active template')) {
+        return response.badRequest({ error: error.message })
+      }
+
+      return response.badRequest({ error: 'Failed to start new period' })
+    }
+  }
+
+  /**
    * POST /api/budget/entries
    * Create a new budget entry and update checking account balance
    */

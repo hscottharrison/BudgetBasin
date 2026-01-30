@@ -151,3 +151,37 @@ export async function deleteBudgetPeriod(periodId: number): Promise<void> {
     throw new Error(error.error || 'Failed to delete period')
   }
 }
+
+export interface StartNewPeriodPayload {
+  year: number
+  month: number
+  actualBalance?: number
+}
+
+export interface StartNewPeriodResponse {
+  closedPeriod: BudgetPeriodDTO | null
+  newPeriod: BudgetPeriodDTO
+  newBalance: number | null
+}
+
+/**
+ * Start a new budget period (closes current period, creates new period, and updates balance)
+ */
+export async function startNewPeriod(
+  payload: StartNewPeriodPayload
+): Promise<StartNewPeriodResponse> {
+  const res = await fetch('/api/budget/periods/start-new', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Failed to start new period')
+  }
+
+  return res.json()
+}

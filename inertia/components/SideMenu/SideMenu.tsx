@@ -82,7 +82,7 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList, curr
           id: `period - ${period.id}`,
           isSubMenuItem: true,
           label: formatBudgetMonth(period.month, period.year),
-          href: `/monthly-budget/`
+          href: `/monthly-budget/${period.id}`
         }))
       }
      return menuItem;

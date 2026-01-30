@@ -217,6 +217,7 @@ export default class BudgetService {
       .where('userId', userId)
       .where('year', year)
       .where('month', month)
+      .where('status', 'active')
       .preload('entries', (query) => {
         query.preload('category')
       })
@@ -239,6 +240,109 @@ export default class BudgetService {
     await period.load('entries')
 
     return this.periodToDTO(period)
+  }
+
+  /**
+   * Start a new budget period:
+   * 1. Close the current active period (if exists)
+   * 2. Create new period for specified month/year
+   * 3. Create new balance record (if actualBalance provided)
+   * All operations in a single transaction
+   */
+  async startNewPeriod(
+    userId: number,
+    data: {
+      year: number
+      month: number
+      actualBalance?: number
+    }
+  ): Promise<{
+    closedPeriod: BudgetPeriodDTO | null
+    newPeriod: BudgetPeriodDTO
+    newBalance: number | null
+  }> {
+    return await db.transaction(async (trx) => {
+      // 1. Get active template
+      const template = await BudgetTemplate.query({ client: trx })
+        .where('userId', userId)
+        .where('isActive', true)
+        .first()
+
+      if (!template) {
+        throw new Error('No active template found. Please create a budget template first.')
+      }
+
+      // 2. Check if period already exists for target month/year
+      const existingPeriod = await BudgetPeriod.query({ client: trx })
+        .where('userId', userId)
+        .where('year', data.year)
+        .where('month', data.month)
+        .first()
+
+      if (existingPeriod) {
+        throw new Error(`Budget period for ${data.month}/${data.year} already exists`)
+      }
+
+      // 3. Close current active period (if exists)
+      let closedPeriod: BudgetPeriodDTO | null = null
+      const activePeriod = await BudgetPeriod.query({ client: trx })
+        .where('userId', userId)
+        .where('status', 'active')
+        .first()
+
+      if (activePeriod) {
+        activePeriod.status = 'closed'
+        await activePeriod.save()
+
+        // Load entries for DTO
+        await activePeriod.load('entries', (query) => {
+          query.preload('category')
+        })
+        closedPeriod = this.periodToDTO(activePeriod)
+      }
+
+      // 4. Create new period
+      const newPeriod = await BudgetPeriod.create(
+        {
+          userId,
+          budgetTemplateId: template.id,
+          year: data.year,
+          month: data.month,
+          status: 'active',
+        },
+        { client: trx }
+      )
+
+      await newPeriod.load('entries', (query) => {
+        query.preload('category')
+      })
+
+      // 5. Create new balance record (if actualBalance provided)
+      let newBalance: number | null = null
+      if (data.actualBalance !== undefined) {
+        const checkingAccount = await BankAccount.query({ client: trx })
+          .where('userId', userId)
+          .where('accountType', 'checking')
+          .first()
+
+        if (checkingAccount) {
+          await Balance.create(
+            {
+              bankAccountId: checkingAccount.id,
+              amount: data.actualBalance,
+            },
+            { client: trx }
+          )
+          newBalance = data.actualBalance
+        }
+      }
+
+      return {
+        closedPeriod,
+        newPeriod: this.periodToDTO(newPeriod),
+        newBalance,
+      }
+    })
   }
 
   // ==================== ENTRIES ====================
@@ -523,20 +627,22 @@ export default class BudgetService {
       year: period.year,
       month: period.month,
       status: period.status,
-      entries: period.entries.map((e) => ({
-        id: e.id,
-        budgetPeriodId: e.budgetPeriodId,
-        budgetCategoryId: e.budgetCategoryId,
-        category: {
-          id: e.category.id,
-          name: e.category.name,
-          type: e.category.type,
-          sortOrder: e.category.sortOrder,
-        },
-        amount: Number(e.amount),
-        note: e.note,
-        createdAt: e.createdAt?.toISO() ?? null,
-      })),
+      entries: period.entries
+        .filter((e) => e.category) // Filter out entries without loaded category
+        .map((e) => ({
+          id: e.id,
+          budgetPeriodId: e.budgetPeriodId,
+          budgetCategoryId: e.budgetCategoryId,
+          category: {
+            id: e.category.id,
+            name: e.category.name,
+            type: e.category.type,
+            sortOrder: e.category.sortOrder,
+          },
+          amount: Number(e.amount),
+          note: e.note,
+          createdAt: e.createdAt?.toISO() ?? null,
+        })),
     }
   }
 }
