@@ -1,18 +1,16 @@
 import { useState } from 'react'
-import { Button } from '~/components/ui/button'
-import { Trash2 } from 'lucide-react'
 import { MonthlyBudgetProvider, useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { MonthlyBudgetPageDTO } from '~/types/budget'
 import {
   createBudgetSetup,
   createBudgetPeriod,
-  createBudgetEntry,
-  createBudgetCategory,
-  deleteAllBudgetData,
+  // createBudgetEntry,
+  // createBudgetCategory,
+  // deleteAllBudgetData,
 } from '~/services/budget_service'
 
 import BudgetSummaryCard from '~/components/MonthlyBudget/BudgetSummaryCard/BudgetSummaryCard'
-import BudgetActionsBar from '~/components/MonthlyBudget/BudgetActionsBar/BudgetActionsBar'
+// import BudgetActionsBar from '~/components/MonthlyBudget/BudgetActionsBar/BudgetActionsBar'
 import BudgetSetupPrompt from '~/components/MonthlyBudget/BudgetSetupPrompt/BudgetSetupPrompt'
 import CreateBudgetForm from '~/components/MonthlyBudget/CreateBudgetForm/CreateBudgetForm'
 import BudgetViewToggle from '~/components/MonthlyBudget/BudgetViewToggle/BudgetViewToggle'
@@ -44,10 +42,10 @@ function MonthlyBudgetPage() {
     updateCategories,
     setTemplate,
     setPeriod,
-    addEntry,
-    addCategory,
+    // addEntry,
+    // addCategory,
     setCheckingAccount,
-    updateCheckingBalance,
+    // updateCheckingBalance,
   } = useMonthlyBudget()
   const [showCreateBudgetForm, setShowCreateBudgetForm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -92,60 +90,35 @@ function MonthlyBudgetPage() {
       </div>
 
       {/* Actions Bar - Fixed */}
-      <div className="flex-shrink-0 mb-4">
-        <div className="flex justify-between items-center gap-2">
-          <BudgetActionsBar onAddEntry={handleAddEntry} onAddCategory={handleAddCategory} />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDeleteBudget}
-            disabled={isLoading}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 size={14} />
-            Reset
-          </Button>
-        </div>
-      </div>
+      {/*<div className="flex-shrink-0 mb-4">*/}
+      {/*  <div className="flex justify-between items-center gap-2">*/}
+      {/*    <BudgetActionsBar onAddCategory={handleAddCategory} />*/}
+      {/*    <Button*/}
+      {/*      variant="ghost"*/}
+      {/*      size="sm"*/}
+      {/*      onClick={handleDeleteBudget}*/}
+      {/*      disabled={isLoading}*/}
+      {/*      className="text-destructive hover:text-destructive hover:bg-destructive/10"*/}
+      {/*    >*/}
+      {/*      <Trash2 size={14} />*/}
+      {/*      Reset*/}
+      {/*    </Button>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
       <BudgetViewToggle />
     </div>
   )
 
-  async function handleAddEntry(entry: {
-    budgetCategoryId: number
-    amount: number
-    note?: string
-  }) {
-    if (!currentPeriod) return
-
-    try {
-      setError(null)
-      const response = await createBudgetEntry({
-        budgetPeriodId: currentPeriod.id,
-        budgetCategoryId: entry.budgetCategoryId,
-        amount: entry.amount,
-        note: entry.note,
-      })
-      addEntry(response.entry)
-      if (response.newBalance !== null) {
-        updateCheckingBalance(response.newBalance)
-      }
-    } catch (err) {
-      console.error('Add entry error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to add entry')
-    }
-  }
-
-  async function handleAddCategory(category: { name: string; type: 'income' | 'expense' }) {
-    try {
-      setError(null)
-      const response = await createBudgetCategory(category)
-      addCategory(response)
-    } catch (err) {
-      console.error('Add category error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to add category')
-    }
-  }
+  // async function handleAddCategory(category: { name: string; type: 'income' | 'expense' }) {
+  //   try {
+  //     setError(null)
+  //     const response = await createBudgetCategory(category)
+  //     addCategory(response)
+  //   } catch (err) {
+  //     console.error('Add category error:', err)
+  //     setError(err instanceof Error ? err.message : 'Failed to add category')
+  //   }
+  // }
 
   async function handleCreateBudget(data: {
     name: string
@@ -194,26 +167,26 @@ function MonthlyBudgetPage() {
     }
   }
 
-  async function handleDeleteBudget() {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your entire budget? This action cannot be undone.'
-    )
-
-    if (!confirmed) return
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      await deleteAllBudgetData()
-      updateCategories([])
-      setTemplate(null as any)
-      setPeriod(null as any)
-    } catch (err) {
-      console.error('Delete budget error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to delete budget')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // async function handleDeleteBudget() {
+  //   const confirmed = window.confirm(
+  //     'Are you sure you want to delete your entire budget? This action cannot be undone.'
+  //   )
+  //
+  //   if (!confirmed) return
+  //
+  //   setIsLoading(true)
+  //   setError(null)
+  //
+  //   try {
+  //     await deleteAllBudgetData()
+  //     updateCategories([])
+  //     setTemplate(null as any)
+  //     setPeriod(null as any)
+  //   } catch (err) {
+  //     console.error('Delete budget error:', err)
+  //     setError(err instanceof Error ? err.message : 'Failed to delete budget')
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 }

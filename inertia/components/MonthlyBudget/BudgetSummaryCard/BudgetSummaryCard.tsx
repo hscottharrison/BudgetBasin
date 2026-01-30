@@ -1,10 +1,22 @@
+import { useState } from 'react'
 import { useMonthlyBudget } from '~/context/MonthlyBudgetContext'
 import { formatBudgetMonth, formatCurrency } from '~/services/utils_service'
 import { cn } from '~/lib/utils'
-import { Calendar, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import {
+  Calendar,
+  Wallet,
+  ArrowUpRight,
+  ArrowDownRight,
+  BanknoteArrowUp,
+  BanknoteArrowDown,
+} from 'lucide-react'
+import AddIncomeModal from '~/components/MonthlyBudget/AddIncomeModal/AddIncomeModal'
+import AddExpenseModal from '~/components/MonthlyBudget/AddExpenseModal/AddExpenseModal'
 
 
 export default function BudgetSummaryCard() {
+  const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false)
+  const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
   const {
     currentPeriod,
     totalExpectedIncome,
@@ -52,9 +64,16 @@ export default function BudgetSummaryCard() {
       <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
         {/* Income */}
         <div className="p-4">
-          <div className="flex items-center gap-1 mb-1">
+          <div className="flex items-center gap-1 mb-1 relative">
             <ArrowUpRight size={12} className="text-green-600" />
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Income</p>
+            <BanknoteArrowUp
+              onClick={() => setIsAddIncomeModalOpen(true)}
+              size={20}
+              className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-green-600 transition-colors duration-300"/>
+              <AddIncomeModal
+                isOpen={isAddIncomeModalOpen}
+                handleClose={() => setIsAddIncomeModalOpen(false)}/>
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-lg font-bold text-green-600 tabular-nums">
@@ -74,9 +93,16 @@ export default function BudgetSummaryCard() {
 
         {/* Expenses */}
         <div className="p-4">
-          <div className="flex items-center gap-1 mb-1">
+          <div className="flex items-center gap-1 mb-1 relative">
             <ArrowDownRight size={12} className="text-red-600" />
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Spent</p>
+            <BanknoteArrowDown
+              onClick={() => setIsAddExpenseModalOpen(true)}
+              size={20}
+              className="ml-1 absolute right-0 top-0 cursor-pointer hover:text-red-600 transition-colors duration-300"/>
+            <AddExpenseModal
+              isOpen={isAddExpenseModalOpen}
+              handleClose={() => setIsAddExpenseModalOpen(false)}/>
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-lg font-bold text-red-600 tabular-nums">

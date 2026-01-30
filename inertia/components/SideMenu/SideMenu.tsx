@@ -76,9 +76,11 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList, curr
     const budgetListMenuItems = budgetList.map(item => {
       const menuItem: MenuItem = {
         id: `template - ${item.id}`,
+        isSubMenuItem: true,
         label: item.name,
         children: item.periods.map((period: BudgetPeriodDTO) => ({
           id: `period - ${period.id}`,
+          isSubMenuItem: true,
           label: formatBudgetMonth(period.month, period.year),
           href: `/monthly-budget/`
         }))
@@ -226,7 +228,7 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList, curr
               expanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0',
             )}
           >
-            <div className="mt-1 space-y-1">
+            <div className="mt-1 ml-4 space-y-1">
               {item.children!.map((child) => (
                 <NavItem key={child.id} item={child} depth={depth + 1} />
               ))}
@@ -264,17 +266,6 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList, curr
               </Button>
             </div>
           )
-          //   : (
-          //   <Button
-          //     variant="ghost"
-          //     size="icon"
-          //     onClick={toggleCollapse}
-          //     aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          //     className="hover:bg-white hover:text-primary"
-          //   >
-          //     {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
-          //   </Button>
-          // )
           }
         </div>
 

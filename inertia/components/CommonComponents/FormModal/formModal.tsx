@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import Input from '~/components/CommonComponents/Input/input'
-import { FormEvent, ReactNode, useState } from 'react'
+import { FormEvent, ReactNode, useMemo, useState } from 'react'
 import SelectInput from '~/components/CommonComponents/Select/select'
 import { useLoading } from '~/context/LoadingContext'
 import LoadingButton from '~/components/CommonComponents/LoadingButton/loadingButton'
@@ -36,6 +36,9 @@ export type FormModalProps<T extends Record<string, unknown>> = {
   closeButtonLabel?: string
   submitButtonLabel?: string
   onSubmit: (payload: T) => Promise<void>
+  isOpen?: boolean
+  controlled?: boolean
+  handleClose?: () => void
 }
 
 export default function FormModal<T extends Record<string, unknown>>({
@@ -47,9 +50,14 @@ export default function FormModal<T extends Record<string, unknown>>({
   closeButtonLabel = 'Cancel',
   submitButtonLabel = 'Submit',
   onSubmit,
+  isOpen = false,
+  controlled = false,
+  handleClose = () => {}
 }: FormModalProps<T>) {
   const [open, setOpen] = useState(false)
   const { isLoading } = useLoading()
+
+  const isModalOpen = useMemo(() => controlled ? isOpen : open, [controlled, isOpen, open])
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -61,17 +69,27 @@ export default function FormModal<T extends Record<string, unknown>>({
     }, {} as T)
 
     await onSubmit(payload)
-    setOpen(false)
+    handleOnOpenChange(false)
+  }
+
+  function handleOnOpenChange(open: boolean) {
+    if (controlled && !open) {
+      handleClose()
+    } else {
+      setOpen(open)
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          {actionLabelIcon ?? <PlusIcon className="h-4 w-4" />}
-          {actionLabel}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isModalOpen} onOpenChange={handleOnOpenChange}>
+      {!controlled && (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            {actionLabelIcon ?? <PlusIcon className="h-4 w-4" />}
+            {actionLabel}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -117,7 +135,7 @@ export default function FormModal<T extends Record<string, unknown>>({
               }
             })}
             <DialogFooter className="gap-2">
-              <Button type="button" variant="outline" disabled={isLoading} onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" disabled={isLoading} onClick={() => handleOnOpenChange(false)}>
                 {closeButtonLabel}
               </Button>
               <LoadingButton type="submit" label={submitButtonLabel} />

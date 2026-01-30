@@ -6,6 +6,7 @@ export type MenuItem = {
   href?: string
   icon?: React.ElementType
   children?: MenuItem[]
+  isSubMenuItem?: boolean
 }
 
 export function getMenuConfig(budgetItems: MenuItem[]) {

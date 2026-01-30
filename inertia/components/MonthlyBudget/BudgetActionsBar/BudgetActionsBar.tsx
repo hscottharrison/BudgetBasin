@@ -13,64 +13,13 @@ interface CreateBudgetCategoryDTO {
 }
 
 interface BudgetActionsBarProps {
-  onAddEntry: (entry: CreateBudgetEntryDTO) => Promise<void>
   onAddCategory: (category: CreateBudgetCategoryDTO) => Promise<void>
 }
 
-export default function BudgetActionsBar({ onAddEntry, onAddCategory }: BudgetActionsBarProps) {
+export default function BudgetActionsBar({ onAddCategory }: BudgetActionsBarProps) {
   const { incomeCategories, expenseCategories, hasSetup } = useMonthlyBudget()
 
-  const addIncomeConfig: FormModalProps<CreateBudgetEntryDTO> = {
-    actionLabel: 'Add Income',
-    title: 'Record Income',
-    description: 'Add income you received this month',
-    submitButtonLabel: 'Add',
-    onSubmit: onAddEntry,
-    formElements: [
-      {
-        name: 'budgetCategoryId',
-        label: 'Category',
-        type: 'select',
-        options: incomeCategories.map((c) => ({ label: c.name, value: `${c.id}` })),
-      },
-      {
-        name: 'amount',
-        label: 'Amount',
-        type: 'number',
-        step: '0.01',
-      },
-      {
-        name: 'note',
-        label: 'Note (optional)',
-      },
-    ],
-  }
 
-  const addExpenseConfig: FormModalProps<CreateBudgetEntryDTO> = {
-    actionLabel: 'Add Expense',
-    title: 'Record Expense',
-    description: 'Add an expense for this month',
-    submitButtonLabel: 'Add',
-    onSubmit: onAddEntry,
-    formElements: [
-      {
-        name: 'budgetCategoryId',
-        label: 'Category',
-        type: 'select',
-        options: expenseCategories.map((c) => ({ label: c.name, value: `${c.id}` })),
-      },
-      {
-        name: 'amount',
-        label: 'Amount',
-        type: 'number',
-        step: '0.01',
-      },
-      {
-        name: 'note',
-        label: 'Note (optional)',
-      },
-    ],
-  }
 
   const addIncomeCategoryConfig: FormModalProps<CreateBudgetCategoryDTO> = {
     actionLabel: 'Add Income Category',
@@ -114,8 +63,8 @@ export default function BudgetActionsBar({ onAddEntry, onAddCategory }: BudgetAc
     <div className="flex gap-2 flex-wrap">
       {hasSetup && (
         <>
-          <FormModal<CreateBudgetEntryDTO> {...addIncomeConfig} />
-          <FormModal<CreateBudgetEntryDTO> {...addExpenseConfig} />
+          {/*<FormModal<CreateBudgetEntryDTO> {...addIncomeConfig} />*/}
+          {/*<FormModal<CreateBudgetEntryDTO> {...addExpenseConfig} />*/}
         </>
       )}
       <FormModal<CreateBudgetCategoryDTO> {...addIncomeCategoryConfig} />

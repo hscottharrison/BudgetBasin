@@ -1,5 +1,5 @@
 import CategoryList from '~/components/MonthlyBudget/CategoryList/CategoryList'
-import { Columns2, Table as TableIcon, TrendingDown, TrendingUp } from 'lucide-react'
+import { Columns2, Table as TableIcon, TrendingDown } from 'lucide-react'
 import {
   Button,
   TableHead,
@@ -37,16 +37,6 @@ export default function BudgetViewToggle() {
       </div>
       {activeView === 'list' && (
         <div className="flex-1 min-h-0 flex gap-6">
-          {/* Income - Compact, No Scroll */}
-          <div className="w-[280px] flex-shrink-0">
-            <CategoryList
-              type="income"
-              title="Income"
-              icon={<TrendingUp size={16} className="text-green-600" />}
-              compact
-            />
-          </div>
-
           {/* Expenses - Scrollable */}
           <div className="flex-1 min-h-0 overflow-hidden">
             <CategoryList

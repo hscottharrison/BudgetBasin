@@ -3,10 +3,11 @@ import {
   BudgetCategoryDTO,
   BudgetTemplateDTO,
   BudgetPeriodDTO,
-  BudgetEntryDTO,
   BankAccountDTO,
 } from '~/types/budget'
 import { getTotalExpenseCategoryFromBudget, getTotalExpenseCategoryFromBudgetTemplate } from '~/services/utils_service'
+import { createBudgetEntry } from '~/services/budget_service'
+import { CreateBudgetEntryDTO } from '#models/budget_entry'
 
 export interface MonthlyBudgetContextProps {
   // Data
@@ -35,9 +36,12 @@ export interface MonthlyBudgetContextProps {
   updateCategories: (categories: BudgetCategoryDTO[]) => void
   setTemplate: (template: BudgetTemplateDTO) => void
   setPeriod: (period: BudgetPeriodDTO) => void
-  addEntry: (entry: BudgetEntryDTO) => void
+  addEntry: (entry: CreateBudgetEntryDTO) => Promise<void>
   setCheckingAccount: (account: BankAccountDTO | null) => void
   updateCheckingBalance: (newBalance: number) => void
+
+  // Feedback
+  error: string | null
 }
 
 const MonthlyBudgetContext = createContext<MonthlyBudgetContextProps | undefined>(undefined)
@@ -53,6 +57,7 @@ export const MonthlyBudgetProvider: React.FC<{
   const [template, setTemplateState] = useState<BudgetTemplateDTO | null>(initialTemplate)
   const [currentPeriod, setCurrentPeriod] = useState<BudgetPeriodDTO | null>(initialPeriod)
   const [checkingAccount, setCheckingAccountState] = useState<BankAccountDTO | null>(initialCheckingAccount)
+  const [error, setError] = useState<string | null>(null)
 
   // Check if user has completed setup
   const hasSetup = useMemo(() => {
@@ -134,12 +139,27 @@ export const MonthlyBudgetProvider: React.FC<{
     setCurrentPeriod(period)
   }
 
-  const addEntry = (entry: BudgetEntryDTO) => {
+  const addEntry = async (entry: CreateBudgetEntryDTO) => {
     if (!currentPeriod) return
-    setCurrentPeriod({
-      ...currentPeriod,
-      entries: [...currentPeriod.entries, entry],
-    })
+    try {
+      setError(null)
+      const response = await createBudgetEntry({
+        budgetPeriodId: currentPeriod.id,
+        budgetCategoryId: entry.budgetCategoryId,
+        amount: entry.amount,
+        note: entry.note ?? '',
+      })
+      setCurrentPeriod({
+        ...currentPeriod,
+        entries: [...currentPeriod.entries, response.entry],
+      })
+      if (response.newBalance !== null) {
+        updateCheckingBalance(response.newBalance)
+      }
+    } catch (err) {
+      console.error('Add entry error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to add entry')
+    }
   }
 
   const setCheckingAccount = (account: BankAccountDTO | null) => {
@@ -182,6 +202,7 @@ export const MonthlyBudgetProvider: React.FC<{
     addEntry,
     setCheckingAccount,
     updateCheckingBalance,
+    error
   }
 
   return <MonthlyBudgetContext.Provider value={value}>{children}</MonthlyBudgetContext.Provider>
