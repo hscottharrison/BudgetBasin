@@ -92,8 +92,7 @@ export default function SideMenu({ isAuthenticated, currentUrl, budgetList, curr
   // Expand parents of active route by default (and when route changes).
   const activePathIds = useMemo(
     () => findActivePathIds(menuConfig, isActive),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentUrl],
+    [currentUrl, menuConfig],
   )
 
   useEffect(() => {
